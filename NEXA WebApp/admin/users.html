@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Management – NEXA Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body class="adm-page">
+    <div class="adm-layout">
+      <aside class="adm-sidebar">
+        <a href="dashboard.html" class="adm-sidebar-brand">
+          <span class="adm-sidebar-brand-logo">NEXA</span>
+          <span class="adm-sidebar-brand-tag">Admin</span>
+        </a>
+        <nav class="adm-nav">
+          <span class="adm-nav-label">Overview</span>
+          <a href="dashboard.html" class="adm-nav-link"
+            ><i class="bi bi-grid-1x2"></i> Dashboard</a
+          >
+          <a href="analytics.html" class="adm-nav-link"
+            ><i class="bi bi-bar-chart-line"></i> Analytics</a
+          >
+          <span class="adm-nav-label">Content</span>
+          <a href="verification-queue.html" class="adm-nav-link"
+            ><i class="bi bi-card-checklist"></i> Verification Queue
+            <span class="adm-nav-badge">4</span></a
+          >
+          <a href="reports.html" class="adm-nav-link"
+            ><i class="bi bi-flag"></i> Reports
+            <span class="adm-nav-badge">7</span></a
+          >
+          <span class="adm-nav-label">Users</span>
+          <a href="users.html" class="adm-nav-link active"
+            ><i class="bi bi-people"></i> User Management</a
+          >
+          <span class="adm-nav-label">System</span>
+          <a href="settings.html" class="adm-nav-link"
+            ><i class="bi bi-gear"></i> Settings</a
+          >
+          <div class="adm-nav-divider"></div>
+          <a href="login.html" class="adm-nav-link adm-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <main class="adm-main">
+        <div class="adm-page-header">
+          <div>
+            <h1 class="adm-page-title">User Management</h1>
+            <p class="adm-page-sub">
+              9,341 registered users — lessees and lessors
+            </p>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div
+          class="adm-card"
+          style="margin-bottom: 1.25rem; padding: 1rem 1.25rem"
+        >
+          <div class="adm-filter-bar">
+            <div class="adm-search-wrap">
+              <i class="bi bi-search"></i>
+              <input
+                type="text"
+                class="adm-input"
+                placeholder="Search by name or email…"
+              />
+            </div>
+            <select class="adm-select">
+              <option>All Roles</option>
+              <option>Lessee</option>
+              <option>Lessor</option>
+              <option>Both</option>
+            </select>
+            <select class="adm-select">
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Suspended</option>
+              <option>Banned</option>
+            </select>
+            <select class="adm-select">
+              <option>Joined: Newest</option>
+              <option>Joined: Oldest</option>
+              <option>Most Bookings</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="adm-card">
+          <div class="adm-card-header">
+            <h2 class="adm-card-title">All Users</h2>
+            <span style="font-size: 0.78rem; color: var(--nexa-gray-500)"
+              >Showing 1–8 of 9,341</span
+            >
+          </div>
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Bookings</th>
+                <th>Listings</th>
+                <th>Reports</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=5"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Sarah K.</div>
+                      <div class="adm-user-email">sarah.k@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-review">Lessee</span></td>
+                <td>Nov 2024</td>
+                <td>14</td>
+                <td>—</td>
+                <td>0</td>
+                <td><span class="adm-badge adm-badge-active">Active</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-warning btn-adm-sm">
+                      Suspend
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=12"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Jordan M.</div>
+                      <div class="adm-user-email">jordan@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-pending">Lessor</span></td>
+                <td>Jan 2025</td>
+                <td>2</td>
+                <td>3</td>
+                <td>0</td>
+                <td><span class="adm-badge adm-badge-active">Active</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-warning btn-adm-sm">
+                      Suspend
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=19"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Priya K.</div>
+                      <div class="adm-user-email">priya.k@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-review">Lessee</span></td>
+                <td>Feb 2025</td>
+                <td>7</td>
+                <td>—</td>
+                <td>3</td>
+                <td>
+                  <span class="adm-badge adm-badge-suspended">Suspended</span>
+                </td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-success btn-adm-sm">
+                      Reactivate</button
+                    ><button class="btn-adm btn-adm-danger btn-adm-sm">
+                      Ban
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=9"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Marcus T.</div>
+                      <div class="adm-user-email">marcus.t@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-review">Lessee</span></td>
+                <td>Mar 2025</td>
+                <td>22</td>
+                <td>—</td>
+                <td>1</td>
+                <td><span class="adm-badge adm-badge-active">Active</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-warning btn-adm-sm">
+                      Suspend
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=8"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Maya R.</div>
+                      <div class="adm-user-email">maya.r@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-pending">Lessor</span></td>
+                <td>Apr 2025</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td><span class="adm-badge adm-badge-active">Active</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-warning btn-adm-sm">
+                      Suspend
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=22"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Chris L.</div>
+                      <div class="adm-user-email">chris.l@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-pending">Lessor</span></td>
+                <td>Jun 2025</td>
+                <td>1</td>
+                <td>2</td>
+                <td>0</td>
+                <td><span class="adm-badge adm-badge-active">Active</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-warning btn-adm-sm">
+                      Suspend
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=31"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Aisha T.</div>
+                      <div class="adm-user-email">aisha.t@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-pending">Lessor</span></td>
+                <td>Jul 2025</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td><span class="adm-badge adm-badge-active">Active</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-warning btn-adm-sm">
+                      Suspend
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                class="adm-row-link"
+                onclick="location.href = 'user-detail.html'"
+              >
+                <td>
+                  <div class="adm-user-cell">
+                    <img
+                      src="https://i.pravatar.cc/50?img=44"
+                      class="adm-avatar"
+                    />
+                    <div>
+                      <div class="adm-user-name">Dev P.</div>
+                      <div class="adm-user-email">dev.p@mail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="adm-badge adm-badge-review">Lessee</span></td>
+                <td>Sep 2025</td>
+                <td>5</td>
+                <td>—</td>
+                <td>2</td>
+                <td><span class="adm-badge adm-badge-active">Active</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a
+                      href="user-detail.html"
+                      class="btn-adm btn-adm-outline btn-adm-sm"
+                      >View</a
+                    ><button class="btn-adm btn-adm-warning btn-adm-sm">
+                      Suspend
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="adm-pagination" style="margin-top: 1rem">
+            <div class="adm-page-info">Showing 1–8 of 9,341 results</div>
+            <div class="adm-page-btns">
+              <button class="adm-page-btn">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button class="adm-page-btn active">1</button>
+              <button class="adm-page-btn">2</button>
+              <button class="adm-page-btn">3</button>
+              <button class="adm-page-btn">…</button>
+              <button class="adm-page-btn">1168</button>
+              <button class="adm-page-btn">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

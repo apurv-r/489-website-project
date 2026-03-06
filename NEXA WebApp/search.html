@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Search Parking in Seattle</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <!-- Leaflet CSS -->
+    <link
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link href="css/base.css" rel="stylesheet" />
+    <link href="css/search.css" rel="stylesheet" />
+  </head>
+  <body class="search-page">
+    <!-- ============================
+       NAVBAR
+       ============================ -->
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container-fluid px-4">
+        <!-- Brand -->
+        <a class="navbar-brand" href="index.html">
+          <span class="brand-n">N</span><span class="brand-rest">EXA</span>
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About Us</a>
+            </li>
+          </ul>
+
+          <!-- Auth Buttons -->
+          <div class="d-flex gap-2">
+            <a href="login.html" class="btn btn-nexa-outline btn-nexa-sm"
+              >Log In</a
+            >
+            <a href="register.html" class="btn btn-nexa btn-nexa-sm">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============================
+       SEARCH PAGE LAYOUT
+       ============================ -->
+    <div class="search-layout">
+      <!-- ===== LEFT PANEL – Filters + Results ===== -->
+      <div class="search-panel" id="searchPanel">
+        <!-- Toggle Button (mobile) -->
+        <button class="search-panel-toggle d-lg-none" id="panelToggle">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <!-- Filters Bar -->
+        <div class="search-filters">
+          <div class="search-filters-top">
+            <div class="position-relative search-location-input">
+              <i class="bi bi-geo-alt-fill search-filter-icon"></i>
+              <input
+                type="text"
+                class="form-control"
+                value="Seattle, WA"
+                placeholder="Location…"
+              />
+            </div>
+            <div class="search-date-range">
+              <div class="position-relative">
+                <i class="bi bi-calendar3 search-filter-icon"></i>
+                <input
+                  type="date"
+                  class="form-control search-filter-date"
+                  title="Check-in"
+                />
+              </div>
+              <span class="date-separator">→</span>
+              <div class="position-relative">
+                <i class="bi bi-calendar3 search-filter-icon"></i>
+                <input
+                  type="date"
+                  class="form-control search-filter-date"
+                  title="Check-out"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="search-filters-row">
+            <!-- Type filter chips -->
+            <div class="filter-chips">
+              <button class="filter-chip active" data-type="all">All</button>
+              <button class="filter-chip" data-type="garage">
+                <i class="bi bi-building me-1"></i>Garage
+              </button>
+              <button class="filter-chip" data-type="driveway">
+                <i class="bi bi-house-door me-1"></i>Driveway
+              </button>
+              <button class="filter-chip" data-type="open-lot">
+                <i class="bi bi-square me-1"></i>Open Lot
+              </button>
+              <button class="filter-chip" data-type="covered">
+                <i class="bi bi-umbrella me-1"></i>Covered
+              </button>
+            </div>
+
+            <!-- Sort -->
+            <div class="search-sort">
+              <label class="search-sort-label"
+                ><i class="bi bi-sort-down me-1"></i>Sort:</label
+              >
+              <div class="custom-select custom-select--sm" id="sortSelect">
+                <div class="custom-select__trigger">
+                  <span class="custom-select__value">Recommended</span>
+                  <i class="bi bi-chevron-down custom-select__arrow"></i>
+                </div>
+                <div class="custom-select__options">
+                  <div
+                    class="custom-select__option selected"
+                    data-value="recommended"
+                  >
+                    Recommended
+                  </div>
+                  <div class="custom-select__option" data-value="price-low">
+                    Price: Low → High
+                  </div>
+                  <div class="custom-select__option" data-value="price-high">
+                    Price: High → Low
+                  </div>
+                  <div class="custom-select__option" data-value="rating">
+                    Top Rated
+                  </div>
+                  <div class="custom-select__option" data-value="distance">
+                    Nearest First
+                  </div>
+                </div>
+                <input type="hidden" name="sort" value="recommended" />
+              </div>
+            </div>
+          </div>
+
+          <div class="search-result-count">
+            <span class="text-gradient fw-bold">8</span> parking spots found
+            near <strong>Seattle, WA</strong>
+          </div>
+        </div>
+
+        <!-- Results List -->
+        <div class="search-results" id="searchResults">
+          <!-- Result 1 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.6205"
+            data-lng="-122.3493"
+            data-id="1"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80"
+                alt="Garage"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">
+                  Private Garage — Capitol Hill
+                </h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.9
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 0.3 mi · Capitol Hill,
+                Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Garage</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$18 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Result 2 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.6145"
+            data-lng="-122.3440"
+            data-id="2"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80"
+                alt="Driveway"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">
+                  Spacious Driveway — Belltown
+                </h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.7
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 0.5 mi · Belltown, Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Driveway</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$12 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Result 3 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.6588"
+            data-lng="-122.3130"
+            data-id="3"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80"
+                alt="Open lot"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">
+                  Open Lot — University District
+                </h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.5
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 1.2 mi · U-District, Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Open Lot</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$8 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Result 4 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.6062"
+            data-lng="-122.3321"
+            data-id="4"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80"
+                alt="Covered parking"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">
+                  Covered Spot — Pioneer Square
+                </h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.8
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 0.8 mi · Pioneer Square,
+                Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Covered</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$22 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Result 5 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.6280"
+            data-lng="-122.3460"
+            data-id="5"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80"
+                alt="Residential driveway"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">
+                  Residential Driveway — South Lake Union
+                </h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.6
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 0.6 mi · SLU, Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Driveway</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$10 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Result 6 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.6097"
+            data-lng="-122.3425"
+            data-id="6"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80"
+                alt="Downtown garage"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">Downtown Garage — Westlake</h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.4
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 0.1 mi · Downtown, Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Garage</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$25 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Result 7 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.6300"
+            data-lng="-122.3620"
+            data-id="7"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80"
+                alt="Lot near Space Needle"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">
+                  Lot Near Space Needle — Lower Queen Anne
+                </h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.9
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 0.9 mi · Queen Anne, Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Open Lot</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$15 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Result 8 -->
+          <a
+            href="details.html"
+            class="search-result-card"
+            data-lat="47.5985"
+            data-lng="-122.3320"
+            data-id="8"
+          >
+            <div class="search-result-img">
+              <img
+                src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80"
+                alt="International District parking"
+              />
+              <button class="listing-save" onclick="event.preventDefault()">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+            <div class="search-result-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="search-result-title">
+                  Secure Garage — International District
+                </h6>
+                <div class="listing-rating">
+                  <i class="bi bi-star-fill"></i> 4.3
+                </div>
+              </div>
+              <p class="search-result-location">
+                <i class="bi bi-geo-alt-fill"></i> 1.0 mi · Intl District,
+                Seattle
+              </p>
+              <div class="listing-tags">
+                <span class="listing-tag">Garage</span>
+              </div>
+              <div class="search-result-footer">
+                <div class="listing-price">$15 <span>/ day</span></div>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- /search-results -->
+      </div>
+      <!-- /search-panel -->
+
+      <!-- ===== RIGHT – MAP ===== -->
+      <div class="search-map" id="searchMap"></div>
+    </div>
+    <!-- /search-layout -->
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+      // ============================
+      // Navbar scroll
+      // ============================
+      window.addEventListener("scroll", function () {
+        const nav = document.getElementById("mainNav");
+        if (window.scrollY > 50) {
+          nav.classList.add("scrolled");
+        } else {
+          nav.classList.remove("scrolled");
+        }
+      });
+
+      // ============================
+      // Custom select dropdowns
+      // ============================
+      document.querySelectorAll(".custom-select").forEach(function (select) {
+        const trigger = select.querySelector(".custom-select__trigger");
+        const options = select.querySelectorAll(".custom-select__option");
+        const valueDisplay = select.querySelector(".custom-select__value");
+        const hiddenInput = select.querySelector('input[type="hidden"]');
+
+        trigger.addEventListener("click", function (e) {
+          e.stopPropagation();
+          document
+            .querySelectorAll(".custom-select.open")
+            .forEach(function (s) {
+              if (s !== select) s.classList.remove("open");
+            });
+          select.classList.toggle("open");
+        });
+
+        options.forEach(function (option) {
+          option.addEventListener("click", function () {
+            options.forEach(function (o) {
+              o.classList.remove("selected");
+            });
+            option.classList.add("selected");
+            valueDisplay.textContent = option.textContent.trim();
+            if (hiddenInput)
+              hiddenInput.value = option.getAttribute("data-value");
+            select.classList.remove("open");
+          });
+        });
+      });
+
+      document.addEventListener("click", function () {
+        document.querySelectorAll(".custom-select.open").forEach(function (s) {
+          s.classList.remove("open");
+        });
+      });
+
+      // ============================
+      // Filter chips
+      // ============================
+      document.querySelectorAll(".filter-chip").forEach(function (chip) {
+        chip.addEventListener("click", function () {
+          document.querySelectorAll(".filter-chip").forEach(function (c) {
+            c.classList.remove("active");
+          });
+          chip.classList.add("active");
+        });
+      });
+
+      // ============================
+      // Leaflet Map — Dark Theme
+      // ============================
+      var map = L.map("searchMap", {
+        zoomControl: false,
+      }).setView([47.6162, -122.3421], 13);
+
+      // Dark tile layer (CartoDB Dark Matter – free, no key)
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+        {
+          attribution:
+            '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+          subdomains: "abcd",
+          maxZoom: 19,
+        },
+      ).addTo(map);
+
+      // Zoom control – bottom right
+      L.control.zoom({ position: "bottomright" }).addTo(map);
+
+      // Custom marker icon matching NEXA theme
+      var nexaIcon = L.divIcon({
+        className: "nexa-marker",
+        html: '<div class="nexa-marker-inner"><i class="bi bi-p-circle-fill"></i></div>',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -42],
+      });
+
+      var activeIcon = L.divIcon({
+        className: "nexa-marker nexa-marker--active",
+        html: '<div class="nexa-marker-inner"><i class="bi bi-p-circle-fill"></i></div>',
+        iconSize: [48, 48],
+        iconAnchor: [24, 48],
+        popupAnchor: [0, -50],
+      });
+
+      // Place markers from result cards
+      var markers = {};
+      document.querySelectorAll(".search-result-card").forEach(function (card) {
+        var lat = parseFloat(card.dataset.lat);
+        var lng = parseFloat(card.dataset.lng);
+        var id = card.dataset.id;
+        var title = card.querySelector(".search-result-title").textContent;
+        var price = card.querySelector(".listing-price").textContent.trim();
+
+        var marker = L.marker([lat, lng], { icon: nexaIcon }).addTo(map);
+
+        // Popup
+        marker.bindPopup(
+          '<div class="nexa-popup">' +
+            "<strong>" +
+            title +
+            "</strong>" +
+            '<div class="nexa-popup-price">' +
+            price +
+            "</div>" +
+            '<a href="details.html" class="nexa-popup-link">View Details →</a>' +
+            "</div>",
+          { className: "nexa-popup-wrapper" },
+        );
+
+        markers[id] = marker;
+
+        // Hover card → highlight marker
+        card.addEventListener("mouseenter", function () {
+          marker.setIcon(activeIcon);
+          marker.openPopup();
+        });
+        card.addEventListener("mouseleave", function () {
+          marker.setIcon(nexaIcon);
+          marker.closePopup();
+        });
+      });
+
+      // ============================
+      // Mobile panel toggle
+      // ============================
+      var panelToggle = document.getElementById("panelToggle");
+      var searchPanel = document.getElementById("searchPanel");
+      if (panelToggle) {
+        panelToggle.addEventListener("click", function () {
+          searchPanel.classList.toggle("open");
+        });
+      }
+
+      // Invalidate map size after load (fixes grey tiles)
+      setTimeout(function () {
+        map.invalidateSize();
+      }, 200);
+    </script>
+  </body>
+</html>

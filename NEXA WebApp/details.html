@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Private Garage · Capitol Hill</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <!-- Leaflet CSS -->
+    <link
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link href="css/base.css" rel="stylesheet" />
+    <link href="css/details.css" rel="stylesheet" />
+  </head>
+  <body class="details-page">
+    <!-- ============================
+         NAVBAR
+         ============================ -->
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="index.html">
+          <span class="brand-n">N</span><span class="brand-rest">EXA</span>
+        </a>
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About Us</a>
+            </li>
+          </ul>
+          <div class="d-flex gap-2">
+            <a href="login.html" class="btn btn-nexa-outline btn-nexa-sm"
+              >Log In</a
+            >
+            <a href="register.html" class="btn btn-nexa btn-nexa-sm">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============================
+         MAIN CONTENT
+         ============================ -->
+    <main class="details-main">
+      <!-- Breadcrumb -->
+      <div class="details-breadcrumb">
+        <div class="container-xl">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+              <li class="breadcrumb-item"><a href="search.html">Search</a></li>
+              <li class="breadcrumb-item active">
+                Private Garage — Capitol Hill
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <div class="container-xl details-container">
+        <!-- ===== PHOTO GALLERY ===== -->
+        <div class="details-gallery">
+          <div class="gallery-carousel">
+            <!-- Arrows -->
+            <button
+              class="gallery-arrow gallery-arrow--prev"
+              id="galleryPrev"
+              aria-label="Previous photo"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button
+              class="gallery-arrow gallery-arrow--next"
+              id="galleryNext"
+              aria-label="Next photo"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+            <!-- 16:9 image wrapper -->
+            <div class="gallery-16-9">
+              <img
+                src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=1200&q=80"
+                alt="Main parking photo"
+                id="galleryMain"
+              />
+            </div>
+            <!-- Dot indicators -->
+            <div class="gallery-dots" id="galleryDots"></div>
+          </div>
+          <div class="gallery-thumbs">
+            <div
+              class="gallery-thumb active"
+              data-index="0"
+              data-src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=1200&q=80"
+            >
+              <div class="gallery-thumb-16-9">
+                <img
+                  src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=300&q=70"
+                  alt="Photo 1"
+                />
+              </div>
+            </div>
+            <div
+              class="gallery-thumb"
+              data-index="1"
+              data-src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=1200&q=80"
+            >
+              <div class="gallery-thumb-16-9">
+                <img
+                  src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=300&q=70"
+                  alt="Photo 2"
+                />
+              </div>
+            </div>
+            <div
+              class="gallery-thumb"
+              data-index="2"
+              data-src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=1200&q=80"
+            >
+              <div class="gallery-thumb-16-9">
+                <img
+                  src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=300&q=70"
+                  alt="Photo 3"
+                />
+              </div>
+            </div>
+            <div
+              class="gallery-thumb"
+              data-index="3"
+              data-src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=1200&q=80"
+            >
+              <div class="gallery-thumb-16-9">
+                <img
+                  src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=300&q=70"
+                  alt="Photo 4"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== TWO-COLUMN LAYOUT ===== -->
+        <div class="details-body">
+          <!-- ===== LEFT – Listing Info ===== -->
+          <div class="details-left">
+            <!-- Title row -->
+            <div class="details-title-row">
+              <div>
+                <h1 class="details-title">Private Garage — Capitol Hill</h1>
+                <div class="details-meta">
+                  <span
+                    ><i class="bi bi-geo-alt-fill"></i> 1421 10th Ave, Seattle,
+                    WA 98122</span
+                  >
+                  <span class="details-meta-dot">·</span>
+                  <span class="listing-tag" style="display: inline-block"
+                    >Garage</span
+                  >
+                </div>
+              </div>
+              <div class="details-rating-badge">
+                <i class="bi bi-star-fill"></i>
+                <span>4.9</span>
+                <small>(38 reviews)</small>
+              </div>
+            </div>
+
+            <hr class="details-divider" />
+
+            <!-- Description -->
+            <div class="details-section">
+              <h2 class="details-section-title">About this space</h2>
+              <p class="details-description">
+                A private, fully covered garage located just two blocks from the
+                Capitol Hill light rail station. Perfect for daily commuters and
+                visitors exploring the neighbourhood. The space fits standard
+                and mid-size SUVs comfortably. Access is via a keypad — code
+                sent upon booking confirmation. Security cameras are monitored
+                24/7 and the garage is well-lit with ample turning room.
+              </p>
+              <p class="details-description">
+                EV charging (Level 2, J1772) is available at no extra cost. The
+                garage door height is 2.1 m — please check clearance before
+                booking if you drive a tall vehicle.
+              </p>
+            </div>
+
+            <hr class="details-divider" />
+
+            <!-- Amenities -->
+            <div class="details-section">
+              <h2 class="details-section-title">Amenities</h2>
+              <div class="details-amenities">
+                <div class="amenity-item">
+                  <i class="bi bi-lightning-charge-fill"></i>
+                  <span>EV Charging</span>
+                </div>
+                <div class="amenity-item">
+                  <i class="bi bi-camera-video-fill"></i>
+                  <span>CCTV</span>
+                </div>
+                <div class="amenity-item">
+                  <i class="bi bi-lightbulb-fill"></i>
+                  <span>Well Lit</span>
+                </div>
+                <div class="amenity-item">
+                  <i class="bi bi-key-fill"></i>
+                  <span>Keypad Entry</span>
+                </div>
+                <div class="amenity-item">
+                  <i class="bi bi-umbrella-fill"></i>
+                  <span>Covered</span>
+                </div>
+                <div class="amenity-item">
+                  <i class="bi bi-bus-front-fill"></i>
+                  <span>Near Transit</span>
+                </div>
+                <div class="amenity-item">
+                  <i class="bi bi-person-wheelchair"></i>
+                  <span>Accessible</span>
+                </div>
+                <div class="amenity-item">
+                  <i class="bi bi-clock-history"></i>
+                  <span>24 / 7 Access</span>
+                </div>
+              </div>
+            </div>
+
+            <hr class="details-divider" />
+
+            <!-- Availability Calendar -->
+            <div class="details-section">
+              <h2 class="details-section-title">Availability</h2>
+              <p class="details-description" style="margin-bottom: 20px">
+                Select your check-in and check-out dates. Greyed-out dates are
+                already booked.
+              </p>
+
+              <!-- Custom calendar -->
+              <div class="avail-calendar">
+                <div class="avail-cal-header">
+                  <button class="avail-cal-nav" id="calPrev">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <span class="avail-cal-month" id="calMonthLabel"></span>
+                  <button class="avail-cal-nav" id="calNext">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+                <div class="avail-cal-weekdays">
+                  <span>Su</span><span>Mo</span><span>Tu</span><span>We</span
+                  ><span>Th</span><span>Fr</span><span>Sa</span>
+                </div>
+                <div class="avail-cal-grid" id="calGrid"></div>
+              </div>
+
+              <div class="avail-cal-legend">
+                <span class="avail-legend-item"
+                  ><span class="avail-legend-dot avail-dot-booked"></span>
+                  Booked</span
+                >
+                <span class="avail-legend-item"
+                  ><span class="avail-legend-dot avail-dot-selected"></span>
+                  Your selection</span
+                >
+                <span class="avail-legend-item"
+                  ><span class="avail-legend-dot avail-dot-free"></span>
+                  Available</span
+                >
+              </div>
+
+              <!-- Hidden inputs synced to calendar -->
+              <input type="hidden" id="detailCheckin" />
+              <input type="hidden" id="detailCheckout" />
+
+              <div class="details-avail-note" style="margin-top: 14px">
+                <i class="bi bi-info-circle me-1"></i>
+                Minimum booking: 1 day. Cancellation free up to 48 hrs before
+                check-in.
+              </div>
+            </div>
+
+            <hr class="details-divider" />
+
+            <!-- Map -->
+            <div class="details-section">
+              <h2 class="details-section-title">Location</h2>
+              <p class="details-description">
+                Exact address provided after booking confirmation.
+              </p>
+              <div class="details-map" id="detailMap"></div>
+            </div>
+
+            <hr class="details-divider" />
+
+            <!-- Reviews -->
+            <div class="details-section">
+              <h2 class="details-section-title">
+                Reviews
+                <span class="details-review-score">
+                  <i class="bi bi-star-fill"></i> 4.9 &nbsp;·&nbsp; 38 reviews
+                </span>
+              </h2>
+              <div class="details-reviews">
+                <div class="review-card">
+                  <div class="review-header">
+                    <img
+                      src="https://i.pravatar.cc/100?img=5"
+                      alt="Reviewer"
+                      class="review-avatar"
+                    />
+                    <div class="review-author-info">
+                      <span class="review-name">Marcus T.</span>
+                      <span class="review-date">February 2026</span>
+                    </div>
+                    <div class="review-stars">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                  </div>
+                  <p class="review-text">
+                    Absolutely perfect spot. Clean, secure, and the EV charger
+                    worked flawlessly. The keypad code was sent immediately
+                    after booking. Will definitely rebook.
+                  </p>
+                </div>
+
+                <div class="review-card">
+                  <div class="review-header">
+                    <img
+                      src="https://i.pravatar.cc/100?img=9"
+                      alt="Reviewer"
+                      class="review-avatar"
+                    />
+                    <div class="review-author-info">
+                      <span class="review-name">Priya K.</span>
+                      <span class="review-date">January 2026</span>
+                    </div>
+                    <div class="review-stars">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-half"></i>
+                    </div>
+                  </div>
+                  <p class="review-text">
+                    Great location, two minutes from the rail station. Garage
+                    was spotless. Only minor gripe — the entrance is a little
+                    narrow, but my sedan fit fine.
+                  </p>
+                </div>
+
+                <div class="review-card">
+                  <div class="review-header">
+                    <img
+                      src="https://i.pravatar.cc/100?img=17"
+                      alt="Reviewer"
+                      class="review-avatar"
+                    />
+                    <div class="review-author-info">
+                      <span class="review-name">Jordan L.</span>
+                      <span class="review-date">December 2025</span>
+                    </div>
+                    <div class="review-stars">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                  </div>
+                  <p class="review-text">
+                    Saved me so much vs. the nearby pay lots. The host responded
+                    within minutes when I had a question. Highly recommend for
+                    anyone working downtown.
+                  </p>
+                </div>
+              </div>
+              <!-- /details-reviews -->
+            </div>
+          </div>
+          <!-- /details-left -->
+
+          <!-- ===== RIGHT – Booking + Host Card ===== -->
+          <div class="details-right">
+            <!-- Booking Card -->
+            <div class="booking-card">
+              <div class="booking-card-price">$5 <span>/ day</span></div>
+              <div class="booking-card-rating">
+                <i class="bi bi-star-fill"></i> 4.9
+                <span class="booking-card-reviews">(38 reviews)</span>
+              </div>
+
+              <div class="booking-dates">
+                <div class="booking-date-field">
+                  <label>Check-in</label>
+                  <input type="date" class="form-control" id="bookCheckin" />
+                </div>
+                <div class="booking-date-sep">
+                  <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="booking-date-field">
+                  <label>Check-out</label>
+                  <input type="date" class="form-control" id="bookCheckout" />
+                </div>
+              </div>
+
+              <div
+                class="booking-summary"
+                id="bookingSummary"
+                style="display: none"
+              >
+                <div class="booking-summary-row">
+                  <span>$5 × <span id="numDays">0</span> days</span>
+                  <span id="subtotal">$0</span>
+                </div>
+                <div class="booking-summary-row">
+                  <span>Service fee</span>
+                  <span id="serviceFee">$0</span>
+                </div>
+                <div class="booking-summary-row booking-summary-total">
+                  <span>Total</span>
+                  <span id="totalPrice">$0</span>
+                </div>
+              </div>
+
+              <a href="booking.html" class="btn btn-nexa w-100 booking-btn">
+                <i class="bi bi-calendar-check me-2"></i>Reserve Now
+              </a>
+              <p class="booking-note">You won't be charged yet</p>
+            </div>
+
+            <!-- Host Card -->
+            <div class="host-card">
+              <div class="host-card-header">
+                <img
+                  src="https://i.pravatar.cc/100?img=33"
+                  alt="Host"
+                  class="host-avatar"
+                />
+                <div class="host-info">
+                  <span class="host-name">Daniel R.</span>
+                  <span class="host-since">Host since 2023</span>
+                  <div class="host-badges">
+                    <span class="host-badge"
+                      ><i class="bi bi-patch-check-fill"></i> Verified</span
+                    >
+                    <span class="host-badge"
+                      ><i class="bi bi-star-fill"></i> Top Host</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="host-stats">
+                <div class="host-stat">
+                  <span class="host-stat-value">38</span>
+                  <span class="host-stat-label">Reviews</span>
+                </div>
+                <div class="host-stat">
+                  <span class="host-stat-value">4.9</span>
+                  <span class="host-stat-label">Rating</span>
+                </div>
+                <div class="host-stat">
+                  <span class="host-stat-value">&lt; 1hr</span>
+                  <span class="host-stat-label">Response</span>
+                </div>
+              </div>
+              <p class="host-bio">
+                Hi! I'm Daniel, a Capitol Hill local. I have two covered garage
+                spots available and love helping commuters find affordable,
+                secure parking in the neighbourhood.
+              </p>
+              <button
+                class="btn btn-nexa-outline w-100 chat-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#chatModal"
+              >
+                <i class="bi bi-chat-dots-fill me-2"></i>Message Host
+              </button>
+
+              <div class="report-listing-link">
+                <button
+                  class="btn-report-link"
+                  data-bs-toggle="modal"
+                  data-bs-target="#reportModal"
+                >
+                  <i class="bi bi-flag"></i> Report this listing
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- /details-right -->
+        </div>
+        <!-- /details-body -->
+      </div>
+      <!-- /container-xl -->
+    </main>
+
+    <!-- ============================
+         CHAT MODAL
+         ============================ -->
+    <div
+      class="modal fade"
+      id="chatModal"
+      tabindex="-1"
+      aria-labelledby="chatModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content chat-modal-content">
+          <div class="modal-header chat-modal-header">
+            <div class="chat-modal-host">
+              <img
+                src="https://i.pravatar.cc/100?img=33"
+                alt="Host"
+                class="chat-modal-avatar"
+              />
+              <div>
+                <div class="chat-modal-name">Daniel R.</div>
+                <div class="chat-modal-status">
+                  <span class="chat-online-dot"></span> Usually responds in &lt;
+                  1 hr
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body chat-modal-body">
+            <!-- Chat messages -->
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-bubble chat-bubble--host">
+                <img
+                  src="https://i.pravatar.cc/100?img=33"
+                  alt="Host"
+                  class="chat-bubble-avatar"
+                />
+                <div class="chat-bubble-text">
+                  Hey there! Thanks for checking out my listing. Feel free to
+                  ask anything about the space 🙂
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer chat-modal-footer">
+            <div class="chat-input-row">
+              <input
+                type="text"
+                class="form-control chat-input"
+                id="chatInput"
+                placeholder="Type a message…"
+              />
+              <button class="btn btn-nexa chat-send-btn" id="chatSendBtn">
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         REPORT MODAL
+         ============================ -->
+    <div
+      class="modal fade"
+      id="reportModal"
+      tabindex="-1"
+      aria-labelledby="reportModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered report-modal-dialog">
+        <div class="modal-content report-modal-content">
+          <div class="modal-header report-modal-header">
+            <div class="report-modal-title-row">
+              <div class="report-modal-icon">
+                <i class="bi bi-flag-fill"></i>
+              </div>
+              <div>
+                <h5 class="modal-title" id="reportModalLabel">
+                  Report Listing
+                </h5>
+                <p class="report-modal-sub">
+                  Help us keep NEXA safe and accurate
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body report-modal-body" id="reportModalBody">
+            <!-- Step 1: reason selection -->
+            <div id="reportStep1">
+              <p class="report-step-label">What's the issue?</p>
+              <div class="report-reasons">
+                <label class="report-reason">
+                  <input type="radio" name="reportReason" value="inaccurate" />
+                  <span class="report-reason-box">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span class="report-reason-text">
+                      <strong>Inaccurate info</strong>
+                      <small>Photos or details don't match reality</small>
+                    </span>
+                  </span>
+                </label>
+                <label class="report-reason">
+                  <input type="radio" name="reportReason" value="unavailable" />
+                  <span class="report-reason-box">
+                    <i class="bi bi-calendar-x"></i>
+                    <span class="report-reason-text">
+                      <strong>Not actually available</strong>
+                      <small>Spot is permanently taken or doesn't exist</small>
+                    </span>
+                  </span>
+                </label>
+                <label class="report-reason">
+                  <input type="radio" name="reportReason" value="scam" />
+                  <span class="report-reason-box">
+                    <i class="bi bi-shield-exclamation"></i>
+                    <span class="report-reason-text">
+                      <strong>Scam or fraud</strong>
+                      <small>Suspicious activity or fake listing</small>
+                    </span>
+                  </span>
+                </label>
+                <label class="report-reason">
+                  <input
+                    type="radio"
+                    name="reportReason"
+                    value="inappropriate"
+                  />
+                  <span class="report-reason-box">
+                    <i class="bi bi-hand-thumbs-down"></i>
+                    <span class="report-reason-text">
+                      <strong>Inappropriate content</strong>
+                      <small>Offensive photos or description</small>
+                    </span>
+                  </span>
+                </label>
+                <label class="report-reason">
+                  <input type="radio" name="reportReason" value="other" />
+                  <span class="report-reason-box">
+                    <i class="bi bi-three-dots"></i>
+                    <span class="report-reason-text">
+                      <strong>Other</strong>
+                      <small>Something else not listed above</small>
+                    </span>
+                  </span>
+                </label>
+              </div>
+
+              <div class="report-details-wrap" id="reportDetailsWrap">
+                <label class="report-details-label" for="reportDetails"
+                  >Additional details <span>(optional)</span></label
+                >
+                <textarea
+                  class="form-control report-textarea"
+                  id="reportDetails"
+                  rows="3"
+                  placeholder="Describe the issue in more detail…"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Step 2: success state -->
+            <div id="reportStep2" style="display: none">
+              <div class="report-success">
+                <div class="report-success-icon">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h6 class="report-success-title">Report submitted</h6>
+                <p class="report-success-sub">
+                  Thanks for letting us know. Our team will review this listing
+                  within 24 hours.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer report-modal-footer" id="reportModalFooter">
+            <button
+              type="button"
+              class="btn btn-outline-secondary report-cancel-btn"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-nexa report-submit-btn"
+              id="reportSubmitBtn"
+              disabled
+            >
+              <i class="bi bi-flag me-1"></i> Submit Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+      // ── Navbar scroll
+      window.addEventListener("scroll", function () {
+        const nav = document.getElementById("mainNav");
+        nav.classList.toggle("scrolled", window.scrollY > 50);
+      });
+
+      // ── Gallery carousel
+      const galleryImages = Array.from(
+        document.querySelectorAll(".gallery-thumb"),
+      ).map((t) => t.dataset.src);
+      const thumbEls = document.querySelectorAll(".gallery-thumb");
+      const mainImg = document.getElementById("galleryMain");
+      const dotsEl = document.getElementById("galleryDots");
+      let current = 0;
+
+      // Build dots
+      galleryImages.forEach(function (_, i) {
+        const dot = document.createElement("span");
+        dot.className = "gallery-dot" + (i === 0 ? " active" : "");
+        dot.addEventListener("click", function () {
+          goTo(i);
+        });
+        dotsEl.appendChild(dot);
+      });
+
+      function goTo(index) {
+        current = (index + galleryImages.length) % galleryImages.length;
+        mainImg.src = galleryImages[current];
+        thumbEls.forEach((t, i) => t.classList.toggle("active", i === current));
+        dotsEl
+          .querySelectorAll(".gallery-dot")
+          .forEach((d, i) => d.classList.toggle("active", i === current));
+      }
+
+      thumbEls.forEach(function (thumb) {
+        thumb.addEventListener("click", function () {
+          goTo(parseInt(this.dataset.index));
+        });
+      });
+
+      document
+        .getElementById("galleryPrev")
+        .addEventListener("click", function () {
+          goTo(current - 1);
+        });
+      document
+        .getElementById("galleryNext")
+        .addEventListener("click", function () {
+          goTo(current + 1);
+        });
+
+      // Keyboard arrow nav
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") goTo(current - 1);
+        if (e.key === "ArrowRight") goTo(current + 1);
+      });
+
+      // ── Booking price calculator
+      const checkin = document.getElementById("bookCheckin");
+      const checkout = document.getElementById("bookCheckout");
+      const summary = document.getElementById("bookingSummary");
+      const RATE = 5;
+
+      function updateSummary() {
+        const d1 = new Date(checkin.value);
+        const d2 = new Date(checkout.value);
+        if (!checkin.value || !checkout.value || d2 <= d1) {
+          summary.style.display = "none";
+          return;
+        }
+        const days = Math.round((d2 - d1) / 86400000);
+        const sub = days * RATE;
+        const fee = Math.round(sub * 0.05);
+        document.getElementById("numDays").textContent = days;
+        document.getElementById("subtotal").textContent = "$" + sub;
+        document.getElementById("serviceFee").textContent = "$" + fee;
+        document.getElementById("totalPrice").textContent = "$" + (sub + fee);
+        summary.style.display = "block";
+      }
+
+      checkin.addEventListener("change", function () {
+        checkout.min = this.value;
+        updateSummary();
+      });
+      checkout.addEventListener("change", function () {
+        updateSummary();
+      });
+
+      // ── Availability Calendar
+      const BOOKED_RANGES = [
+        { from: "2026-03-08", to: "2026-03-11" },
+        { from: "2026-03-15", to: "2026-03-18" },
+        { from: "2026-03-22", to: "2026-03-24" },
+        { from: "2026-04-02", to: "2026-04-05" },
+        { from: "2026-04-12", to: "2026-04-14" },
+      ];
+
+      const MONTHS = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      let calYear = new Date().getFullYear();
+      let calMonth = new Date().getMonth();
+      let calStart = null;
+      let calEnd = null;
+
+      function dateStr(y, m, d) {
+        return (
+          y +
+          "-" +
+          String(m + 1).padStart(2, "0") +
+          "-" +
+          String(d).padStart(2, "0")
+        );
+      }
+
+      function isBooked(str) {
+        return BOOKED_RANGES.some(function (r) {
+          return str >= r.from && str <= r.to;
+        });
+      }
+
+      function isPast(str) {
+        return (
+          str <
+          dateStr(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate(),
+          )
+        );
+      }
+
+      function inRange(str) {
+        if (!calStart || !calEnd) return false;
+        return str > calStart && str < calEnd;
+      }
+
+      function renderCalendar() {
+        document.getElementById("calMonthLabel").textContent =
+          MONTHS[calMonth] + " " + calYear;
+        const grid = document.getElementById("calGrid");
+        grid.innerHTML = "";
+
+        const firstDay = new Date(calYear, calMonth, 1).getDay();
+        const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+        // Empty leading cells
+        for (let i = 0; i < firstDay; i++) {
+          const blank = document.createElement("div");
+          blank.className = "cal-cell cal-empty";
+          grid.appendChild(blank);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const str = dateStr(calYear, calMonth, d);
+          const cell = document.createElement("div");
+          cell.className = "cal-cell";
+          cell.textContent = d;
+
+          if (isPast(str)) {
+            cell.classList.add("cal-past");
+          } else if (isBooked(str)) {
+            cell.classList.add("cal-booked");
+          } else {
+            cell.classList.add("cal-free");
+            cell.addEventListener("click", function () {
+              onDayClick(str);
+            });
+          }
+
+          if (str === calStart) cell.classList.add("cal-selected", "cal-start");
+          if (str === calEnd) cell.classList.add("cal-selected", "cal-end");
+          if (inRange(str)) cell.classList.add("cal-in-range");
+
+          grid.appendChild(cell);
+        }
+      }
+
+      function onDayClick(str) {
+        if (!calStart || calEnd || str < calStart) {
+          calStart = str;
+          calEnd = null;
+        } else {
+          calEnd = str;
+        }
+        // Sync hidden inputs + booking card
+        document.getElementById("detailCheckin").value = calStart || "";
+        document.getElementById("detailCheckout").value = calEnd || "";
+        checkin.value = calStart || "";
+        checkout.value = calEnd || "";
+        if (calEnd) checkout.min = calStart;
+        updateSummary();
+        renderCalendar();
+      }
+
+      document.getElementById("calPrev").addEventListener("click", function () {
+        calMonth--;
+        if (calMonth < 0) {
+          calMonth = 11;
+          calYear--;
+        }
+        renderCalendar();
+      });
+
+      document.getElementById("calNext").addEventListener("click", function () {
+        calMonth++;
+        if (calMonth > 11) {
+          calMonth = 0;
+          calYear++;
+        }
+        renderCalendar();
+      });
+
+      renderCalendar();
+
+      // ── Leaflet map
+      const map = L.map("detailMap", {
+        zoomControl: true,
+        scrollWheelZoom: false,
+      }).setView([47.6149, -122.3182], 16);
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+          maxZoom: 19,
+        },
+      ).addTo(map);
+
+      const icon = L.divIcon({
+        className: "nexa-marker",
+        html: '<div class="nexa-marker-inner"><i class="bi bi-p-circle-fill"></i></div>',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+      });
+
+      L.marker([47.6149, -122.3182], { icon })
+        .addTo(map)
+        .bindPopup(
+          '<div class="nexa-popup"><strong>Private Garage</strong><br>1421 10th Ave, Capitol Hill</div>',
+          { className: "nexa-popup-wrap" },
+        )
+        .openPopup();
+
+      // ── Chat
+      document
+        .getElementById("chatSendBtn")
+        .addEventListener("click", sendMessage);
+      document
+        .getElementById("chatInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") sendMessage();
+        });
+
+      function sendMessage() {
+        const input = document.getElementById("chatInput");
+        const text = input.value.trim();
+        if (!text) return;
+
+        const messages = document.getElementById("chatMessages");
+
+        // User bubble
+        const userBubble = document.createElement("div");
+        userBubble.className = "chat-bubble chat-bubble--user";
+        userBubble.innerHTML =
+          '<div class="chat-bubble-text">' + escapeHtml(text) + "</div>";
+        messages.appendChild(userBubble);
+
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+
+        // Simulated host reply
+        setTimeout(function () {
+          const hostBubble = document.createElement("div");
+          hostBubble.className = "chat-bubble chat-bubble--host";
+          hostBubble.innerHTML =
+            '<img src="https://i.pravatar.cc/100?img=33" alt="Host" class="chat-bubble-avatar" />' +
+            '<div class="chat-bubble-text">Thanks for reaching out! I\'ll get back to you shortly 👍</div>';
+          messages.appendChild(hostBubble);
+          messages.scrollTop = messages.scrollHeight;
+        }, 1200);
+      }
+
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      // ── Report Modal
+      const reportRadios = document.querySelectorAll(
+        'input[name="reportReason"]',
+      );
+      const reportSubmitBtn = document.getElementById("reportSubmitBtn");
+
+      reportRadios.forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          reportSubmitBtn.disabled = false;
+        });
+      });
+
+      reportSubmitBtn.addEventListener("click", function () {
+        document.getElementById("reportStep1").style.display = "none";
+        document.getElementById("reportStep2").style.display = "block";
+        document.getElementById("reportModalFooter").style.display = "none";
+      });
+
+      // Reset modal state when it closes
+      document
+        .getElementById("reportModal")
+        .addEventListener("hidden.bs.modal", function () {
+          document.getElementById("reportStep1").style.display = "block";
+          document.getElementById("reportStep2").style.display = "none";
+          document.getElementById("reportModalFooter").style.display = "";
+          reportRadios.forEach(function (r) {
+            r.checked = false;
+          });
+          document.getElementById("reportDetails").value = "";
+          reportSubmitBtn.disabled = true;
+        });
+    </script>
+  </body>
+</html>

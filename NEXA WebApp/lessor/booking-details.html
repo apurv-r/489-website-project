@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Booking Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link href="../css/base.css" rel="stylesheet" />
+    <link href="../css/dashboard.css" rel="stylesheet" />
+  </head>
+  <body class="dash-page lsr-page">
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="../index.html"
+          ><span class="brand-n">N</span><span class="brand-rest">EXA</span></a
+        >
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../about.html">About Us</a>
+            </li>
+          </ul>
+          <div class="d-flex gap-2 align-items-center">
+            <a href="messages.html" class="dash-nav-icon" title="Messages"
+              ><i class="bi bi-chat-dots"></i
+            ></a>
+            <div class="dash-avatar-btn">
+              <img src="https://i.pravatar.cc/40?img=33" alt="Avatar" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-profile">
+          <img
+            src="https://i.pravatar.cc/80?img=33"
+            class="dash-profile-avatar"
+            alt="User"
+          />
+          <div class="dash-profile-info">
+            <div class="dash-profile-name">Daniel R.</div>
+            <div class="dash-profile-role">Host · Lessor</div>
+          </div>
+        </div>
+        <div class="lsr-mode-pill">
+          <i class="bi bi-building-fill-gear"></i> HOST MODE
+        </div>
+        <nav class="dash-nav">
+          <a href="dashboard.html" class="dash-nav-link"
+            ><i class="bi bi-grid-1x2-fill"></i> Overview</a
+          >
+          <a href="my-listings.html" class="dash-nav-link"
+            ><i class="bi bi-building"></i> My Listings</a
+          >
+          <a href="bookings.html" class="dash-nav-link active"
+            ><i class="bi bi-calendar2-check"></i> Bookings
+            <span class="dash-nav-badge">3</span></a
+          >
+          <a href="earnings.html" class="dash-nav-link"
+            ><i class="bi bi-cash-stack"></i> Earnings</a
+          >
+          <a href="messages.html" class="dash-nav-link"
+            ><i class="bi bi-chat-dots-fill"></i> Messages
+            <span class="dash-nav-badge">2</span></a
+          >
+          <div class="dash-nav-divider"></div>
+          <a href="../login.html" class="dash-nav-link dash-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="dash-page-header">
+          <div>
+            <a href="bookings.html" class="lsr-back-link"
+              ><i class="bi bi-arrow-left"></i> Back to Bookings</a
+            >
+            <h1 class="dash-page-title">Booking #BK-20481</h1>
+            <p class="dash-page-sub">Received June 1, 2026</p>
+          </div>
+          <span
+            class="dash-booking-status status-pending"
+            style="font-size: 0.95rem; padding: 0.45rem 1.2rem"
+            >Pending Approval</span
+          >
+        </div>
+
+        <div class="lsr-detail-layout">
+          <!-- LEFT: booking info -->
+          <div class="lsr-detail-main">
+            <!-- Lessee info -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Lessee Information</span>
+              </div>
+              <div class="lsr-lessee-profile">
+                <img
+                  src="https://i.pravatar.cc/72?img=12"
+                  class="lsr-lessee-avatar"
+                  alt="James"
+                />
+                <div class="lsr-lessee-info">
+                  <div class="lsr-lessee-name">James R.</div>
+                  <div class="lsr-lessee-meta">
+                    james.r@email.com · Member since Jan 2025
+                  </div>
+                  <div class="lsr-lessee-stats">
+                    <span><i class="bi bi-car-front"></i> 4 past bookings</span>
+                    <span
+                      ><i class="bi bi-star-fill text-warning"></i> 4.8
+                      rating</span
+                    >
+                    <span
+                      ><i class="bi bi-shield-check text-success"></i>
+                      Verified</span
+                    >
+                  </div>
+                </div>
+                <a
+                  href="messages.html"
+                  class="btn-nexa-outline"
+                  style="
+                    height: 2.4rem;
+                    padding: 0 1.1rem;
+                    font-size: 0.85rem;
+                    white-space: nowrap;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                  "
+                  ><i class="bi bi-chat-dots"></i> Message</a
+                >
+              </div>
+            </div>
+
+            <!-- Listing info -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Listing</span>
+                <a href="listing-details.html" class="dash-card-link"
+                  >View listing</a
+                >
+              </div>
+              <div class="lsr-booking-listing-card">
+                <img
+                  src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&h=80&fit=crop"
+                  class="lsr-booking-listing-img"
+                  alt="Listing"
+                />
+                <div>
+                  <div class="lsr-booking-listing-name">Covered Driveway</div>
+                  <div class="lsr-booking-listing-addr">
+                    <i class="bi bi-geo-alt-fill"></i> 340 Maple Ave, Fremont,
+                    CA 94539
+                  </div>
+                  <div class="lsr-booking-listing-type">
+                    <i class="bi bi-shield-check"></i> Covered · Fits: Standard,
+                    SUV
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date & Price -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Reservation Details</span>
+              </div>
+              <div class="lsr-res-grid">
+                <div class="lsr-res-item">
+                  <div class="lsr-res-label">Check-in</div>
+                  <div class="lsr-res-value">June 3, 2026</div>
+                </div>
+                <div class="lsr-res-item">
+                  <div class="lsr-res-label">Check-out</div>
+                  <div class="lsr-res-value">June 7, 2026</div>
+                </div>
+                <div class="lsr-res-item">
+                  <div class="lsr-res-label">Duration</div>
+                  <div class="lsr-res-value">4 nights</div>
+                </div>
+                <div class="lsr-res-item">
+                  <div class="lsr-res-label">Vehicle</div>
+                  <div class="lsr-res-value">Toyota Camry · SUV</div>
+                </div>
+              </div>
+              <div class="lsr-price-breakdown">
+                <div class="lsr-pb-row">
+                  <span>$5.25 × 4 nights</span><span>$21.00</span>
+                </div>
+                <div class="lsr-pb-row">
+                  <span>Service fee (NEXA)</span><span>−$1.58</span>
+                </div>
+                <div class="lsr-pb-divider"></div>
+                <div class="lsr-pb-row lsr-pb-total">
+                  <span>You receive</span
+                  ><span class="text-success">$19.42</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Access instructions (shown after approval) -->
+            <div class="dash-card" id="accessCard" style="display: none">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Access Instructions</span>
+                <span class="lsr-info-pill"
+                  ><i class="bi bi-eye-slash"></i> Visible to lessee after
+                  approval</span
+                >
+              </div>
+              <p class="lsr-access-text">
+                Gate code: <strong>#4821</strong>. Enter from Maple Ave side
+                entrance. Space is on the left labeled "B-2". Do not block the
+                yellow lines.
+              </p>
+            </div>
+          </div>
+
+          <!-- RIGHT: actions sidebar -->
+          <div class="lsr-detail-sidebar">
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Actions</span>
+              </div>
+              <div class="lsr-action-stack" id="actionStack">
+                <button
+                  class="btn-nexa w-100"
+                  id="approveBtn"
+                  onclick="approvePending()"
+                >
+                  <i class="bi bi-check-circle"></i> Approve Booking
+                </button>
+                <button
+                  class="lsr-decline-btn w-100"
+                  id="declineBtn"
+                  onclick="declinePending()"
+                >
+                  <i class="bi bi-x-circle"></i> Decline Request
+                </button>
+              </div>
+              <div
+                id="approvedActions"
+                style="display: none"
+                class="lsr-action-stack"
+              >
+                <a
+                  href="messages.html"
+                  class="btn-nexa-outline w-100 d-flex align-items-center justify-content-center gap-2"
+                >
+                  <i class="bi bi-chat-dots"></i> Message Lessee
+                </a>
+                <button class="lsr-decline-btn w-100" onclick="cancelBooking()">
+                  <i class="bi bi-slash-circle"></i> Cancel Booking
+                </button>
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Payment Status</span>
+              </div>
+              <div class="lsr-payment-status">
+                <div class="lsr-payment-icon lsr-payment-pending">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div>
+                  <div class="lsr-payment-label">Awaiting approval</div>
+                  <div class="lsr-payment-sub">
+                    Payment is held until you approve.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Booking Timeline</span>
+              </div>
+              <div class="lsr-timeline">
+                <div class="lsr-tl-item lsr-tl-done">
+                  <div class="lsr-tl-dot"></div>
+                  <div class="lsr-tl-content">
+                    <div class="lsr-tl-label">Request submitted</div>
+                    <div class="lsr-tl-time">Jun 1, 2026 · 9:14 AM</div>
+                  </div>
+                </div>
+                <div class="lsr-tl-item lsr-tl-active" id="tlApproval">
+                  <div class="lsr-tl-dot"></div>
+                  <div class="lsr-tl-content">
+                    <div class="lsr-tl-label">Awaiting host approval</div>
+                    <div class="lsr-tl-time">Pending</div>
+                  </div>
+                </div>
+                <div class="lsr-tl-item lsr-tl-pending">
+                  <div class="lsr-tl-dot"></div>
+                  <div class="lsr-tl-content">
+                    <div class="lsr-tl-label">Stay begins</div>
+                    <div class="lsr-tl-time">Jun 3, 2026</div>
+                  </div>
+                </div>
+                <div class="lsr-tl-item lsr-tl-pending">
+                  <div class="lsr-tl-dot"></div>
+                  <div class="lsr-tl-content">
+                    <div class="lsr-tl-label">Stay ends · Payout</div>
+                    <div class="lsr-tl-time">Jun 7, 2026</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      window.addEventListener("scroll", () => {
+        document
+          .getElementById("mainNav")
+          .classList.toggle("scrolled", window.scrollY > 50);
+      });
+
+      function approvePending() {
+        document.querySelector(".dash-booking-status").className =
+          "dash-booking-status status-active";
+        document.querySelector(".dash-booking-status").textContent = "Active";
+        document.getElementById("actionStack").style.display = "none";
+        document.getElementById("approvedActions").style.display = "";
+        document.getElementById("accessCard").style.display = "";
+        const tl = document.getElementById("tlApproval");
+        tl.className = "lsr-tl-item lsr-tl-done";
+        tl.querySelector(".lsr-tl-label").textContent = "Host approved";
+        tl.querySelector(".lsr-tl-time").textContent = "Just now";
+        document.querySelector(".lsr-payment-icon").className =
+          "lsr-payment-icon lsr-payment-ok";
+        document.querySelector(".lsr-payment-icon").innerHTML =
+          '<i class="bi bi-check-circle"></i>';
+        document.querySelector(".lsr-payment-label").textContent =
+          "Payment secured";
+        document.querySelector(".lsr-payment-sub").textContent =
+          "You'll receive $19.42 after stay.";
+      }
+
+      function declinePending() {
+        if (confirm("Decline this booking request?")) {
+          window.location.href = "bookings.html";
+        }
+      }
+
+      function cancelBooking() {
+        if (
+          confirm("Cancel this active booking? The lessee will be notified.")
+        ) {
+          window.location.href = "bookings.html";
+        }
+      }
+    </script>
+  </body>
+</html>

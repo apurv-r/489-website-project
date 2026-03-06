@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Create Listing</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link href="../css/base.css" rel="stylesheet" />
+    <link href="../css/dashboard.css" rel="stylesheet" />
+  </head>
+  <body class="dash-page lsr-page">
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="../index.html"
+          ><span class="brand-n">N</span><span class="brand-rest">EXA</span></a
+        >
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../about.html">About Us</a>
+            </li>
+          </ul>
+          <div class="d-flex gap-2 align-items-center">
+            <a href="messages.html" class="dash-nav-icon" title="Messages"
+              ><i class="bi bi-chat-dots"></i
+            ></a>
+            <div class="dash-avatar-btn">
+              <img src="https://i.pravatar.cc/40?img=33" alt="Avatar" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-profile">
+          <img
+            src="https://i.pravatar.cc/80?img=33"
+            class="dash-profile-avatar"
+            alt="User"
+          />
+          <div class="dash-profile-info">
+            <div class="dash-profile-name">Daniel R.</div>
+            <div class="dash-profile-role">Host · Lessor</div>
+          </div>
+        </div>
+        <div class="lsr-mode-pill">
+          <i class="bi bi-building-fill-gear"></i> HOST MODE
+        </div>
+        <nav class="dash-nav">
+          <a href="dashboard.html" class="dash-nav-link"
+            ><i class="bi bi-grid-1x2-fill"></i> Overview</a
+          >
+          <a href="my-listings.html" class="dash-nav-link active"
+            ><i class="bi bi-building"></i> My Listings</a
+          >
+          <a href="bookings.html" class="dash-nav-link"
+            ><i class="bi bi-calendar2-check"></i> Bookings
+            <span class="dash-nav-badge">3</span></a
+          >
+          <a href="earnings.html" class="dash-nav-link"
+            ><i class="bi bi-cash-stack"></i> Earnings</a
+          >
+          <a href="messages.html" class="dash-nav-link"
+            ><i class="bi bi-chat-dots-fill"></i> Messages
+            <span class="dash-nav-badge">2</span></a
+          >
+          <div class="dash-nav-divider"></div>
+          <a href="../login.html" class="dash-nav-link dash-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="dash-page-header">
+          <div>
+            <h1 class="dash-page-title">Create New Listing</h1>
+            <p class="dash-page-sub">
+              Fill in the details to list your parking space.
+            </p>
+          </div>
+          <a href="my-listings.html" class="btn btn-nexa-outline btn-nexa-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Listings
+          </a>
+        </div>
+
+        <!-- Step indicator -->
+        <div class="lsr-steps">
+          <div class="lsr-step active" id="stepIndicator1">
+            <span class="lsr-step-num">1</span
+            ><span class="lsr-step-label">Basic Info</span>
+          </div>
+          <div class="lsr-step-line"></div>
+          <div class="lsr-step" id="stepIndicator2">
+            <span class="lsr-step-num">2</span
+            ><span class="lsr-step-label">Photos</span>
+          </div>
+          <div class="lsr-step-line"></div>
+          <div class="lsr-step" id="stepIndicator3">
+            <span class="lsr-step-num">3</span
+            ><span class="lsr-step-label">Pricing & Availability</span>
+          </div>
+          <div class="lsr-step-line"></div>
+          <div class="lsr-step" id="stepIndicator4">
+            <span class="lsr-step-num">4</span
+            ><span class="lsr-step-label">Review</span>
+          </div>
+        </div>
+
+        <form id="createListingForm">
+          <!-- Step 1: Basic Info -->
+          <div class="lsr-form-step" id="step1">
+            <div class="dash-card">
+              <h2 class="dash-card-title" style="margin-bottom: 1.5rem">
+                Basic Information
+              </h2>
+              <div class="lsr-form-grid">
+                <div class="lsr-form-group lsr-form-group--full">
+                  <label class="lsr-label">Listing title</label>
+                  <input
+                    type="text"
+                    class="lsr-input"
+                    placeholder="e.g. Private Garage · Capitol Hill"
+                  />
+                </div>
+                <div class="lsr-form-group">
+                  <label class="lsr-label">Parking type</label>
+                  <select class="lsr-input">
+                    <option value="">Select type</option>
+                    <option>Garage</option>
+                    <option>Driveway</option>
+                    <option>Outdoor Lot</option>
+                    <option>Underground</option>
+                    <option>Covered</option>
+                    <option>Street</option>
+                  </select>
+                </div>
+                <div class="lsr-form-group">
+                  <label class="lsr-label">Max vehicle size</label>
+                  <select class="lsr-input">
+                    <option>Compact</option>
+                    <option>Standard</option>
+                    <option>SUV / Midsize</option>
+                    <option>Truck / Large</option>
+                  </select>
+                </div>
+                <div class="lsr-form-group lsr-form-group--full">
+                  <label class="lsr-label">Address</label>
+                  <input
+                    type="text"
+                    class="lsr-input"
+                    placeholder="Street address"
+                  />
+                </div>
+                <div class="lsr-form-group">
+                  <label class="lsr-label">City</label>
+                  <input
+                    type="text"
+                    class="lsr-input"
+                    placeholder="Seattle"
+                    value="Seattle"
+                  />
+                </div>
+                <div class="lsr-form-group">
+                  <label class="lsr-label">ZIP code</label>
+                  <input type="text" class="lsr-input" placeholder="98101" />
+                </div>
+                <div class="lsr-form-group lsr-form-group--full">
+                  <label class="lsr-label">Description</label>
+                  <textarea
+                    class="lsr-input lsr-textarea"
+                    rows="4"
+                    placeholder="Describe your space — access instructions, nearby landmarks, special features…"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Amenities -->
+              <div style="margin-top: 1.5rem">
+                <label class="lsr-label" style="margin-bottom: 0.75rem"
+                  >Amenities</label
+                >
+                <div class="lsr-amenity-grid">
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i
+                      class="bi bi-lightning-charge-fill"
+                    ></i>
+                    EV Charging</label
+                  >
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i
+                      class="bi bi-camera-video-fill"
+                    ></i>
+                    CCTV</label
+                  >
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i
+                      class="bi bi-lightbulb-fill"
+                    ></i>
+                    Well Lit</label
+                  >
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i class="bi bi-key-fill"></i>
+                    Keypad Entry</label
+                  >
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i
+                      class="bi bi-umbrella-fill"
+                    ></i>
+                    Covered</label
+                  >
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i
+                      class="bi bi-bus-front-fill"
+                    ></i>
+                    Near Transit</label
+                  >
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i
+                      class="bi bi-person-wheelchair"
+                    ></i>
+                    Accessible</label
+                  >
+                  <label class="lsr-amenity-check"
+                    ><input type="checkbox" /><i
+                      class="bi bi-clock-history"
+                    ></i>
+                    24/7 Access</label
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="lsr-form-nav">
+              <span></span>
+              <button type="button" class="btn btn-nexa" onclick="goStep(2)">
+                Next: Photos <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: Photos -->
+          <div class="lsr-form-step" id="step2" style="display: none">
+            <div class="dash-card">
+              <h2 class="dash-card-title" style="margin-bottom: 0.5rem">
+                Photos
+              </h2>
+              <p
+                style="
+                  color: var(--nexa-gray-500);
+                  font-size: 0.875rem;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                Upload at least 1 photo. High quality images get more bookings.
+              </p>
+              <div class="lsr-upload-zone" id="uploadZone">
+                <i
+                  class="bi bi-cloud-arrow-up"
+                  style="
+                    font-size: 2.5rem;
+                    color: var(--nexa-primary);
+                    margin-bottom: 1rem;
+                  "
+                ></i>
+                <div
+                  style="
+                    font-weight: 600;
+                    color: var(--nexa-white);
+                    margin-bottom: 0.25rem;
+                  "
+                >
+                  Drag & drop photos here
+                </div>
+                <div
+                  style="
+                    color: var(--nexa-gray-500);
+                    font-size: 0.875rem;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  or click to browse
+                </div>
+                <label
+                  class="btn btn-nexa-outline btn-nexa-sm"
+                  style="cursor: pointer"
+                >
+                  <i class="bi bi-image me-1"></i> Choose Files
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    style="display: none"
+                    onchange="previewPhotos(this)"
+                  />
+                </label>
+              </div>
+              <div class="lsr-photo-preview" id="photoPreview"></div>
+            </div>
+            <div class="lsr-form-nav">
+              <button
+                type="button"
+                class="btn btn-nexa-outline"
+                onclick="goStep(1)"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Back
+              </button>
+              <button type="button" class="btn btn-nexa" onclick="goStep(3)">
+                Next: Pricing <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Pricing & Availability -->
+          <div class="lsr-form-step" id="step3" style="display: none">
+            <div class="dash-card">
+              <h2 class="dash-card-title" style="margin-bottom: 1.5rem">
+                Pricing & Availability
+              </h2>
+              <div class="lsr-form-grid">
+                <div class="lsr-form-group">
+                  <label class="lsr-label">Daily rate (USD)</label>
+                  <div class="lsr-input-prefix-wrap">
+                    <span class="lsr-input-prefix">$</span>
+                    <input
+                      type="number"
+                      class="lsr-input lsr-input--prefixed"
+                      placeholder="5.00"
+                      min="1"
+                      step="0.50"
+                    />
+                  </div>
+                </div>
+                <div class="lsr-form-group">
+                  <label class="lsr-label">Minimum booking (days)</label>
+                  <input
+                    type="number"
+                    class="lsr-input"
+                    placeholder="1"
+                    min="1"
+                    value="1"
+                  />
+                </div>
+                <div class="lsr-form-group">
+                  <label class="lsr-label">Available from</label>
+                  <input type="date" class="lsr-input" />
+                </div>
+                <div class="lsr-form-group">
+                  <label class="lsr-label">Available until</label>
+                  <input type="date" class="lsr-input" />
+                </div>
+                <div class="lsr-form-group lsr-form-group--full">
+                  <label class="lsr-label" style="margin-bottom: 0.75rem"
+                    >Available days</label
+                  >
+                  <div class="lsr-day-pills">
+                    <label class="lsr-day-pill"
+                      ><input type="checkbox" checked /><span>Mon</span></label
+                    >
+                    <label class="lsr-day-pill"
+                      ><input type="checkbox" checked /><span>Tue</span></label
+                    >
+                    <label class="lsr-day-pill"
+                      ><input type="checkbox" checked /><span>Wed</span></label
+                    >
+                    <label class="lsr-day-pill"
+                      ><input type="checkbox" checked /><span>Thu</span></label
+                    >
+                    <label class="lsr-day-pill"
+                      ><input type="checkbox" checked /><span>Fri</span></label
+                    >
+                    <label class="lsr-day-pill"
+                      ><input type="checkbox" /><span>Sat</span></label
+                    >
+                    <label class="lsr-day-pill"
+                      ><input type="checkbox" /><span>Sun</span></label
+                    >
+                  </div>
+                </div>
+                <div class="lsr-form-group lsr-form-group--full">
+                  <label class="lsr-label"
+                    >Access instructions
+                    <span style="color: var(--nexa-gray-600); font-weight: 400"
+                      >(shared after booking)</span
+                    ></label
+                  >
+                  <textarea
+                    class="lsr-input lsr-textarea"
+                    rows="3"
+                    placeholder="e.g. Gate code is 4821. Pull all the way in to clear the door."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="lsr-form-nav">
+              <button
+                type="button"
+                class="btn btn-nexa-outline"
+                onclick="goStep(2)"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Back
+              </button>
+              <button type="button" class="btn btn-nexa" onclick="goStep(4)">
+                Review Listing <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 4: Review -->
+          <div class="lsr-form-step" id="step4" style="display: none">
+            <div class="dash-card">
+              <h2 class="dash-card-title" style="margin-bottom: 1rem">
+                Review &amp; Publish
+              </h2>
+              <p
+                style="
+                  color: var(--nexa-gray-500);
+                  font-size: 0.875rem;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                Your listing will go live immediately after publishing. You can
+                edit it at any time.
+              </p>
+              <div class="lsr-review-preview">
+                <div class="lsr-review-img-placeholder">
+                  <i
+                    class="bi bi-image"
+                    style="font-size: 2rem; color: var(--nexa-gray-600)"
+                  ></i
+                  ><span
+                    style="
+                      color: var(--nexa-gray-600);
+                      font-size: 0.8rem;
+                      margin-top: 0.5rem;
+                    "
+                    >Your photos will appear here</span
+                  >
+                </div>
+                <div class="lsr-review-info">
+                  <div
+                    style="
+                      font-size: 0.75rem;
+                      font-weight: 600;
+                      color: var(--nexa-primary);
+                      text-transform: uppercase;
+                      letter-spacing: 0.06em;
+                      margin-bottom: 0.5rem;
+                    "
+                  >
+                    Garage
+                  </div>
+                  <div
+                    style="
+                      font-size: 1.1rem;
+                      font-weight: 700;
+                      color: var(--nexa-white);
+                      margin-bottom: 0.4rem;
+                    "
+                  >
+                    Your Listing Title
+                  </div>
+                  <div
+                    style="
+                      font-size: 0.85rem;
+                      color: var(--nexa-gray-500);
+                      margin-bottom: 0.75rem;
+                    "
+                  >
+                    <i class="bi bi-geo-alt"></i> Your address, Seattle, WA
+                  </div>
+                  <div
+                    style="
+                      font-size: 1.25rem;
+                      font-weight: 700;
+                      color: var(--nexa-white);
+                    "
+                  >
+                    $5
+                    <span
+                      style="
+                        font-size: 0.875rem;
+                        font-weight: 400;
+                        color: var(--nexa-gray-400);
+                      "
+                      >/ day</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="lsr-review-checklist">
+                <div class="lsr-review-check">
+                  <i class="bi bi-check-circle-fill" style="color: #00d97e"></i>
+                  Basic information filled
+                </div>
+                <div class="lsr-review-check">
+                  <i class="bi bi-check-circle-fill" style="color: #00d97e"></i>
+                  Photos added
+                </div>
+                <div class="lsr-review-check">
+                  <i class="bi bi-check-circle-fill" style="color: #00d97e"></i>
+                  Pricing set
+                </div>
+                <div class="lsr-review-check">
+                  <i class="bi bi-check-circle-fill" style="color: #00d97e"></i>
+                  Availability configured
+                </div>
+              </div>
+            </div>
+            <div class="lsr-form-nav">
+              <button
+                type="button"
+                class="btn btn-nexa-outline"
+                onclick="goStep(3)"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Back
+              </button>
+              <button type="submit" class="btn btn-nexa" id="publishBtn">
+                <i class="bi bi-rocket-takeoff me-1"></i> Publish Listing
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Success state -->
+        <div id="publishSuccess" style="display: none">
+          <div class="dash-card text-center" style="padding: 3rem 2rem">
+            <div style="font-size: 3rem; color: #00d97e; margin-bottom: 1rem">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h2
+              style="
+                color: var(--nexa-white);
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+              "
+            >
+              Listing Published!
+            </h2>
+            <p style="color: var(--nexa-gray-500); margin-bottom: 1.5rem">
+              Your parking space is now live and accepting bookings.
+            </p>
+            <div class="d-flex gap-3 justify-content-center">
+              <a href="my-listings.html" class="btn btn-nexa"
+                >View My Listings</a
+              >
+              <a href="create-listing.html" class="btn btn-nexa-outline"
+                >Add Another</a
+              >
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      window.addEventListener("scroll", () => {
+        document
+          .getElementById("mainNav")
+          .classList.toggle("scrolled", window.scrollY > 50);
+      });
+
+      function goStep(n) {
+        document.querySelectorAll(".lsr-form-step").forEach((s, i) => {
+          s.style.display = i + 1 === n ? "block" : "none";
+        });
+        document.querySelectorAll(".lsr-step").forEach((s, i) => {
+          s.classList.toggle("active", i + 1 === n);
+          s.classList.toggle("done", i + 1 < n);
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function previewPhotos(input) {
+        const preview = document.getElementById("photoPreview");
+        Array.from(input.files).forEach((file) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const wrap = document.createElement("div");
+            wrap.className = "lsr-photo-thumb";
+            wrap.innerHTML = `<img src="${e.target.result}" alt="Photo" /><button class="lsr-photo-remove" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>`;
+            preview.appendChild(wrap);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      document
+        .getElementById("createListingForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          document.getElementById("createListingForm").style.display = "none";
+          document.getElementById("publishSuccess").style.display = "block";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    </script>
+  </body>
+</html>

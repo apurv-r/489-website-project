@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Find & Rent Parking Spaces Near You</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link href="css/base.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- ============================
+       NAVBAR
+       ============================ -->
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand" href="index.html">
+          <span class="brand-n">N</span><span class="brand-rest">EXA</span>
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About Us</a>
+            </li>
+          </ul>
+
+          <!-- Auth Buttons -->
+          <div class="d-flex gap-2">
+            <a href="login.html" class="btn btn-nexa-outline btn-nexa-sm"
+              >Log In</a
+            >
+            <a href="register.html" class="btn btn-nexa btn-nexa-sm">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============================
+       HERO – SEARCH-FIRST
+       ============================ -->
+    <section class="hero-section" id="hero">
+      <!-- Background image overlay -->
+      <div class="hero-bg">
+        <img
+          src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=1400&q=80"
+          alt="Aerial city parking"
+        />
+      </div>
+
+      <div class="container hero-content text-center">
+        <!-- Badge -->
+        <div class="hero-badge animate-fade-up">
+          <i class="bi bi-lightning-charge-fill"></i>
+          The smarter way to park
+        </div>
+
+        <!-- Headline -->
+        <h1 class="hero-title animate-fade-up delay-1">
+          Find <span class="text-gradient">Parking</span> Near You
+        </h1>
+        <p class="hero-subtitle mx-auto animate-fade-up delay-2">
+          Search hundreds of affordable driveways, garages, and lots listed by
+          local homeowners &amp; businesses.
+        </p>
+
+        <!-- ======= SEARCH BAR ======= -->
+        <div class="search-bar-wrapper animate-fade-up delay-3">
+          <form class="search-bar-form">
+            <div class="search-bar-field search-bar-field--location">
+              <label class="search-label"
+                ><i class="bi bi-geo-alt-fill me-1"></i>Location</label
+              >
+              <div class="position-relative">
+                <i class="bi bi-geo-alt search-input-icon"></i>
+                <input
+                  type="text"
+                  class="form-control form-control-lg"
+                  style="padding-left: 44px"
+                  placeholder="City, address, or ZIP…"
+                />
+              </div>
+            </div>
+            <div class="search-bar-field search-bar-field--dates">
+              <label class="search-label"
+                ><i class="bi bi-calendar-event me-1"></i>Dates</label
+              >
+              <div class="search-date-range search-date-range--hero">
+                <input
+                  type="date"
+                  class="form-control form-control-lg"
+                  title="Check-in"
+                  placeholder="Check-in"
+                />
+                <span class="date-separator">→</span>
+                <input
+                  type="date"
+                  class="form-control form-control-lg"
+                  title="Check-out"
+                  placeholder="Check-out"
+                />
+              </div>
+            </div>
+            <div class="search-bar-field search-bar-field--type">
+              <label class="search-label"
+                ><i class="bi bi-car-front me-1"></i>Type</label
+              >
+              <!-- Custom Dropdown -->
+              <div class="custom-select" id="parkingTypeSelect">
+                <div class="custom-select__trigger">
+                  <span class="custom-select__value">All Parking Types</span>
+                  <i class="bi bi-chevron-down custom-select__arrow"></i>
+                </div>
+                <div class="custom-select__options">
+                  <div class="custom-select__option selected" data-value="all">
+                    <i class="bi bi-grid-fill"></i> All Parking Types
+                  </div>
+                  <div class="custom-select__option" data-value="driveway">
+                    <i class="bi bi-house-door"></i> Driveway
+                  </div>
+                  <div class="custom-select__option" data-value="garage">
+                    <i class="bi bi-building"></i> Garage
+                  </div>
+                  <div class="custom-select__option" data-value="open-lot">
+                    <i class="bi bi-square"></i> Open Lot
+                  </div>
+                  <div class="custom-select__option" data-value="covered">
+                    <i class="bi bi-umbrella"></i> Covered
+                  </div>
+                </div>
+                <input type="hidden" name="parkingType" value="all" />
+              </div>
+            </div>
+            <div class="search-bar-field search-bar-field--btn">
+              <button type="submit" class="btn btn-nexa btn-nexa-lg w-100">
+                <i class="bi bi-search me-1"></i> Search
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Popular hints -->
+        <div class="search-hints mt-4 animate-fade-up delay-4">
+          <span class="search-hint"
+            ><i class="bi bi-fire me-1"></i>Popular:</span
+          >
+          <a href="#" class="search-hint-link">Seattle, WA</a>
+          <a href="#" class="search-hint-link">Portland, OR</a>
+          <a href="#" class="search-hint-link">San Francisco, CA</a>
+          <a href="#" class="search-hint-link">Bellevue, WA</a>
+        </div>
+
+        <!-- Stats row -->
+        <div class="hero-stats justify-content-center animate-fade-up delay-4">
+          <div class="hero-stat">
+            <h3 class="text-gradient">500+</h3>
+            <p>Parking Spots</p>
+          </div>
+          <div class="hero-stat">
+            <h3 class="text-gradient">1,200+</h3>
+            <p>Happy Drivers</p>
+          </div>
+          <div class="hero-stat">
+            <h3 class="text-gradient">50+</h3>
+            <p>Cities Covered</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+       HOW IT WORKS
+       ============================ -->
+    <section class="section-padding" id="how-it-works">
+      <div class="container">
+        <!-- Header -->
+        <div class="section-header text-center">
+          <span class="section-tag"
+            ><i class="bi bi-gear"></i> How It Works</span
+          >
+          <h2>Park in <span class="text-gradient">Three Easy Steps</span></h2>
+          <p>
+            Whether you're looking for a spot or listing one, NEXA makes the
+            process seamless.
+          </p>
+        </div>
+
+        <!-- Steps -->
+        <div class="row g-4">
+          <!-- Step 1 -->
+          <div class="col-lg-4">
+            <div class="text-center step-connector">
+              <div class="step-number">1</div>
+              <h5>Search &amp; Discover</h5>
+              <p class="text-secondary px-2">
+                Enter your destination and browse available parking spaces near
+                you on our interactive map. Filter by distance, price, and type.
+              </p>
+            </div>
+          </div>
+          <!-- Step 2 -->
+          <div class="col-lg-4">
+            <div class="text-center step-connector">
+              <div class="step-number">2</div>
+              <h5>Book &amp; Pay</h5>
+              <p class="text-secondary px-2">
+                Found the perfect spot? Reserve it instantly. Secure payments
+                and confirmation — all handled through the platform.
+              </p>
+            </div>
+          </div>
+          <!-- Step 3 -->
+          <div class="col-lg-4">
+            <div class="text-center">
+              <div class="step-number">3</div>
+              <h5>Park &amp; Go</h5>
+              <p class="text-secondary px-2">
+                Follow the directions to your reserved space, park your vehicle,
+                and enjoy your day — hassle-free.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+       FEATURED LISTINGS
+       ============================ -->
+    <section class="section-padding bg-dark-light" id="listings">
+      <div class="container">
+        <!-- Header -->
+        <div class="section-header text-center">
+          <span class="section-tag"
+            ><i class="bi bi-star"></i> Featured Listings</span
+          >
+          <h2>Popular <span class="text-gradient">Parking Spots</span></h2>
+          <p>Hand-picked spaces loved by our community of drivers.</p>
+        </div>
+
+        <!-- Listing Cards -->
+        <div class="row g-4">
+          <!-- Card 1 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="listing-card">
+              <div class="listing-img">
+                <img
+                  src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=500&q=80"
+                  alt="Garage parking"
+                />
+                <span class="listing-badge">Featured</span>
+                <button class="listing-save" aria-label="Save listing">
+                  <i class="bi bi-heart"></i>
+                </button>
+              </div>
+              <div class="listing-body">
+                <h6 class="listing-title">Private Garage — Capitol Hill</h6>
+                <p class="listing-location">
+                  <i class="bi bi-geo-alt-fill"></i> Seattle, WA
+                </p>
+                <div class="listing-tags">
+                  <span class="listing-tag">Garage</span>
+                  <span class="listing-tag">Covered</span>
+                  <span class="listing-tag">24/7 Access</span>
+                </div>
+                <div class="listing-footer">
+                  <div class="listing-price">$18 <span>/ day</span></div>
+                  <div class="listing-rating">
+                    <i class="bi bi-star-fill"></i> 4.9 <span>(42)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="listing-card">
+              <div class="listing-img">
+                <img
+                  src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=500&q=80"
+                  alt="Driveway parking"
+                />
+                <span class="listing-badge">Popular</span>
+                <button class="listing-save" aria-label="Save listing">
+                  <i class="bi bi-heart"></i>
+                </button>
+              </div>
+              <div class="listing-body">
+                <h6 class="listing-title">Spacious Driveway — Belltown</h6>
+                <p class="listing-location">
+                  <i class="bi bi-geo-alt-fill"></i> Seattle, WA
+                </p>
+                <div class="listing-tags">
+                  <span class="listing-tag">Driveway</span>
+                  <span class="listing-tag">Easy Access</span>
+                </div>
+                <div class="listing-footer">
+                  <div class="listing-price">$12 <span>/ day</span></div>
+                  <div class="listing-rating">
+                    <i class="bi bi-star-fill"></i> 4.7 <span>(28)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="listing-card">
+              <div class="listing-img">
+                <img
+                  src="https://images.unsplash.com/photo-1621929747188-0b4dc28498d6?w=500&q=80"
+                  alt="Open lot parking"
+                />
+                <span class="listing-badge">New</span>
+                <button class="listing-save" aria-label="Save listing">
+                  <i class="bi bi-heart"></i>
+                </button>
+              </div>
+              <div class="listing-body">
+                <h6 class="listing-title">Open Lot — University District</h6>
+                <p class="listing-location">
+                  <i class="bi bi-geo-alt-fill"></i> Seattle, WA
+                </p>
+                <div class="listing-tags">
+                  <span class="listing-tag">Open Lot</span>
+                  <span class="listing-tag">Budget</span>
+                  <span class="listing-tag">Near Transit</span>
+                </div>
+                <div class="listing-footer">
+                  <div class="listing-price">$8 <span>/ day</span></div>
+                  <div class="listing-rating">
+                    <i class="bi bi-star-fill"></i> 4.5 <span>(15)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View All -->
+        <div class="text-center mt-5">
+          <a href="search.html" class="btn btn-nexa-outline">
+            View All Listings <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+       WHY NEXA (Features)
+       ============================ -->
+    <section class="section-padding" id="features">
+      <div class="container">
+        <!-- Header -->
+        <div class="section-header text-center">
+          <span class="section-tag"><i class="bi bi-heart"></i> Why Nexa</span>
+          <h2>
+            Built for <span class="text-gradient">Drivers &amp; Hosts</span>
+          </h2>
+          <p>
+            Everything you need to rent or list parking — all in one platform.
+          </p>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="row g-4">
+          <!-- 1 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="nexa-card text-center h-100">
+              <div class="feature-icon purple mx-auto">
+                <i class="bi bi-map"></i>
+              </div>
+              <h5>Interactive Map</h5>
+              <p>
+                Browse available spots on a real-time map and filter by
+                distance, type, and availability.
+              </p>
+            </div>
+          </div>
+          <!-- 2 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="nexa-card text-center h-100">
+              <div class="feature-icon blue mx-auto">
+                <i class="bi bi-shield-check"></i>
+              </div>
+              <h5>Verified Listings</h5>
+              <p>
+                Our admin team verifies every listing so you always know exactly
+                what you're booking.
+              </p>
+            </div>
+          </div>
+          <!-- 3 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="nexa-card text-center h-100">
+              <div class="feature-icon green mx-auto">
+                <i class="bi bi-cash-stack"></i>
+              </div>
+              <h5>Earn Passive Income</h5>
+              <p>
+                Have an unused driveway or lot? List it on NEXA and start
+                earning with zero effort.
+              </p>
+            </div>
+          </div>
+          <!-- 4 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="nexa-card text-center h-100">
+              <div class="feature-icon yellow mx-auto">
+                <i class="bi bi-clock-history"></i>
+              </div>
+              <h5>Flexible Scheduling</h5>
+              <p>
+                Hosts set their own availability windows and custom hourly or
+                daily rates.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+       DUAL CTA – DRIVERS & HOSTS
+       ============================ -->
+    <section class="section-padding bg-dark-light">
+      <div class="container">
+        <div class="row g-4">
+          <!-- For Drivers -->
+          <div class="col-lg-6">
+            <div
+              class="nexa-card h-100"
+              style="border-left: 4px solid var(--nexa-accent)"
+            >
+              <div class="feature-icon blue mb-3">
+                <i class="bi bi-car-front-fill"></i>
+              </div>
+              <h4 class="mb-3">For Drivers</h4>
+              <ul
+                class="list-unstyled mb-4"
+                style="color: var(--nexa-gray-400)"
+              >
+                <li class="mb-2">
+                  <i class="bi bi-check-circle-fill text-info me-2"></i>Search
+                  by location, price &amp; distance
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-circle-fill text-info me-2"></i
+                  >Guaranteed spot — no circling the block
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-circle-fill text-info me-2"></i>Save
+                  favorites for quick re-booking
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-circle-fill text-info me-2"></i>View
+                  &amp; manage all your bookings
+                </li>
+              </ul>
+              <a href="search.html" class="btn btn-nexa"
+                >Find a Spot <i class="bi bi-arrow-right ms-1"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- For Hosts -->
+          <div class="col-lg-6">
+            <div
+              class="nexa-card h-100"
+              style="border-left: 4px solid var(--nexa-primary-light)"
+            >
+              <div class="feature-icon purple mb-3">
+                <i class="bi bi-house-door-fill"></i>
+              </div>
+              <h4 class="mb-3">For Hosts</h4>
+              <ul
+                class="list-unstyled mb-4"
+                style="color: var(--nexa-gray-400)"
+              >
+                <li class="mb-2">
+                  <i
+                    class="bi bi-check-circle-fill me-2"
+                    style="color: var(--nexa-primary-light)"
+                  ></i
+                  >List your space in minutes
+                </li>
+                <li class="mb-2">
+                  <i
+                    class="bi bi-check-circle-fill me-2"
+                    style="color: var(--nexa-primary-light)"
+                  ></i
+                  >Set your own rates &amp; schedule
+                </li>
+                <li class="mb-2">
+                  <i
+                    class="bi bi-check-circle-fill me-2"
+                    style="color: var(--nexa-primary-light)"
+                  ></i
+                  >Track views &amp; manage bookings
+                </li>
+                <li class="mb-2">
+                  <i
+                    class="bi bi-check-circle-fill me-2"
+                    style="color: var(--nexa-primary-light)"
+                  ></i
+                  >Turn dead space into passive income
+                </li>
+              </ul>
+              <a href="register.html" class="btn btn-nexa-outline"
+                >List Your Space <i class="bi bi-arrow-right ms-1"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+       TESTIMONIALS
+       ============================ -->
+    <section class="section-padding" id="testimonials">
+      <div class="container">
+        <!-- Header -->
+        <div class="section-header text-center">
+          <span class="section-tag"
+            ><i class="bi bi-chat-quote"></i> Testimonials</span
+          >
+          <h2>What Our <span class="text-gradient">Users Say</span></h2>
+          <p>Real stories from drivers and hosts who use NEXA every day.</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Testimonial 1 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card h-100">
+              <div class="testimonial-stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+              <p class="testimonial-text">
+                "I used to spend $50 a day on parking downtown. With NEXA, I
+                found a driveway two blocks from my office for $15/day. Total
+                game changer."
+              </p>
+              <div class="testimonial-author">
+                <img
+                  src="https://i.pravatar.cc/100?img=12"
+                  alt="Avatar"
+                  class="testimonial-avatar"
+                />
+                <div>
+                  <div class="testimonial-name">Marcus T.</div>
+                  <p class="testimonial-role">Daily Commuter, Seattle</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 2 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card h-100">
+              <div class="testimonial-stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+              <p class="testimonial-text">
+                "I listed my empty garage while I'm at work and I've been making
+                an extra $400/month doing absolutely nothing. Why didn't this
+                exist sooner?"
+              </p>
+              <div class="testimonial-author">
+                <img
+                  src="https://i.pravatar.cc/100?img=32"
+                  alt="Avatar"
+                  class="testimonial-avatar"
+                />
+                <div>
+                  <div class="testimonial-name">Sarah L.</div>
+                  <p class="testimonial-role">Host, Capitol Hill</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 3 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card h-100">
+              <div class="testimonial-stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-half"></i>
+              </div>
+              <p class="testimonial-text">
+                "The verification process gave me confidence. Every spot I've
+                booked was exactly as described. The map search is super
+                intuitive too."
+              </p>
+              <div class="testimonial-author">
+                <img
+                  src="https://i.pravatar.cc/100?img=47"
+                  alt="Avatar"
+                  class="testimonial-avatar"
+                />
+                <div>
+                  <div class="testimonial-name">James K.</div>
+                  <p class="testimonial-role">Weekend Visitor, Bellevue</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+       CTA BANNER
+       ============================ -->
+    <section class="cta-section section-padding-sm">
+      <div class="container">
+        <div class="cta-inner text-center text-lg-start">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <h2>Ready to Never Worry About Parking Again?</h2>
+              <p>
+                Join thousands of drivers and hosts already using NEXA to save
+                money and earn passive income.
+              </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+              <a href="register.html" class="btn btn-cta btn-nexa-lg">
+                Get Started Free <i class="bi bi-arrow-right ms-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+       FOOTER
+       ============================ -->
+    <footer class="footer-nexa">
+      <div class="container">
+        <div class="row g-5">
+          <!-- Brand Column -->
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-brand">
+              <span class="brand-n">N</span><span class="brand-rest">EXA</span>
+            </div>
+            <p class="footer-desc">
+              The marketplace that connects drivers with affordable, local
+              parking spaces — and helps homeowners earn from unused spots.
+            </p>
+            <div class="footer-socials">
+              <a href="#" class="footer-social-link"
+                ><i class="bi bi-twitter-x"></i
+              ></a>
+              <a href="#" class="footer-social-link"
+                ><i class="bi bi-facebook"></i
+              ></a>
+              <a href="#" class="footer-social-link"
+                ><i class="bi bi-instagram"></i
+              ></a>
+              <a href="#" class="footer-social-link"
+                ><i class="bi bi-linkedin"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="col-lg-2 col-md-6">
+            <h6 class="footer-heading">Platform</h6>
+            <ul class="footer-links">
+              <li><a href="search.html">Search Parking</a></li>
+              <li><a href="register.html">List Your Space</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="about.html">About Us</a></li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+          <div class="col-lg-2 col-md-6">
+            <h6 class="footer-heading">Resources</h6>
+            <ul class="footer-links">
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">Safety</a></li>
+              <li><a href="#">Host Guide</a></li>
+              <li><a href="#">Blog</a></li>
+            </ul>
+          </div>
+
+          <!-- Legal -->
+          <div class="col-lg-2 col-md-6">
+            <h6 class="footer-heading">Legal</h6>
+            <ul class="footer-links">
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Cookie Policy</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact -->
+          <div class="col-lg-2 col-md-6">
+            <h6 class="footer-heading">Contact</h6>
+            <ul class="footer-links">
+              <li>
+                <a href="mailto:support@nexa.park"
+                  ><i class="bi bi-envelope me-1"></i> support@nexa.park</a
+                >
+              </li>
+              <li>
+                <a href="#"><i class="bi bi-geo-alt me-1"></i> Seattle, WA</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom -->
+        <div class="footer-bottom">
+          <p class="mb-0">
+            &copy; 2026 NEXA. All rights reserved. Built for CptS 489.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Navbar scroll effect + Custom dropdown -->
+    <script>
+      // Navbar scroll
+      window.addEventListener("scroll", function () {
+        const nav = document.getElementById("mainNav");
+        if (window.scrollY > 50) {
+          nav.classList.add("scrolled");
+        } else {
+          nav.classList.remove("scrolled");
+        }
+      });
+
+      // Custom select dropdowns
+      document.querySelectorAll(".custom-select").forEach(function (select) {
+        const trigger = select.querySelector(".custom-select__trigger");
+        const options = select.querySelectorAll(".custom-select__option");
+        const valueDisplay = select.querySelector(".custom-select__value");
+        const hiddenInput = select.querySelector('input[type="hidden"]');
+
+        trigger.addEventListener("click", function (e) {
+          e.stopPropagation();
+          document
+            .querySelectorAll(".custom-select.open")
+            .forEach(function (s) {
+              if (s !== select) s.classList.remove("open");
+            });
+          select.classList.toggle("open");
+        });
+
+        options.forEach(function (option) {
+          option.addEventListener("click", function () {
+            options.forEach(function (o) {
+              o.classList.remove("selected");
+            });
+            option.classList.add("selected");
+            valueDisplay.textContent = option.textContent.trim();
+            if (hiddenInput)
+              hiddenInput.value = option.getAttribute("data-value");
+            select.classList.remove("open");
+          });
+        });
+      });
+
+      // Close dropdowns when clicking outside
+      document.addEventListener("click", function () {
+        document.querySelectorAll(".custom-select.open").forEach(function (s) {
+          s.classList.remove("open");
+        });
+      });
+    </script>
+  </body>
+</html>

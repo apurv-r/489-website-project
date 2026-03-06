@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Listing Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link href="../css/base.css" rel="stylesheet" />
+    <link href="../css/dashboard.css" rel="stylesheet" />
+    <link href="../css/details.css" rel="stylesheet" />
+  </head>
+  <body class="dash-page lsr-page">
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="../index.html"
+          ><span class="brand-n">N</span><span class="brand-rest">EXA</span></a
+        >
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../about.html">About Us</a>
+            </li>
+          </ul>
+          <div class="d-flex gap-2 align-items-center">
+            <a href="messages.html" class="dash-nav-icon" title="Messages"
+              ><i class="bi bi-chat-dots"></i
+            ></a>
+            <div class="dash-avatar-btn">
+              <img src="https://i.pravatar.cc/40?img=33" alt="Avatar" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-profile">
+          <img
+            src="https://i.pravatar.cc/80?img=33"
+            class="dash-profile-avatar"
+            alt="User"
+          />
+          <div class="dash-profile-info">
+            <div class="dash-profile-name">Daniel R.</div>
+            <div class="dash-profile-role">Host · Lessor</div>
+          </div>
+        </div>
+        <div class="lsr-mode-pill">
+          <i class="bi bi-building-fill-gear"></i> HOST MODE
+        </div>
+        <nav class="dash-nav">
+          <a href="dashboard.html" class="dash-nav-link"
+            ><i class="bi bi-grid-1x2-fill"></i> Overview</a
+          >
+          <a href="my-listings.html" class="dash-nav-link active"
+            ><i class="bi bi-building"></i> My Listings</a
+          >
+          <a href="bookings.html" class="dash-nav-link"
+            ><i class="bi bi-calendar2-check"></i> Bookings
+            <span class="dash-nav-badge">3</span></a
+          >
+          <a href="earnings.html" class="dash-nav-link"
+            ><i class="bi bi-cash-stack"></i> Earnings</a
+          >
+          <a href="messages.html" class="dash-nav-link"
+            ><i class="bi bi-chat-dots-fill"></i> Messages
+            <span class="dash-nav-badge">2</span></a
+          >
+          <div class="dash-nav-divider"></div>
+          <a href="../login.html" class="dash-nav-link dash-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="dash-page-header">
+          <div>
+            <h1 class="dash-page-title">Listing Details</h1>
+            <p class="dash-page-sub">Private Garage · Capitol Hill</p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="edit-listing.html" class="btn btn-nexa btn-nexa-sm"
+              ><i class="bi bi-pencil me-1"></i> Edit Listing</a
+            >
+            <a
+              href="../details.html"
+              class="btn btn-nexa-outline btn-nexa-sm"
+              target="_blank"
+              ><i class="bi bi-box-arrow-up-right me-1"></i> View as Lessee</a
+            >
+            <a href="my-listings.html" class="btn btn-nexa-outline btn-nexa-sm"
+              ><i class="bi bi-arrow-left me-1"></i> Back</a
+            >
+          </div>
+        </div>
+
+        <!-- Row 1: Photos left, Info right -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.25rem;
+            align-items: start;
+            margin-bottom: 1.25rem;
+          "
+        >
+          <!-- Photos -->
+          <div class="dash-card" style="padding: 0; overflow: hidden">
+            <div class="lsr-detail-photos">
+              <div class="lsr-detail-photo-main">
+                <img
+                  src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=900&q=80"
+                  alt="Main photo"
+                />
+              </div>
+              <div class="lsr-detail-photo-thumbs">
+                <img
+                  src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=70"
+                  alt="Photo 2"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70"
+                  alt="Photo 3"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic info -->
+          <div class="dash-card">
+            <div
+              class="d-flex align-items-start justify-content-between gap-2 mb-3"
+            >
+              <span class="lsr-badge lsr-badge-active">Active</span>
+              <div
+                style="
+                  font-size: 1.5rem;
+                  font-weight: 700;
+                  color: var(--nexa-white);
+                "
+              >
+                $5
+                <span
+                  style="
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    color: var(--nexa-gray-400);
+                  "
+                  >/ day</span
+                >
+              </div>
+            </div>
+            <h2
+              style="
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--nexa-white);
+                margin-bottom: 0.4rem;
+              "
+            >
+              Private Garage · Capitol Hill
+            </h2>
+            <div
+              style="
+                color: var(--nexa-gray-500);
+                font-size: 0.875rem;
+                margin-bottom: 1rem;
+              "
+            >
+              <i class="bi bi-geo-alt me-1"></i>1421 10th Ave, Seattle, WA 98122
+            </div>
+            <p
+              style="
+                color: var(--nexa-gray-300);
+                font-size: 0.875rem;
+                line-height: 1.7;
+                margin-bottom: 1.25rem;
+              "
+            >
+              A private, fully covered garage located just two blocks from the
+              Capitol Hill light rail station. Perfect for daily commuters and
+              visitors exploring the neighbourhood. EV charging (Level 2, J1772)
+              available at no extra cost.
+            </p>
+            <hr
+              style="
+                border-color: rgba(255, 255, 255, 0.07);
+                margin: 0 0 1.25rem;
+              "
+            />
+            <h3
+              style="
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--nexa-white);
+                margin-bottom: 0.75rem;
+              "
+            >
+              Amenities
+            </h3>
+            <div class="details-amenities">
+              <div class="amenity-item">
+                <i class="bi bi-lightning-charge-fill"></i
+                ><span>EV Charging</span>
+              </div>
+              <div class="amenity-item">
+                <i class="bi bi-camera-video-fill"></i><span>CCTV</span>
+              </div>
+              <div class="amenity-item">
+                <i class="bi bi-lightbulb-fill"></i><span>Well Lit</span>
+              </div>
+              <div class="amenity-item">
+                <i class="bi bi-key-fill"></i><span>Keypad Entry</span>
+              </div>
+              <div class="amenity-item">
+                <i class="bi bi-umbrella-fill"></i><span>Covered</span>
+              </div>
+              <div class="amenity-item">
+                <i class="bi bi-clock-history"></i><span>24/7 Access</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Availability calendar full width -->
+        <div class="dash-card" style="margin-bottom: 1.25rem">
+          <div class="dash-card-header" style="margin-bottom: 1rem">
+            <div style="display: flex; align-items: center; gap: 0.75rem">
+              <button class="lsr-cal-nav" id="rosPrevMonth">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span
+                class="dash-card-title"
+                id="rosMonthLabel"
+                style="min-width: 10rem; text-align: center"
+                >June 2026</span
+              >
+              <button class="lsr-cal-nav" id="rosNextMonth">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem">
+              <div class="lsr-cal-legend">
+                <span class="lsr-leg-dot lsr-leg-avail"></span
+                ><span>Available</span>
+                <span class="lsr-leg-dot lsr-leg-booked"></span
+                ><span>Booked</span>
+                <span class="lsr-leg-dot lsr-leg-blocked"></span
+                ><span>Blocked</span>
+              </div>
+              <a
+                href="edit-listing.html#availability"
+                class="btn btn-nexa-outline btn-nexa-sm"
+                ><i class="bi bi-pencil me-1"></i> Edit</a
+              >
+            </div>
+          </div>
+          <div class="lsr-calendar ros-cal" id="rosCalGrid"></div>
+        </div>
+
+        <!-- Row 3: Performance left, Bookings right -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.25rem;
+            align-items: start;
+          "
+        >
+          <!-- Performance -->
+          <div class="dash-card">
+            <h2 class="dash-card-title" style="margin-bottom: 1.25rem">
+              Performance
+            </h2>
+            <div class="lsr-stat-list">
+              <div class="lsr-stat-row">
+                <span class="lsr-stat-row-label"
+                  ><i class="bi bi-calendar2-check"></i> Total Bookings</span
+                >
+                <span class="lsr-stat-row-val">12</span>
+              </div>
+              <div class="lsr-stat-row">
+                <span class="lsr-stat-row-label"
+                  ><i class="bi bi-cash"></i> Total Earned</span
+                >
+                <span class="lsr-stat-row-val">$189</span>
+              </div>
+              <div class="lsr-stat-row">
+                <span class="lsr-stat-row-label"
+                  ><i class="bi bi-star-fill" style="color: #f1c40f"></i> Avg.
+                  Rating</span
+                >
+                <span class="lsr-stat-row-val">4.9</span>
+              </div>
+              <div class="lsr-stat-row">
+                <span class="lsr-stat-row-label"
+                  ><i class="bi bi-eye"></i> Profile Views</span
+                >
+                <span class="lsr-stat-row-val">347</span>
+              </div>
+              <div class="lsr-stat-row">
+                <span class="lsr-stat-row-label"
+                  ><i class="bi bi-heart-fill" style="color: #e74c3c"></i>
+                  Favorited</span
+                >
+                <span class="lsr-stat-row-val">28</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Bookings -->
+          <div class="dash-card">
+            <div class="dash-card-header" style="margin-bottom: 1rem">
+              <h2 class="dash-card-title">Current Bookings</h2>
+              <a href="bookings.html" class="dash-card-link">View all</a>
+            </div>
+            <div class="dash-booking-list">
+              <a href="booking-details.html" class="dash-booking-item">
+                <img
+                  src="https://i.pravatar.cc/60?img=5"
+                  alt=""
+                  class="dash-booking-thumb"
+                  style="border-radius: 50%"
+                />
+                <div class="dash-booking-info">
+                  <div class="dash-booking-name">Sarah K.</div>
+                  <div class="dash-booking-dates">
+                    <i class="bi bi-calendar3"></i> Jun 9 – Jun 12, 2026
+                  </div>
+                  <div class="dash-booking-price">$15.75</div>
+                </div>
+                <span class="dash-booking-status status-active">Active</span>
+              </a>
+              <a href="booking-details.html" class="dash-booking-item">
+                <img
+                  src="https://i.pravatar.cc/60?img=9"
+                  alt=""
+                  class="dash-booking-thumb"
+                  style="border-radius: 50%"
+                />
+                <div class="dash-booking-info">
+                  <div class="dash-booking-name">Marcus T.</div>
+                  <div class="dash-booking-dates">
+                    <i class="bi bi-calendar3"></i> Jun 20 – Jun 23, 2026
+                  </div>
+                  <div class="dash-booking-price">$15.75</div>
+                </div>
+                <span class="dash-booking-status status-pending">Pending</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      window.addEventListener("scroll", () => {
+        document
+          .getElementById("mainNav")
+          .classList.toggle("scrolled", window.scrollY > 50);
+      });
+
+      // Read-only availability calendar
+      (function () {
+        let rosYear = 2026,
+          rosMonth = 5;
+        const rosBooked = new Set([9, 10, 11, 12, 20, 21, 22, 23]);
+        const rosBlocked = new Set([1, 2, 25, 26]);
+        const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const MONTHS = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        function renderRos() {
+          document.getElementById("rosMonthLabel").textContent =
+            MONTHS[rosMonth] + " " + rosYear;
+          const firstDay = new Date(rosYear, rosMonth, 1).getDay();
+          const daysInMonth = new Date(rosYear, rosMonth + 1, 0).getDate();
+          let html = '<div class="lsr-cal-grid">';
+          DAYS.forEach((d) => {
+            html += `<div class="lsr-cal-dow">${d}</div>`;
+          });
+          for (let i = 0; i < firstDay; i++)
+            html += '<div class="lsr-cal-cell lsr-cal-empty"></div>';
+          for (let d = 1; d <= daysInMonth; d++) {
+            let cls = "lsr-cal-cell lsr-cal-avail";
+            if (rosBooked.has(d)) cls = "lsr-cal-cell lsr-cal-booked";
+            else if (rosBlocked.has(d)) cls = "lsr-cal-cell lsr-cal-blocked";
+            html += `<div class="${cls}" style="cursor:default">${d}</div>`;
+          }
+          html += "</div>";
+          document.getElementById("rosCalGrid").innerHTML = html;
+        }
+        document
+          .getElementById("rosPrevMonth")
+          .addEventListener("click", () => {
+            rosMonth--;
+            if (rosMonth < 0) {
+              rosMonth = 11;
+              rosYear--;
+            }
+            renderRos();
+          });
+        document
+          .getElementById("rosNextMonth")
+          .addEventListener("click", () => {
+            rosMonth++;
+            if (rosMonth > 11) {
+              rosMonth = 0;
+              rosYear++;
+            }
+            renderRos();
+          });
+        renderRos();
+      })();
+    </script>
+  </body>
+</html>

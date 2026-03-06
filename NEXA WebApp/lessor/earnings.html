@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Earnings</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link href="../css/base.css" rel="stylesheet" />
+    <link href="../css/dashboard.css" rel="stylesheet" />
+  </head>
+  <body class="dash-page lsr-page">
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="../index.html"
+          ><span class="brand-n">N</span><span class="brand-rest">EXA</span></a
+        >
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../about.html">About Us</a>
+            </li>
+          </ul>
+          <div class="d-flex gap-2 align-items-center">
+            <a href="messages.html" class="dash-nav-icon" title="Messages"
+              ><i class="bi bi-chat-dots"></i
+            ></a>
+            <div class="dash-avatar-btn">
+              <img src="https://i.pravatar.cc/40?img=33" alt="Avatar" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-profile">
+          <img
+            src="https://i.pravatar.cc/80?img=33"
+            class="dash-profile-avatar"
+            alt="User"
+          />
+          <div class="dash-profile-info">
+            <div class="dash-profile-name">Daniel R.</div>
+            <div class="dash-profile-role">Host · Lessor</div>
+          </div>
+        </div>
+        <div class="lsr-mode-pill">
+          <i class="bi bi-building-fill-gear"></i> HOST MODE
+        </div>
+        <nav class="dash-nav">
+          <a href="dashboard.html" class="dash-nav-link"
+            ><i class="bi bi-grid-1x2-fill"></i> Overview</a
+          >
+          <a href="my-listings.html" class="dash-nav-link"
+            ><i class="bi bi-building"></i> My Listings</a
+          >
+          <a href="bookings.html" class="dash-nav-link"
+            ><i class="bi bi-calendar2-check"></i> Bookings
+            <span class="dash-nav-badge">3</span></a
+          >
+          <a href="earnings.html" class="dash-nav-link active"
+            ><i class="bi bi-cash-stack"></i> Earnings</a
+          >
+          <a href="messages.html" class="dash-nav-link"
+            ><i class="bi bi-chat-dots-fill"></i> Messages
+            <span class="dash-nav-badge">2</span></a
+          >
+          <div class="dash-nav-divider"></div>
+          <a href="../login.html" class="dash-nav-link dash-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="dash-page-header">
+          <div>
+            <h1 class="dash-page-title">Earnings</h1>
+            <p class="dash-page-sub">
+              Your revenue breakdown and payout history.
+            </p>
+          </div>
+          <div class="lsr-date-filter">
+            <button class="lsr-df-btn active" data-period="month">
+              This Month
+            </button>
+            <button class="lsr-df-btn" data-period="3month">
+              Last 3 Months
+            </button>
+            <button class="lsr-df-btn" data-period="year">This Year</button>
+            <button class="lsr-df-btn" data-period="all">All Time</button>
+          </div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="dash-stat-grid">
+          <div class="dash-stat-card">
+            <div
+              class="dash-stat-icon"
+              style="background: rgba(0, 210, 90, 0.15); color: #00d25a"
+            >
+              <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="dash-stat-body">
+              <div class="dash-stat-value">$1,248</div>
+              <div class="dash-stat-label">Total Earned (All Time)</div>
+            </div>
+          </div>
+          <div class="dash-stat-card">
+            <div
+              class="dash-stat-icon"
+              style="background: rgba(108, 92, 231, 0.15); color: #6c5ce7"
+            >
+              <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="dash-stat-body">
+              <div class="dash-stat-value">$412</div>
+              <div class="dash-stat-label">This Month</div>
+            </div>
+          </div>
+          <div class="dash-stat-card">
+            <div
+              class="dash-stat-icon"
+              style="background: rgba(0, 210, 255, 0.15); color: #00d2ff"
+            >
+              <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <div class="dash-stat-body">
+              <div class="dash-stat-value">$34.60</div>
+              <div class="dash-stat-label">Avg per Booking</div>
+            </div>
+          </div>
+          <div class="dash-stat-card">
+            <div
+              class="dash-stat-icon"
+              style="background: rgba(255, 193, 7, 0.15); color: #ffc107"
+            >
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="dash-stat-body">
+              <div class="dash-stat-value">$89.20</div>
+              <div class="dash-stat-label">Pending Payout</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-two-col">
+          <!-- Transaction history -->
+          <div style="flex: 1; min-width: 0">
+            <div class="dash-card" style="padding: 0; overflow: hidden">
+              <div class="dash-card-header" style="padding: 1.25rem 1.5rem">
+                <span class="dash-card-title">Transaction History</span>
+                <button class="lsr-export-btn">
+                  <i class="bi bi-download"></i> Export CSV
+                </button>
+              </div>
+              <div class="lsr-tx-table">
+                <div class="lsr-tx-header">
+                  <span>Date</span>
+                  <span>Lessee</span>
+                  <span>Listing</span>
+                  <span>Gross</span>
+                  <span>Fee</span>
+                  <span>Net</span>
+                  <span>Status</span>
+                </div>
+                <div class="lsr-tx-row">
+                  <span>Jun 7, 2026</span>
+                  <span class="lsr-tx-person"
+                    ><img src="https://i.pravatar.cc/28?img=5" alt="" />Sarah
+                    K.</span
+                  >
+                  <span>Private Garage</span>
+                  <span>$15.75</span>
+                  <span class="lsr-fee">−$1.18</span>
+                  <span class="lsr-net">$14.57</span>
+                  <span
+                    ><span class="lsr-tx-badge lsr-tx-paid">Paid</span></span
+                  >
+                </div>
+                <div class="lsr-tx-row">
+                  <span>May 22, 2026</span>
+                  <span class="lsr-tx-person"
+                    ><img src="https://i.pravatar.cc/28?img=21" alt="" />Priya
+                    K.</span
+                  >
+                  <span>Outdoor Lot</span>
+                  <span>$10.50</span>
+                  <span class="lsr-fee">−$0.79</span>
+                  <span class="lsr-net">$9.71</span>
+                  <span
+                    ><span class="lsr-tx-badge lsr-tx-paid">Paid</span></span
+                  >
+                </div>
+                <div class="lsr-tx-row">
+                  <span>May 4, 2026</span>
+                  <span class="lsr-tx-person"
+                    ><img src="https://i.pravatar.cc/28?img=17" alt="" />Jordan
+                    L.</span
+                  >
+                  <span>Covered Driveway</span>
+                  <span>$28.00</span>
+                  <span class="lsr-fee">−$2.10</span>
+                  <span class="lsr-net">$25.90</span>
+                  <span
+                    ><span class="lsr-tx-badge lsr-tx-paid">Paid</span></span
+                  >
+                </div>
+                <div class="lsr-tx-row">
+                  <span>Apr 19, 2026</span>
+                  <span class="lsr-tx-person"
+                    ><img src="https://i.pravatar.cc/28?img=9" alt="" />Marcus
+                    T.</span
+                  >
+                  <span>Private Garage</span>
+                  <span>$21.00</span>
+                  <span class="lsr-fee">−$1.58</span>
+                  <span class="lsr-net">$19.42</span>
+                  <span
+                    ><span class="lsr-tx-badge lsr-tx-paid">Paid</span></span
+                  >
+                </div>
+                <div class="lsr-tx-row">
+                  <span>Jun 12, 2026</span>
+                  <span class="lsr-tx-person"
+                    ><img src="https://i.pravatar.cc/28?img=12" alt="" />James
+                    R.</span
+                  >
+                  <span>Covered Driveway</span>
+                  <span>$21.00</span>
+                  <span class="lsr-fee">−$1.58</span>
+                  <span class="lsr-net">$19.42</span>
+                  <span
+                    ><span class="lsr-tx-badge lsr-tx-pending"
+                      >Pending</span
+                    ></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payout sidebar -->
+          <div class="dash-col-right">
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Next Payout</span>
+              </div>
+              <div class="lsr-payout-card">
+                <div class="lsr-payout-amount">$89.20</div>
+                <div class="lsr-payout-date">
+                  <i class="bi bi-calendar-event"></i> Scheduled Jun 15, 2026
+                </div>
+                <div class="lsr-payout-method">
+                  <i class="bi bi-bank"></i> Chase ····4821
+                </div>
+                <div class="lsr-payout-note">
+                  Payouts arrive 1–3 business days after release.
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <span class="dash-card-title">Earnings by Listing</span>
+              </div>
+              <div class="lsr-earn-list">
+                <div class="lsr-earn-row">
+                  <div class="lsr-earn-info">
+                    <div class="lsr-earn-name">Private Garage</div>
+                    <div class="lsr-earn-meta">Capitol Hill</div>
+                  </div>
+                  <div class="lsr-earn-bar-wrap">
+                    <div class="lsr-earn-bar" style="width: 72%"></div>
+                  </div>
+                  <div class="lsr-earn-val">$899</div>
+                </div>
+                <div class="lsr-earn-row">
+                  <div class="lsr-earn-info">
+                    <div class="lsr-earn-name">Covered Driveway</div>
+                    <div class="lsr-earn-meta">Fremont</div>
+                  </div>
+                  <div class="lsr-earn-bar-wrap">
+                    <div
+                      class="lsr-earn-bar lsr-earn-bar--cyan"
+                      style="width: 41%"
+                    ></div>
+                  </div>
+                  <div class="lsr-earn-val">$241</div>
+                </div>
+                <div class="lsr-earn-row">
+                  <div class="lsr-earn-info">
+                    <div class="lsr-earn-name">Outdoor Lot</div>
+                    <div class="lsr-earn-meta">Belltown</div>
+                  </div>
+                  <div class="lsr-earn-bar-wrap">
+                    <div
+                      class="lsr-earn-bar lsr-earn-bar--green"
+                      style="width: 18%"
+                    ></div>
+                  </div>
+                  <div class="lsr-earn-val">$108</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      window.addEventListener("scroll", () => {
+        document
+          .getElementById("mainNav")
+          .classList.toggle("scrolled", window.scrollY > 50);
+      });
+
+      document.querySelectorAll(".lsr-df-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".lsr-df-btn")
+            .forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>

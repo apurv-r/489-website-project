@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listing Review – NEXA Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body class="adm-page">
+    <div class="adm-layout">
+      <!-- Sidebar -->
+      <aside class="adm-sidebar">
+        <a href="dashboard.html" class="adm-sidebar-brand">
+          <span class="adm-sidebar-brand-logo">NEXA</span>
+          <span class="adm-sidebar-brand-tag">Admin</span>
+        </a>
+        <nav class="adm-nav">
+          <span class="adm-nav-label">Overview</span>
+          <a href="dashboard.html" class="adm-nav-link"
+            ><i class="bi bi-grid-1x2"></i> Dashboard</a
+          >
+          <a href="analytics.html" class="adm-nav-link"
+            ><i class="bi bi-bar-chart-line"></i> Analytics</a
+          >
+          <span class="adm-nav-label">Content</span>
+          <a href="verification-queue.html" class="adm-nav-link active"
+            ><i class="bi bi-card-checklist"></i> Verification Queue
+            <span class="adm-nav-badge">4</span></a
+          >
+          <a href="reports.html" class="adm-nav-link"
+            ><i class="bi bi-flag"></i> Reports
+            <span class="adm-nav-badge">7</span></a
+          >
+          <span class="adm-nav-label">Users</span>
+          <a href="users.html" class="adm-nav-link"
+            ><i class="bi bi-people"></i> User Management</a
+          >
+          <span class="adm-nav-label">System</span>
+          <a href="settings.html" class="adm-nav-link"
+            ><i class="bi bi-gear"></i> Settings</a
+          >
+          <div class="adm-nav-divider"></div>
+          <a href="login.html" class="adm-nav-link adm-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <main class="adm-main">
+        <div class="adm-page-header">
+          <div>
+            <h1 class="adm-page-title">Listing Review</h1>
+            <p class="adm-page-sub">
+              Private Garage · Capitol Hill — submitted Mar 5, 2026
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="verification-queue.html" class="btn-adm btn-adm-outline"
+              ><i class="bi bi-arrow-left"></i> Back to Queue</a
+            >
+          </div>
+        </div>
+
+        <div class="adm-detail-layout">
+          <!-- Left: listing details -->
+          <div>
+            <!-- Photos -->
+            <div class="adm-card" style="margin-bottom: 1.25rem">
+              <h2 class="adm-card-title" style="margin-bottom: 1rem">Photos</h2>
+              <div class="adm-photo-strip">
+                <img
+                  src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=500&q=75"
+                  class="adm-photo-thumb"
+                  style="width: 220px; height: 150px"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=70"
+                  class="adm-photo-thumb"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70"
+                  class="adm-photo-thumb"
+                />
+              </div>
+            </div>
+
+            <!-- Listing info -->
+            <div class="adm-card" style="margin-bottom: 1.25rem">
+              <div
+                class="d-flex align-items-start justify-content-between gap-2 mb-3"
+              >
+                <div>
+                  <span
+                    class="adm-badge adm-badge-pending"
+                    style="margin-bottom: 0.4rem; display: inline-flex"
+                    >Pending Verification</span
+                  >
+                  <h2
+                    style="
+                      font-size: 1.2rem;
+                      font-weight: 700;
+                      color: var(--nexa-white);
+                      margin: 0;
+                    "
+                  >
+                    Private Garage · Capitol Hill
+                  </h2>
+                </div>
+                <div
+                  style="
+                    font-size: 1.4rem;
+                    font-weight: 800;
+                    color: var(--nexa-white);
+                  "
+                >
+                  $5<span
+                    style="
+                      font-size: 0.85rem;
+                      font-weight: 400;
+                      color: var(--nexa-gray-400);
+                    "
+                    >/day</span
+                  >
+                </div>
+              </div>
+
+              <div class="adm-info-list">
+                <div class="adm-info-row">
+                  <span class="adm-info-label"
+                    ><i class="bi bi-geo-alt me-1"></i>Address</span
+                  ><span class="adm-info-val"
+                    >1421 10th Ave, Seattle, WA 98122</span
+                  >
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label"
+                    ><i class="bi bi-car-front me-1"></i>Parking Type</span
+                  ><span class="adm-info-val">Covered Garage</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label"
+                    ><i class="bi bi-truck me-1"></i>Max Vehicle</span
+                  ><span class="adm-info-val">SUV / Truck</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label"
+                    ><i class="bi bi-calendar3 me-1"></i>Min Booking</span
+                  ><span class="adm-info-val">1 day</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label"
+                    ><i class="bi bi-clock me-1"></i>Access Hours</span
+                  ><span class="adm-info-val">24/7</span>
+                </div>
+              </div>
+
+              <hr
+                style="
+                  border-color: rgba(255, 255, 255, 0.07);
+                  margin: 1.1rem 0;
+                "
+              />
+
+              <h3
+                style="
+                  font-size: 0.82rem;
+                  font-weight: 600;
+                  color: var(--nexa-white);
+                  margin-bottom: 0.6rem;
+                "
+              >
+                Description
+              </h3>
+              <p
+                style="
+                  font-size: 0.84rem;
+                  color: var(--nexa-gray-300);
+                  line-height: 1.7;
+                  margin: 0;
+                "
+              >
+                A private, fully covered garage located just two blocks from the
+                Capitol Hill light rail station. Perfect for daily commuters and
+                visitors exploring the neighbourhood. EV charging (Level 2,
+                J1772) available at no extra cost. The garage has a keypad entry
+                system and CCTV coverage 24/7.
+              </p>
+
+              <hr
+                style="
+                  border-color: rgba(255, 255, 255, 0.07);
+                  margin: 1.1rem 0;
+                "
+              />
+
+              <h3
+                style="
+                  font-size: 0.82rem;
+                  font-weight: 600;
+                  color: var(--nexa-white);
+                  margin-bottom: 0.65rem;
+                "
+              >
+                Amenities
+              </h3>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.45rem">
+                <span
+                  style="
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 99px;
+                    padding: 0.2rem 0.7rem;
+                    font-size: 0.75rem;
+                    color: var(--nexa-gray-300);
+                  "
+                  ><i
+                    class="bi bi-lightning-charge-fill me-1"
+                    style="color: #f59e0b"
+                  ></i
+                  >EV Charging</span
+                >
+                <span
+                  style="
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 99px;
+                    padding: 0.2rem 0.7rem;
+                    font-size: 0.75rem;
+                    color: var(--nexa-gray-300);
+                  "
+                  ><i
+                    class="bi bi-camera-video-fill me-1"
+                    style="color: #6c5ce7"
+                  ></i
+                  >CCTV</span
+                >
+                <span
+                  style="
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 99px;
+                    padding: 0.2rem 0.7rem;
+                    font-size: 0.75rem;
+                    color: var(--nexa-gray-300);
+                  "
+                  ><i
+                    class="bi bi-lightbulb-fill me-1"
+                    style="color: #00e676"
+                  ></i
+                  >Well Lit</span
+                >
+                <span
+                  style="
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 99px;
+                    padding: 0.2rem 0.7rem;
+                    font-size: 0.75rem;
+                    color: var(--nexa-gray-300);
+                  "
+                  ><i class="bi bi-key-fill me-1" style="color: #00d2ff"></i
+                  >Keypad Entry</span
+                >
+                <span
+                  style="
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 99px;
+                    padding: 0.2rem 0.7rem;
+                    font-size: 0.75rem;
+                    color: var(--nexa-gray-300);
+                  "
+                  ><i
+                    class="bi bi-umbrella-fill me-1"
+                    style="color: #a29bfe"
+                  ></i
+                  >Covered</span
+                >
+                <span
+                  style="
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 99px;
+                    padding: 0.2rem 0.7rem;
+                    font-size: 0.75rem;
+                    color: var(--nexa-gray-300);
+                  "
+                  ><i class="bi bi-clock-history me-1"></i>24/7 Access</span
+                >
+              </div>
+            </div>
+
+            <!-- Admin notes -->
+            <div class="adm-card">
+              <h2 class="adm-card-title" style="margin-bottom: 0.85rem">
+                Admin Notes
+              </h2>
+              <textarea
+                class="adm-field-input"
+                rows="4"
+                placeholder="Add internal notes about this listing (e.g. reason for rejection, what to request from host)…"
+                style="width: 100%; resize: vertical"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Right: sidebar -->
+          <div class="adm-detail-sidebar">
+            <!-- Host info -->
+            <div class="adm-card">
+              <h2 class="adm-card-title" style="margin-bottom: 1rem">Host</h2>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 0.85rem;
+                  margin-bottom: 1rem;
+                "
+              >
+                <img
+                  src="https://i.pravatar.cc/80?img=12"
+                  class="adm-avatar-lg"
+                />
+                <div>
+                  <div style="font-weight: 700; color: var(--nexa-white)">
+                    Jordan M.
+                  </div>
+                  <div style="font-size: 0.76rem; color: var(--nexa-gray-500)">
+                    jordan@mail.com
+                  </div>
+                  <div style="margin-top: 0.35rem">
+                    <span class="adm-badge adm-badge-active">Verified</span>
+                  </div>
+                </div>
+              </div>
+              <div class="adm-info-list">
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Member since</span
+                  ><span class="adm-info-val">Jan 2025</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Total listings</span
+                  ><span class="adm-info-val">3</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Avg. rating</span
+                  ><span class="adm-info-val">4.8 ⭐</span>
+                </div>
+              </div>
+              <a
+                href="user-detail.html"
+                class="btn-adm btn-adm-outline btn-adm-sm d-block text-center mt-3"
+                >View Profile</a
+              >
+            </div>
+
+            <!-- Actions -->
+            <div class="adm-card">
+              <h2 class="adm-card-title" style="margin-bottom: 1rem">
+                Actions
+              </h2>
+              <div class="adm-action-panel">
+                <button class="btn-adm btn-adm-success">
+                  <i class="bi bi-check-lg"></i> Approve Listing
+                </button>
+                <button class="btn-adm btn-adm-warning">
+                  <i class="bi bi-pencil"></i> Request Changes
+                </button>
+                <button class="btn-adm btn-adm-danger">
+                  <i class="bi bi-x-lg"></i> Reject Listing
+                </button>
+              </div>
+            </div>
+
+            <!-- Checklist -->
+            <div class="adm-card">
+              <h2 class="adm-card-title" style="margin-bottom: 1rem">
+                Verification Checklist
+              </h2>
+              <div style="display: flex; flex-direction: column; gap: 0.55rem">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 0.82rem;
+                    color: var(--nexa-gray-300);
+                    cursor: pointer;
+                  "
+                  ><input
+                    type="checkbox"
+                    checked
+                    class="form-check-input m-0"
+                  />
+                  Photos look accurate</label
+                >
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 0.82rem;
+                    color: var(--nexa-gray-300);
+                    cursor: pointer;
+                  "
+                  ><input
+                    type="checkbox"
+                    checked
+                    class="form-check-input m-0"
+                  />
+                  Address verified on map</label
+                >
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 0.82rem;
+                    color: var(--nexa-gray-300);
+                    cursor: pointer;
+                  "
+                  ><input type="checkbox" class="form-check-input m-0" />
+                  Pricing is reasonable</label
+                >
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 0.82rem;
+                    color: var(--nexa-gray-300);
+                    cursor: pointer;
+                  "
+                  ><input type="checkbox" class="form-check-input m-0" /> No
+                  prohibited content</label
+                >
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 0.82rem;
+                    color: var(--nexa-gray-300);
+                    cursor: pointer;
+                  "
+                  ><input type="checkbox" class="form-check-input m-0" />
+                  Description is accurate</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

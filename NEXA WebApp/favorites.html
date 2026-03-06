@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA – Favorites</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/base.css" rel="stylesheet" />
+    <link href="css/dashboard.css" rel="stylesheet" />
+  </head>
+  <body class="dash-page">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-nexa fixed-top" id="mainNav">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="index.html">
+          <span class="brand-n">N</span><span class="brand-rest">EXA</span>
+        </a>
+        <button
+          class="navbar-toggler border-0 text-white"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="search.html">Search Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About Us</a>
+            </li>
+          </ul>
+          <div class="d-flex gap-2 align-items-center">
+            <a href="messages.html" class="dash-nav-icon" title="Messages"
+              ><i class="bi bi-chat-dots"></i
+            ></a>
+            <div class="dash-avatar-btn">
+              <img src="https://i.pravatar.cc/40?img=14" alt="Avatar" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dash-layout">
+      <!-- Sidebar -->
+      <aside class="dash-sidebar">
+        <div class="dash-profile">
+          <img
+            src="https://i.pravatar.cc/80?img=14"
+            class="dash-profile-avatar"
+            alt="User"
+          />
+          <div class="dash-profile-info">
+            <div class="dash-profile-name">Alex Johnson</div>
+            <div class="dash-profile-role">Driver · Lessee</div>
+          </div>
+        </div>
+        <nav class="dash-nav">
+          <a href="dashboard.html" class="dash-nav-link"
+            ><i class="bi bi-grid-1x2-fill"></i> Overview</a
+          >
+          <a href="my-bookings.html" class="dash-nav-link"
+            ><i class="bi bi-calendar2-check"></i> My Bookings</a
+          >
+          <a href="favorites.html" class="dash-nav-link active"
+            ><i class="bi bi-heart-fill"></i> Favorites</a
+          >
+          <a href="messages.html" class="dash-nav-link"
+            ><i class="bi bi-chat-dots-fill"></i> Messages
+            <span class="dash-nav-badge">2</span></a
+          >
+          <a href="search.html" class="dash-nav-link"
+            ><i class="bi bi-search"></i> Find Parking</a
+          >
+          <div class="dash-nav-divider"></div>
+          <a href="login.html" class="dash-nav-link dash-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <main class="dash-main">
+        <div class="dash-page-header">
+          <div>
+            <h1 class="dash-page-title">Favorites</h1>
+            <p class="dash-page-sub">Parking spots you've saved for later.</p>
+          </div>
+          <a href="search.html" class="btn btn-nexa btn-nexa-sm">
+            <i class="bi bi-search me-1"></i> Find More
+          </a>
+        </div>
+
+        <!-- Favorites grid -->
+        <div class="fav-grid" id="favGrid">
+          <!-- Card 1 -->
+          <div class="fav-card" data-id="1">
+            <a href="details.html" class="fav-card-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80"
+                alt="Private Garage"
+                class="fav-card-img"
+              />
+              <span class="fav-card-badge">Garage</span>
+            </a>
+            <button
+              class="fav-card-heart fav-card-heart--saved"
+              title="Remove from favorites"
+              onclick="removeFav(this)"
+            >
+              <i class="bi bi-heart-fill"></i>
+            </button>
+            <div class="fav-card-body">
+              <div class="fav-card-top">
+                <div>
+                  <div class="fav-card-type">Private Garage</div>
+                  <h3 class="fav-card-name">Private Garage · Capitol Hill</h3>
+                  <div class="fav-card-addr">
+                    <i class="bi bi-geo-alt-fill"></i> 1421 10th Ave, Seattle,
+                    WA
+                  </div>
+                </div>
+                <div class="fav-card-rating">
+                  <i class="bi bi-star-fill"></i> 4.9
+                </div>
+              </div>
+              <div class="fav-card-footer">
+                <div class="fav-card-price">$18 <span>/ day</span></div>
+                <a href="booking.html" class="btn btn-nexa btn-nexa-sm"
+                  >Book Now</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="fav-card" data-id="2">
+            <a href="details.html" class="fav-card-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=500&q=80"
+                alt="Covered Spot"
+                class="fav-card-img"
+              />
+              <span class="fav-card-badge">Covered</span>
+            </a>
+            <button
+              class="fav-card-heart fav-card-heart--saved"
+              title="Remove from favorites"
+              onclick="removeFav(this)"
+            >
+              <i class="bi bi-heart-fill"></i>
+            </button>
+            <div class="fav-card-body">
+              <div class="fav-card-top">
+                <div>
+                  <div class="fav-card-type">Covered Spot</div>
+                  <h3 class="fav-card-name">Covered Spot · Pioneer Square</h3>
+                  <div class="fav-card-addr">
+                    <i class="bi bi-geo-alt-fill"></i> 200 2nd Ave S, Seattle,
+                    WA
+                  </div>
+                </div>
+                <div class="fav-card-rating">
+                  <i class="bi bi-star-fill"></i> 4.8
+                </div>
+              </div>
+              <div class="fav-card-footer">
+                <div class="fav-card-price">$22 <span>/ day</span></div>
+                <a href="booking.html" class="btn btn-nexa btn-nexa-sm"
+                  >Book Now</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="fav-card" data-id="3">
+            <a href="details.html" class="fav-card-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=500&q=80"
+                alt="Lot near Space Needle"
+                class="fav-card-img"
+              />
+              <span class="fav-card-badge">Open Lot</span>
+            </a>
+            <button
+              class="fav-card-heart fav-card-heart--saved"
+              title="Remove from favorites"
+              onclick="removeFav(this)"
+            >
+              <i class="bi bi-heart-fill"></i>
+            </button>
+            <div class="fav-card-body">
+              <div class="fav-card-top">
+                <div>
+                  <div class="fav-card-type">Open Lot</div>
+                  <h3 class="fav-card-name">
+                    Lot Near Space Needle · Queen Anne
+                  </h3>
+                  <div class="fav-card-addr">
+                    <i class="bi bi-geo-alt-fill"></i> 305 Harrison St, Seattle,
+                    WA
+                  </div>
+                </div>
+                <div class="fav-card-rating">
+                  <i class="bi bi-star-fill"></i> 4.9
+                </div>
+              </div>
+              <div class="fav-card-footer">
+                <div class="fav-card-price">$15 <span>/ day</span></div>
+                <a href="booking.html" class="btn btn-nexa btn-nexa-sm"
+                  >Book Now</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="fav-card" data-id="4">
+            <a href="details.html" class="fav-card-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80"
+                alt="Residential Driveway"
+                class="fav-card-img"
+              />
+              <span class="fav-card-badge">Driveway</span>
+            </a>
+            <button
+              class="fav-card-heart fav-card-heart--saved"
+              title="Remove from favorites"
+              onclick="removeFav(this)"
+            >
+              <i class="bi bi-heart-fill"></i>
+            </button>
+            <div class="fav-card-body">
+              <div class="fav-card-top">
+                <div>
+                  <div class="fav-card-type">Driveway</div>
+                  <h3 class="fav-card-name">Residential Driveway · Fremont</h3>
+                  <div class="fav-card-addr">
+                    <i class="bi bi-geo-alt-fill"></i> 3812 Fremont Ave N,
+                    Seattle, WA
+                  </div>
+                </div>
+                <div class="fav-card-rating">
+                  <i class="bi bi-star-fill"></i> 4.6
+                </div>
+              </div>
+              <div class="fav-card-footer">
+                <div class="fav-card-price">$10 <span>/ day</span></div>
+                <a href="booking.html" class="btn btn-nexa btn-nexa-sm"
+                  >Book Now</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state (hidden by default) -->
+        <div class="fav-empty" id="favEmpty" style="display: none">
+          <div class="fav-empty-icon"><i class="bi bi-heart"></i></div>
+          <h3 class="fav-empty-title">No favorites yet</h3>
+          <p class="fav-empty-sub">
+            Heart a listing while browsing and it'll show up here.
+          </p>
+          <a href="search.html" class="btn btn-nexa mt-2">
+            <i class="bi bi-search me-2"></i> Browse Listings
+          </a>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      window.addEventListener("scroll", () => {
+        document
+          .getElementById("mainNav")
+          .classList.toggle("scrolled", window.scrollY > 50);
+      });
+
+      function removeFav(btn) {
+        const card = btn.closest(".fav-card");
+
+        // Animate out
+        card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+        card.style.opacity = "0";
+        card.style.transform = "scale(0.92)";
+
+        setTimeout(() => {
+          card.remove();
+          // Show empty state if no cards left
+          if (document.querySelectorAll(".fav-card").length === 0) {
+            document.getElementById("favEmpty").style.display = "flex";
+            document.getElementById("favGrid").style.display = "none";
+          }
+        }, 300);
+      }
+    </script>
+  </body>
+</html>

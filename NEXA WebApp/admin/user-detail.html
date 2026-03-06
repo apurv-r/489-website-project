@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Detail – NEXA Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body class="adm-page">
+    <div class="adm-layout">
+      <aside class="adm-sidebar">
+        <a href="dashboard.html" class="adm-sidebar-brand">
+          <span class="adm-sidebar-brand-logo">NEXA</span>
+          <span class="adm-sidebar-brand-tag">Admin</span>
+        </a>
+        <nav class="adm-nav">
+          <span class="adm-nav-label">Overview</span>
+          <a href="dashboard.html" class="adm-nav-link"
+            ><i class="bi bi-grid-1x2"></i> Dashboard</a
+          >
+          <a href="analytics.html" class="adm-nav-link"
+            ><i class="bi bi-bar-chart-line"></i> Analytics</a
+          >
+          <span class="adm-nav-label">Content</span>
+          <a href="verification-queue.html" class="adm-nav-link"
+            ><i class="bi bi-card-checklist"></i> Verification Queue
+            <span class="adm-nav-badge">4</span></a
+          >
+          <a href="reports.html" class="adm-nav-link"
+            ><i class="bi bi-flag"></i> Reports
+            <span class="adm-nav-badge">7</span></a
+          >
+          <span class="adm-nav-label">Users</span>
+          <a href="users.html" class="adm-nav-link active"
+            ><i class="bi bi-people"></i> User Management</a
+          >
+          <span class="adm-nav-label">System</span>
+          <a href="settings.html" class="adm-nav-link"
+            ><i class="bi bi-gear"></i> Settings</a
+          >
+          <div class="adm-nav-divider"></div>
+          <a href="login.html" class="adm-nav-link adm-nav-logout"
+            ><i class="bi bi-box-arrow-right"></i> Log Out</a
+          >
+        </nav>
+      </aside>
+
+      <main class="adm-main">
+        <div class="adm-page-header">
+          <div>
+            <h1 class="adm-page-title">User Detail</h1>
+            <p class="adm-page-sub">Priya K. · priya.k@mail.com</p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="users.html" class="btn-adm btn-adm-outline"
+              ><i class="bi bi-arrow-left"></i> Back to Users</a
+            >
+          </div>
+        </div>
+
+        <div class="adm-detail-layout">
+          <!-- Left -->
+          <div>
+            <!-- Bookings history -->
+            <div class="adm-card" style="margin-bottom: 1.25rem">
+              <div class="adm-card-header">
+                <h2 class="adm-card-title">Booking History</h2>
+                <span style="font-size: 0.78rem; color: var(--nexa-gray-500)"
+                  >7 bookings total</span
+                >
+              </div>
+              <table class="adm-table">
+                <thead>
+                  <tr>
+                    <th>Listing</th>
+                    <th>Dates</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Private Garage · Capitol Hill</td>
+                    <td>Dec 10–13, 2025</td>
+                    <td>$15.75</td>
+                    <td>
+                      <span class="adm-badge adm-badge-resolved"
+                        >Completed</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Covered Spot · Fremont</td>
+                    <td>Jan 5–7, 2026</td>
+                    <td>$16.00</td>
+                    <td>
+                      <span class="adm-badge adm-badge-resolved"
+                        >Completed</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Driveway · Belltown</td>
+                    <td>Jan 20, 2026</td>
+                    <td>$4.00</td>
+                    <td>
+                      <span class="adm-badge adm-badge-rejected"
+                        >Cancelled</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Gated Lot · SoDo</td>
+                    <td>Feb 14–16, 2026</td>
+                    <td>$12.00</td>
+                    <td>
+                      <span class="adm-badge adm-badge-resolved"
+                        >Completed</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Private Garage · Capitol Hill</td>
+                    <td>Mar 2–4, 2026</td>
+                    <td>$10.50</td>
+                    <td>
+                      <span class="adm-badge adm-badge-active">Active</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Moderation log -->
+            <div class="adm-card">
+              <h2 class="adm-card-title" style="margin-bottom: 1rem">
+                Moderation History
+              </h2>
+              <div class="adm-timeline">
+                <div class="adm-tl-entry">
+                  <div class="adm-tl-dot">
+                    <i class="bi bi-exclamation"></i>
+                  </div>
+                  <div class="adm-tl-content">
+                    <div class="adm-tl-title">Account Suspended</div>
+                    <div class="adm-tl-sub">
+                      Reason: repeated payment disputes and abusive messages to
+                      host. Actioned by Admin #2 · Mar 1, 2026
+                    </div>
+                  </div>
+                </div>
+                <div class="adm-tl-entry">
+                  <div class="adm-tl-dot"><i class="bi bi-flag"></i></div>
+                  <div class="adm-tl-content">
+                    <div class="adm-tl-title">Report Received #R-004</div>
+                    <div class="adm-tl-sub">
+                      Host reported user for property damage claim. Under review
+                      · Feb 27, 2026
+                    </div>
+                  </div>
+                </div>
+                <div class="adm-tl-entry">
+                  <div class="adm-tl-dot"><i class="bi bi-envelope"></i></div>
+                  <div class="adm-tl-content">
+                    <div class="adm-tl-title">Warning Issued</div>
+                    <div class="adm-tl-sub">
+                      Warned for late checkout policy violation · Feb 10, 2026
+                    </div>
+                  </div>
+                </div>
+                <div class="adm-tl-entry">
+                  <div class="adm-tl-dot">
+                    <i class="bi bi-person-check"></i>
+                  </div>
+                  <div class="adm-tl-content">
+                    <div class="adm-tl-title">Account Created</div>
+                    <div class="adm-tl-sub">
+                      User registered via email · Feb 3, 2025
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right sidebar -->
+          <div class="adm-detail-sidebar">
+            <!-- Profile -->
+            <div class="adm-card">
+              <div style="text-align: center; margin-bottom: 1rem">
+                <img
+                  src="https://i.pravatar.cc/100?img=19"
+                  class="adm-avatar-lg"
+                  style="width: 80px; height: 80px; margin-bottom: 0.75rem"
+                />
+                <div
+                  style="
+                    font-weight: 700;
+                    color: var(--nexa-white);
+                    font-size: 1rem;
+                  "
+                >
+                  Priya K.
+                </div>
+                <div
+                  style="
+                    font-size: 0.76rem;
+                    color: var(--nexa-gray-500);
+                    margin-top: 0.15rem;
+                  "
+                >
+                  priya.k@mail.com
+                </div>
+                <div style="margin-top: 0.55rem">
+                  <span class="adm-badge adm-badge-suspended">Suspended</span>
+                </div>
+              </div>
+              <div class="adm-info-list">
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Role</span
+                  ><span class="adm-info-val">Lessee</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Member since</span
+                  ><span class="adm-info-val">Feb 2025</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Phone</span
+                  ><span class="adm-info-val">+1 206-555-0182</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Location</span
+                  ><span class="adm-info-val">Seattle, WA</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Reports filed</span
+                  ><span class="adm-info-val" style="color: #e74c3c">3</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="adm-card">
+              <h2 class="adm-card-title" style="margin-bottom: 1rem">
+                Account Stats
+              </h2>
+              <div class="adm-info-list">
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Total bookings</span
+                  ><span class="adm-info-val">7</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Completed</span
+                  ><span class="adm-info-val">5</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Cancelled</span
+                  ><span class="adm-info-val">1</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Total spent</span
+                  ><span class="adm-info-val">$58.25</span>
+                </div>
+                <div class="adm-info-row">
+                  <span class="adm-info-label">Avg. rating given</span
+                  ><span class="adm-info-val">3.6 ⭐</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="adm-card">
+              <h2 class="adm-card-title" style="margin-bottom: 1rem">
+                Actions
+              </h2>
+              <div class="adm-action-panel">
+                <button class="btn-adm btn-adm-success">
+                  <i class="bi bi-person-check"></i> Reactivate Account
+                </button>
+                <button class="btn-adm btn-adm-warning">
+                  <i class="bi bi-envelope"></i> Send Warning
+                </button>
+                <button class="btn-adm btn-adm-danger">
+                  <i class="bi bi-ban"></i> Permanently Ban
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
