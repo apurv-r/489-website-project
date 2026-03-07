@@ -1808,7 +1808,7 @@ body.dash-page {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex: 1;
+  flex: none;
   position: relative;
 }
 .lsr-step:last-child {
@@ -1957,9 +1957,10 @@ body.dash-page {
   display: none;
 }
 .lsr-amenity-check:has(input:checked) {
-  background: rgba(108, 92, 231, 0.15);
-  border-color: rgba(108, 92, 231, 0.4);
+  background: rgba(108, 92, 231, 0.35);
+  border-color: rgba(108, 92, 231, 0.85);
   color: #fff;
+  box-shadow: 0 0 0 1px rgba(108, 92, 231, 0.5);
 }
 .lsr-amenity-check i {
   font-size: 0.9rem;
@@ -2343,7 +2344,7 @@ body.dash-page {
 }
 .lsr-booking-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 2fr 1fr 1.2fr 1.5fr;
+  grid-template-columns: 2fr 2fr 2fr 1fr 1.2fr 2fr;
   gap: 1rem;
   padding: 1rem 1.5rem;
   align-items: center;
@@ -2398,7 +2399,8 @@ body.dash-page {
 .lsr-booking-actions {
   display: flex;
   gap: 0.4rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 /* Inline action buttons (table rows) */

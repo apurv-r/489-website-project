@@ -34,11 +34,8 @@
             <li class="nav-item">
               <a class="nav-link" href="../index.html">Home</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item ms-4">
               <a class="nav-link" href="../search.html">Search Listings</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../about.html">About Us</a>
             </li>
           </ul>
           <div class="d-flex gap-2 align-items-center">
@@ -132,7 +129,7 @@
 
         <form id="createListingForm">
           <!-- Step 1: Basic Info -->
-          <div class="lsr-form-step" id="step1">
+          <div class="lsr-form-step" id="step1" style="display: block">
             <div class="dash-card">
               <h2 class="dash-card-title" style="margin-bottom: 1.5rem">
                 Basic Information
@@ -590,6 +587,9 @@
         document.querySelectorAll(".lsr-step").forEach((s, i) => {
           s.classList.toggle("active", i + 1 === n);
           s.classList.toggle("done", i + 1 < n);
+        });
+        document.querySelectorAll(".lsr-step-line").forEach((line, i) => {
+          line.classList.toggle("done", i + 1 < n);
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
       }

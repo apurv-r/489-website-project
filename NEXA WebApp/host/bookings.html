@@ -34,11 +34,8 @@
             <li class="nav-item">
               <a class="nav-link" href="../index.html">Home</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item ms-4">
               <a class="nav-link" href="../search.html">Search Listings</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../about.html">About Us</a>
             </li>
           </ul>
           <div class="d-flex gap-2 align-items-center">
@@ -132,11 +129,7 @@
               <span></span>
             </div>
 
-            <a
-              href="booking-details.html"
-              class="lsr-booking-row"
-              data-status="pending"
-            >
+            <div class="lsr-booking-row" data-status="pending">
               <div class="lsr-booking-lessee">
                 <img
                   src="https://i.pravatar.cc/40?img=12"
@@ -159,30 +152,20 @@
               <div class="lsr-booking-actions">
                 <button
                   class="lsr-inline-btn lsr-inline-btn--success"
-                  onclick="
-                    event.preventDefault();
-                    approveBooking(this);
-                  "
+                  onclick="approveBooking(this)"
                 >
                   <i class="bi bi-check-lg"></i> Approve
                 </button>
                 <button
                   class="lsr-inline-btn lsr-inline-btn--danger"
-                  onclick="
-                    event.preventDefault();
-                    declineBooking(this);
-                  "
+                  onclick="declineBooking(this)"
                 >
                   <i class="bi bi-x-lg"></i> Decline
                 </button>
               </div>
-            </a>
+            </div>
 
-            <a
-              href="booking-details.html"
-              class="lsr-booking-row"
-              data-status="active"
-            >
+            <div class="lsr-booking-row" data-status="active">
               <div class="lsr-booking-lessee">
                 <img
                   src="https://i.pravatar.cc/40?img=5"
@@ -210,13 +193,9 @@
                   ><i class="bi bi-chat-dots"></i
                 ></a>
               </div>
-            </a>
+            </div>
 
-            <a
-              href="booking-details.html"
-              class="lsr-booking-row"
-              data-status="active"
-            >
+            <div class="lsr-booking-row" data-status="active">
               <div class="lsr-booking-lessee">
                 <img
                   src="https://i.pravatar.cc/40?img=9"
@@ -244,13 +223,9 @@
                   ><i class="bi bi-chat-dots"></i
                 ></a>
               </div>
-            </a>
+            </div>
 
-            <a
-              href="booking-details.html"
-              class="lsr-booking-row"
-              data-status="completed"
-            >
+            <div class="lsr-booking-row" data-status="completed">
               <div class="lsr-booking-lessee">
                 <img
                   src="https://i.pravatar.cc/40?img=21"
@@ -275,13 +250,9 @@
               <div class="lsr-booking-actions">
                 <a href="booking-details.html" class="lsr-inline-btn">View</a>
               </div>
-            </a>
+            </div>
 
-            <a
-              href="booking-details.html"
-              class="lsr-booking-row"
-              data-status="completed"
-            >
+            <div class="lsr-booking-row" data-status="completed">
               <div class="lsr-booking-lessee">
                 <img
                   src="https://i.pravatar.cc/40?img=17"
@@ -306,7 +277,7 @@
               <div class="lsr-booking-actions">
                 <a href="booking-details.html" class="lsr-inline-btn">View</a>
               </div>
-            </a>
+            </div>
           </div>
         </div>
       </main>
