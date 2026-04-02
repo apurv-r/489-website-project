@@ -25,7 +25,7 @@ export default function Search() {
   return (
     <div className="search-page">
       <Navbar variant="public" />
-      <div className="search-layout" style={{ marginTop: '84px' }}>
+      <div className="search-layout">
         {/* LEFT PANEL */}
         <div className="search-panel" id="searchPanel">
           {/* Filters */}
