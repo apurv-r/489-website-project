@@ -12,6 +12,7 @@ function createCrudController(Model) {
     async getById(req, res, next) {
       try {
         const item = await Model.findById(req.params.id);
+        // 404 Not Found: requested resource id does not exist.
         if (!item) {
           return res.status(404).json({ message: "Not found" });
         }
@@ -24,6 +25,7 @@ function createCrudController(Model) {
     async create(req, res, next) {
       try {
         const created = await Model.create(req.body);
+        // 201 Created: resource was persisted successfully.
         res.status(201).json(created);
       } catch (error) {
         next(error);
@@ -33,9 +35,12 @@ function createCrudController(Model) {
     async update(req, res, next) {
       try {
         const updated = await Model.findByIdAndUpdate(req.params.id, req.body, {
+          // Return the post-update document instead of the old one.
           returnDocument: "after",
+          // Ensure schema validators still run on updates.
           runValidators: true,
         });
+        // 404 Not Found: cannot update a document that doesn't exist.
         if (!updated) {
           return res.status(404).json({ message: "Not found" });
         }
@@ -48,9 +53,11 @@ function createCrudController(Model) {
     async remove(req, res, next) {
       try {
         const deleted = await Model.findByIdAndDelete(req.params.id);
+        // 404 Not Found: nothing to delete for this id.
         if (!deleted) {
           return res.status(404).json({ message: "Not found" });
         }
+        // 204 No Content: delete succeeded and returns no payload.
         res.status(204).send();
       } catch (error) {
         next(error);

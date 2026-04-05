@@ -1,9 +1,16 @@
 const Booking = require("../models/booking");
+const ParkingSpace = require("../models/parkingSpace");
 
 async function getFutureBookingsFor(req, res, next) {
   try {
     const { parkingSpaceId } = req.params;
     const now = new Date();
+
+    const space = await ParkingSpace.findById(parkingSpaceId);
+    // 403 Forbidden: caller is not the owning host for this parking space.
+    if (!space || space.host.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
 
     const bookings = await Booking.find({
       parkingSpace: parkingSpaceId,
@@ -19,7 +26,95 @@ async function getFutureBookingsFor(req, res, next) {
 async function createBooking(req, res, next) {
   try {
     const created = await Booking.create(req.body);
+    // 201 Created: booking was created successfully.
     res.status(201).json(created);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getMyBookings(req, res, next) {
+  try {
+    // A user can see bookings where they are either the renter or the host.
+    const bookings = await Booking.find({
+      $or: [{ renter: req.user._id }, { host: req.user._id }],
+    });
+    res.json(bookings);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getBookingIfOwner(req, res, next) {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    // 404 Not Found: no booking exists with this id.
+    if (!booking) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    // 403 Forbidden: user exists but is not the owner/participant/admin.
+    if (
+      booking.renter.toString() !== req.user._id.toString() &&
+      booking.host.toString() !== req.user._id.toString() &&
+      req.user.roleType !== "Admin"
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    res.json(booking);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateBookingIfOwner(req, res, next) {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    // 404 Not Found: no booking exists with this id.
+    if (!booking) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    // 403 Forbidden: user is not allowed to modify this booking.
+    if (
+      booking.renter.toString() !== req.user._id.toString() &&
+      booking.host.toString() !== req.user._id.toString() &&
+      req.user.roleType !== "Admin"
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const updated = await Booking.findByIdAndUpdate(req.params.id, req.body, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    res.json(updated);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteBookingIfOwner(req, res, next) {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    // 404 Not Found: no booking exists with this id.
+    if (!booking) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    // 403 Forbidden: user is not allowed to delete this booking.
+    if (
+      booking.renter.toString() !== req.user._id.toString() &&
+      booking.host.toString() !== req.user._id.toString() &&
+      req.user.roleType !== "Admin"
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await Booking.findByIdAndDelete(req.params.id);
+    // 204 No Content: deletion succeeded and body is intentionally empty.
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -28,4 +123,8 @@ async function createBooking(req, res, next) {
 module.exports = {
   getFutureBookingsFor,
   createBooking,
+  getMyBookings,
+  getBookingIfOwner,
+  updateBookingIfOwner,
+  deleteBookingIfOwner,
 };

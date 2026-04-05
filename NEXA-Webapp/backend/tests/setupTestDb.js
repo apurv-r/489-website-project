@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
+const { clearSessions } = require("../middleware/sessionAuth");
 
 let mongoServer;
 
@@ -16,9 +17,10 @@ beforeAll(async () => {
 afterEach(async () => {
   const collections = mongoose.connection.collections;
   const cleanupPromises = Object.values(collections).map((collection) =>
-    collection.deleteMany({})
+    collection.deleteMany({}),
   );
   await Promise.all(cleanupPromises);
+  clearSessions();
 });
 
 afterAll(async () => {
