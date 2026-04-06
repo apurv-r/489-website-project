@@ -1,6 +1,6 @@
 const path = require("path");
 const dns = require("dns");
-dns.setServers(["1.1.1.1"]);
+dns.setServers(["1.1.1.1"]); // Use Cloudflare DNS to avoid potential issues with connecting to MongoDB Atlas
 require("dotenv").config({ path: path.resolve(__dirname, "..", "..", ".env") });
 const connectDB = require("./config/db");
 const app = require("./app");
