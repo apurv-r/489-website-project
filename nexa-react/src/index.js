@@ -12,6 +12,20 @@ import './css/admin.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// fetch("http://localhost:5000/api/test")
+//   .then((response) => {
+//     if (!response.ok) {
+//       throw new Error(`Request failed with status ${response.status}`);
+//     }
+//     return response.json();
+//   })
+//   .then((data) => {
+//     console.log("backend says:", data.message);
+//   })
+//   .catch((error) => {
+//     console.error("Failed to reach /api/test:", error);
+//   });
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

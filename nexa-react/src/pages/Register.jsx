@@ -1,15 +1,85 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import axios from 'axios';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function Register() {
   const navigate = useNavigate();
-  const [role, setRole] = useState('driver');
+  const [role, setRole] = useState('renter');
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
 
-  function handleSubmit(e) {
+  function handleErrors(form) {
+    const firstName = form.firstName.value.trim();
+    const lastName = form.lastName.value.trim();
+    const email = form.regEmail.value.trim();
+    const phoneNumber = form.regPhone.value.trim();
+    const password = form.regPassword.value;
+    const confirmPassword = form.regConfirm.value;
+
+    const errors = [];
+
+    if (!firstName) {
+      errors.push("First name is required.");
+    }
+    if (!lastName) {
+      errors.push("Last name is required.");
+    }
+    if (!email) {
+      errors.push("Email is required.");
+    }
+    if (password.length < 8) {
+      errors.push("Password must be at least 8 characters.");
+    }
+    if (password !== confirmPassword) {
+      errors.push("Passwords do not match.");
+    }
+
+    setErrorMessages(errors);
+
+    if (errors.length > 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    navigate(role === 'host' ? '/host/dashboard' : '/dashboard');
+    setErrorMessages([]);
+
+    const form = e.currentTarget;
+    const isValid = await handleErrors(form);
+
+    if (!isValid) {
+      console.log("Validation errors:", errorMessages);
+      return;
+    }
+
+    const firstName = form.firstName.value.trim();
+    const lastName = form.lastName.value.trim();
+    const email = form.regEmail.value.trim();
+    const phoneNumber = form.regPhone.value.trim();
+    const password = form.regPassword.value;
+
+    axios.post(
+      `${API_BASE_URL}/api/auth/register`,
+      { "email": email, "password": password, "firstName": firstName, "lastName": lastName, "roleType": role },
+      { withCredentials: true }, 
+    )
+    .then(Response => {
+      console.log("Registration successful:", Response.data);
+      navigate(role === 'host' ? '/host/dashboard' : '/dashboard');
+    })
+    .catch(error => {
+      console.error("Registration error:", error);
+      const backendMessage =
+        error.response?.data?.message || 'Registration failed. Please try again.';
+      setErrorMessages([backendMessage]);
+    });
+
   }
 
   return (
@@ -29,7 +99,7 @@ export default function Register() {
             <div className="auth-field">
               <label>I want to…</label>
               <div className="role-toggle">
-                <button type="button" className={`role-toggle-btn${role === 'driver' ? ' active' : ''}`} onClick={() => setRole('driver')}>
+                <button type="button" className={`role-toggle-btn${role === 'renter' ? ' active' : ''}`} onClick={() => setRole('renter')}>
                   <i className="bi bi-car-front-fill"></i> Find Parking
                 </button>
                 <button type="button" className={`role-toggle-btn${role === 'host' ? ' active' : ''}`} onClick={() => setRole('host')}>
@@ -103,6 +173,14 @@ export default function Register() {
                 I agree to the <Link to="/register">Terms of Service</Link> and <Link to="/register">Privacy Policy</Link>
               </label>
             </div>
+
+            {errorMessages.length > 0 && (
+              <div className="alert alert-danger" role="alert">
+                <ul className="mb-0">
+                  {errorMessages.map((msg, i) => <li key={i}>{msg}</li>)}
+                </ul>
+              </div>
+            )}
 
             <button type="submit" className="btn btn-nexa w-100 auth-submit-btn">
               <i className="bi bi-person-plus-fill me-2"></i>Create Account

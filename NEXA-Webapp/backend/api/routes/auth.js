@@ -5,7 +5,12 @@ const requireAuth = require("../../middleware/requireAuth");
 
 const router = express.Router();
 
+// Example: POST /api/auth/register with JSON body
+// { "email": "user@example.com", "password": "secret123", "firstName": "Ava", "lastName": "Lee", "roleType": "Renter" }
 router.post("/register", authController.register);
+
+// Example: POST /api/auth/login with JSON body
+// { "email": "user@example.com", "password": "secret123" }
 router.post(
   "/login",
   passport.authenticate("local", { session: false }),

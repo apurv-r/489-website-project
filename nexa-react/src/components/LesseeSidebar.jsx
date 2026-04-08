@@ -1,15 +1,20 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
-export default function LesseeSidebar() {
+export default function LesseeSidebar({forename, surname, messageCount}) {
   const { pathname } = useLocation();
   const active = (path) => pathname === path ? ' active' : '';
+
+  // this function fires on page refresh/ initial load
+  useEffect(() => {
+  }, [])
 
   return (
     <aside className="dash-sidebar">
       <div className="dash-profile">
         <img src="https://i.pravatar.cc/80?img=14" className="dash-profile-avatar" alt="User" />
         <div className="dash-profile-info">
-          <div className="dash-profile-name">Alex Johnson</div>
+          <div className="dash-profile-name">{forename} {surname}</div>
           <div className="dash-profile-role">Driver · Lessee</div>
         </div>
       </div>
@@ -25,7 +30,7 @@ export default function LesseeSidebar() {
         </Link>
         <Link to="/messages" className={`dash-nav-link${active('/messages')}`}>
           <i className="bi bi-chat-dots-fill"></i> Messages
-          <span className="dash-nav-badge">2</span>
+          <span className="dash-nav-badge">{messageCount}</span>
         </Link>
         <Link to="/search" className={`dash-nav-link${active('/search')}`}>
           <i className="bi bi-search"></i> Find Parking

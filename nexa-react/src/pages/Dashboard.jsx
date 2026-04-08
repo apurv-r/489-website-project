@@ -1,17 +1,45 @@
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
+import { useState, useEffect } from 'react';
+import axios from "axios"
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const USERID = "some temp id"
 
 export default function Dashboard() {
+
+  const [user, setUser] = useState({});
+
+  const fetchUser = async () => {
+    axios.get(`${API_BASE_URL}/api/user:${USERID}`, {
+      headers: {
+        "Authorization": "TOKEN" // dont forget to replcae 'TOKEN' with an actual token
+      }
+    })
+    .then(response => {
+      setUser({
+        foreName: response.data.firstName,
+        lastName: response.data.lastName,
+      })
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
+  useEffect(() => {
+    console.log("hi, you're reading this for no reason lol");
+  },[]);
+
   return (
     <div className="dash-page">
       <Navbar variant="dashboard" />
       <div className="dash-layout">
-        <LesseeSidebar />
+        <LesseeSidebar {...user}/>
         <main className="dash-main">
           <div className="dash-page-header">
             <div>
-              <h1 className="dash-page-title">Good morning, Alex 👋</h1>
+              <h1 className="dash-page-title">Good morning, {user.foreName} 👋</h1>
               <p className="dash-page-sub">Here's what's happening with your parking.</p>
             </div>
           </div>
@@ -23,7 +51,7 @@ export default function Dashboard() {
                 <i className="bi bi-calendar2-check-fill"></i>
               </div>
               <div className="dash-stat-body">
-                <div className="dash-stat-value">2</div>
+                <div className="dash-stat-value">2</div> {/* PROP NEEDED HERE */}
                 <div className="dash-stat-label">Active Bookings</div>
               </div>
             </div>
@@ -32,7 +60,7 @@ export default function Dashboard() {
                 <i className="bi bi-clock-history"></i>
               </div>
               <div className="dash-stat-body">
-                <div className="dash-stat-value">1</div>
+                <div className="dash-stat-value">1</div> {/* PROP NEEDED HERE */}
                 <div className="dash-stat-label">Past Bookings</div>
               </div>
             </div>
@@ -41,7 +69,7 @@ export default function Dashboard() {
                 <i className="bi bi-chat-dots-fill"></i>
               </div>
               <div className="dash-stat-body">
-                <div className="dash-stat-value">2</div>
+                <div className="dash-stat-value">2</div> {/* PROP NEEDED HERE */}
                 <div className="dash-stat-label">Unread Messages</div>
               </div>
             </div>
@@ -50,7 +78,7 @@ export default function Dashboard() {
                 <i className="bi bi-star-fill"></i>
               </div>
               <div className="dash-stat-body">
-                <div className="dash-stat-value">4.8</div>
+                <div className="dash-stat-value">4.8</div> {/* PROP NEEDED HERE */}
                 <div className="dash-stat-label">Avg. Rating Given</div>
               </div>
             </div>

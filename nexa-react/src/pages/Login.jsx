@@ -1,14 +1,41 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import axios from 'axios';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    navigate('/dashboard');
+    setErrorMessage('');
+
+    const form = e.currentTarget;
+    const email = form.loginEmail.value.trim();
+    const password = form.loginPassword.value;
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/auth/login`,
+        { email, password },
+        { withCredentials: true },
+      );
+
+      // Transitional support: backend still returns a JWT for non-cookie clients.
+      if (response.data?.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+
+      navigate('/dashboard');
+    } catch (error) {
+      const backendMessage =
+        error.response?.data?.message || 'Login failed. Check your email and password.';
+      setErrorMessage(backendMessage);
+    }
   }
 
   return (
@@ -51,6 +78,12 @@ export default function Login() {
                 </button>
               </div>
             </div>
+
+            {errorMessage && (
+              <div className="alert alert-danger" role="alert">
+                {errorMessage}
+              </div>
+            )}
 
             <button type="submit" className="btn btn-nexa w-100 auth-submit-btn">
               <i className="bi bi-box-arrow-in-right me-2"></i>Log In
