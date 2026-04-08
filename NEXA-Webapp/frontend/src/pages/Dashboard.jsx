@@ -13,7 +13,7 @@ export default function Dashboard() {
   const fetchUser = async () => {
     axios.get(`${API_BASE_URL}/api/user:${USERID}`, {
       headers: {
-        "Authorization": "TOKEN" // dont forget to replcae 'TOKEN' with an actual token
+        "Authorization": localStorage.getItem("token"),
       }
     })
     .then(response => {
@@ -28,7 +28,7 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    console.log("hi, you're reading this for no reason lol");
+    fetchUser();
   },[]);
 
   return (

@@ -69,8 +69,11 @@ export default function Register() {
       { "email": email, "password": password, "firstName": firstName, "lastName": lastName, "roleType": role },
       { withCredentials: true }, 
     )
-    .then(Response => {
-      console.log("Registration successful:", Response.data);
+    .then(response => {
+      console.log("Registration successful:", response.data);
+        if (response.data?.token) {
+          localStorage.setItem('token', response.data.token);
+      }
       navigate(role === 'host' ? '/host/dashboard' : '/dashboard');
     })
     .catch(error => {
