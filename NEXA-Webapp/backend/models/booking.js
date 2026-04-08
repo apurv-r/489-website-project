@@ -44,13 +44,9 @@ const bookingSchema = new Schema(
       ],
       default: "pending",
     },
-    renterNotes: {
-      type: String,
-      trim: true,
-    },
-    hostNotes: {
-      type: String,
-      trim: true,
+    requestedAt: {
+      type: Date,
+      default: Date.now,
     },
     approvedAt: {
       type: Date,
@@ -64,6 +60,7 @@ const bookingSchema = new Schema(
   },
 );
 
+// Perf optimization: Ensures ascending order of bookings by parking space and date for efficient availability checks
 bookingSchema.index({ parkingSpace: 1, startDate: 1, endDate: 1 });
 
 const Booking = mongoose.model("Booking", bookingSchema);

@@ -5,16 +5,10 @@ const { Schema } = mongoose;
 
 const renterSchema = new Schema(
   {
-    savedListings: [
+    favoritedListings: [
       {
         type: Schema.Types.ObjectId,
         ref: "ParkingSpace",
-      },
-    ],
-    favoriteHosts: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Host",
       },
     ],
   },

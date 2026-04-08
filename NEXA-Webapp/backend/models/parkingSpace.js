@@ -44,9 +44,7 @@ const parkingSpaceSchema = new Schema(
         "garage",
         "driveway",
         "open lot",
-        "underground",
         "covered",
-        "street",
       ],
       required: true,
     },
@@ -83,10 +81,6 @@ const parkingSpaceSchema = new Schema(
         enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
       },
     ],
-    accessInstructions: {
-      type: String,
-      trim: true,
-    },
     isPublished: {
       type: Boolean,
       default: false,
