@@ -5,11 +5,15 @@ require("./models");
 const { configurePassport } = require("./config/passport");
 const { loadSessionUser } = require("./middleware/sessionAuth");
 const apiRouter = require("./api");
+const cors = require("cors");
 
 configurePassport();
 
 const app = express();
-
+app.use(cors({
+  origin: "http://localhost:3000", // this is where the react app runs
+  credentials: true,
+}));
 app.use(express.json());
 app.use(passport.initialize());
 app.use(loadSessionUser);

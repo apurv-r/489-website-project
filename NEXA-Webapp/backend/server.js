@@ -4,6 +4,8 @@ dns.setServers(["1.1.1.1"]); // Use Cloudflare DNS to avoid potential issues wit
 require("dotenv").config({ path: path.resolve(__dirname, "..", "..", ".env") });
 const connectDB = require("./config/db");
 const app = require("./app");
+
+
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
