@@ -71,9 +71,10 @@ export default function Register() {
     )
     .then(response => {
       console.log("Registration successful:", response.data);
-        if (response.data?.token) {
-          localStorage.setItem('token', response.data.token);
+      if (response.data?.token) {
+        localStorage.setItem('token', response.data.token);
       }
+
       navigate(role === 'host' ? '/host/dashboard' : '/dashboard');
     })
     .catch(error => {

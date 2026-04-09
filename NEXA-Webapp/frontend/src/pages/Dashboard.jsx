@@ -9,18 +9,19 @@ const USERID = "some temp id"
 export default function Dashboard() {
 
   const [user, setUser] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
+  // consider moving this to App.js and passing user as prop to avoid multiple calls to /me endpoint across different pages
   const fetchUser = async () => {
-    axios.get(`${API_BASE_URL}/api/user:${USERID}`, {
-      headers: {
-        "Authorization": localStorage.getItem("token"),
-      }
+
+    await axios.get(`${API_BASE_URL}/api/auth/me`, {
+      withCredentials: true,
     })
-    .then(response => {
-      setUser({
-        foreName: response.data.firstName,
-        lastName: response.data.lastName,
-      })
+    .then( async response => {
+      const user = response.data.user;
+      setUser(user);
+      setIsLoading(false);
+      console.log("successfully fetched user data for dashboard:", user);
     })
     .catch(error => {
       console.log(error);
@@ -28,18 +29,18 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    fetchUser();
+    fetchUser();  
   },[]);
 
-  return (
+  return ( !isLoading && 
     <div className="dash-page">
       <Navbar variant="dashboard" />
       <div className="dash-layout">
-        <LesseeSidebar {...user}/>
+        <LesseeSidebar forename={user.firstName} surname={user.lastName} />
         <main className="dash-main">
           <div className="dash-page-header">
             <div>
-              <h1 className="dash-page-title">Good morning, {user.foreName} 👋</h1>
+              <h1 className="dash-page-title">Good morning, {user.firstName} 👋</h1>
               <p className="dash-page-sub">Here's what's happening with your parking.</p>
             </div>
           </div>

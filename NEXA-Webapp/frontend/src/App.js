@@ -39,13 +39,14 @@ import AdminListingReview from './pages/admin/AdminListingReview';
 import AdminReports from './pages/admin/AdminReports';
 import AdminReportReview from './pages/admin/AdminReportReview';
 import AdminSettings from './pages/admin/AdminSettings';
+import LesseeSidebar from './components/LesseeSidebar';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={<Home />} />
+      <BrowserRouter>
+        <Routes>
+          {/* Public */}
+          <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/search" element={<Search />} />
