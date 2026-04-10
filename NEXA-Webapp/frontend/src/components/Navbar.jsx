@@ -51,6 +51,7 @@ export default function Navbar() {
   useEffect(() => {
     setSearchLinkStatus("");
     setHomeLinkStatus("");
+    checkSession();
   }, [homeLinkStatus, searchLinkStatus]);
 
   // default public navbar
