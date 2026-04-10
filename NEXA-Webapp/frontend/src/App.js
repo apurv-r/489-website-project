@@ -1,5 +1,3 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
 // Public pages
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -41,7 +39,35 @@ import AdminReportReview from './pages/admin/AdminReportReview';
 import AdminSettings from './pages/admin/AdminSettings';
 import LesseeSidebar from './components/LesseeSidebar';
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import axios from "axios"
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 export default function App() {
+
+  const [user, setUser] = useState({});
+
+  // consider moving this to App.js and passing user as prop to avoid multiple calls to /me endpoint across different pages
+  const fetchUser = async () => {
+
+    await axios.get(`${API_BASE_URL}/api/auth/me`, {
+      withCredentials: true,
+    })
+    .then( async response => {
+      const user = response.data.user;
+      setUser(user);
+      console.log("successfully fetched user data for dashboard:", user);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
+  useEffect(() => {
+    fetchUser();  
+  },[]);
+
   return (
       <BrowserRouter>
         <Routes>
@@ -55,7 +81,7 @@ export default function App() {
         <Route path="/confirmation" element={<Confirmation />} />
 
         {/* Lessee */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard {...user} />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/booking-details" element={<BookingDetails />} />
         <Route path="/favorites" element={<Favorites />} />
