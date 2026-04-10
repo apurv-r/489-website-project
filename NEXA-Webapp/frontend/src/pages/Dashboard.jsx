@@ -33,7 +33,7 @@ export default function Dashboard(user) {
 
   return (
     <div className="dash-page">
-      <Navbar/>
+      {/* <Navbar/> */}
       <div className="dash-layout">
         <LesseeSidebar {...user} />
         <main className="dash-main">
