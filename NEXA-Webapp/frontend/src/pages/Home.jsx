@@ -11,7 +11,6 @@ export default function Home() {
 
   return (
     <>
-      <Navbar variant="public" />
 
       {/* HERO */}
       <section className="hero-section" id="hero">

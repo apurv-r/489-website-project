@@ -5,7 +5,6 @@ import LesseeSidebar from '../components/LesseeSidebar';
 export default function BookingDetails() {
   return (
     <div className="dash-page">
-      <Navbar variant="dashboard" />
       <div className="dash-layout">
         <LesseeSidebar />
         <main className="dash-main">

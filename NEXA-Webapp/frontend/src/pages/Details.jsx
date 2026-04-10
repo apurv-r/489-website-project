@@ -44,7 +44,6 @@ export default function Details() {
 
   return (
     <>
-      <Navbar variant="public" />
       <main className="details-main">
         {/* Breadcrumb */}
         <div className="details-breadcrumb">

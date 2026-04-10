@@ -6,7 +6,6 @@ export default function Confirmation() {
 
   return (
     <>
-      <Navbar variant="public" />
       <main style={{ paddingTop: '90px', paddingBottom: '3rem', minHeight: '100vh' }}>
         <div className="container" style={{ maxWidth: 680 }}>
           {/* Success banner */}

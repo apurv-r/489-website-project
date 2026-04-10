@@ -45,7 +45,6 @@ export default function Messages() {
 
   return (
     <div className="dash-page">
-      <Navbar variant="dashboard" />
       <div className="dash-layout">
         <LesseeSidebar />
         <main className="dash-main dash-main--flush">
