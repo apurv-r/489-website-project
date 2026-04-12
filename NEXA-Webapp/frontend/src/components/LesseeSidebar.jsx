@@ -1,9 +1,8 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 export default function LesseeSidebar(user) {
-  const { pathname } = useLocation();
-  const active = (path) => pathname === path ? ' active' : '';
+  const active = (path) => window.location.pathname === path ? ' active' : '';
 
   // this function fires on page refresh/ initial load
   useEffect(() => {
