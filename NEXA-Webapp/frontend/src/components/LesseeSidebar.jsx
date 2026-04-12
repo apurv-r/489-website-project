@@ -1,8 +1,30 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function LesseeSidebar(user) {
   const active = (path) => window.location.pathname === path ? ' active' : '';
+  const navigate = useNavigate();
+
+  async function handleLogout(e) {
+      e.preventDefault();
+      // Call logout API
+      await axios.post(`${API_BASE_URL}/api/auth/logout`, {}, 
+          { withCredentials: true })
+          .then(response => {
+              if (response.status === 204) {
+                  console.log("successfully logged out");
+              }
+          })
+          .catch(error => {
+              console.log(error);
+          })
+          .finally(() => {
+              window.dispatchEvent(new Event('auth-changed'));
+              navigate("/login");
+          });
+  }
 
   // this function fires on page refresh/ initial load
   useEffect(() => {
@@ -35,7 +57,7 @@ export default function LesseeSidebar(user) {
           <i className="bi bi-search"></i> Find Parking
         </Link>
         <div className="dash-nav-divider"></div>
-        <Link to="/login" className="dash-nav-link dash-nav-logout">
+        <Link to="/login" className="dash-nav-link dash-nav-logout" onClick={handleLogout}>
           <i className="bi bi-box-arrow-right"></i> Log Out
         </Link>
       </nav>
