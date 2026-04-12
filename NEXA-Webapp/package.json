@@ -1,0 +1,13 @@
+{
+  "name": "nexa-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c green,blue \"npm --prefix backend run dev\" \"npm --prefix frontend start\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend start",
+    "test:backend": "npm --prefix backend test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

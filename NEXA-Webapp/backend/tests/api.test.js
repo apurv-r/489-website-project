@@ -48,12 +48,12 @@ async function createParkingSpaceDoc(hostId) {
     },
     description: "Covered spot",
     parkingType: "garage",
+    imageUrls: ["https://picsum.photos/1920/1080"],
     isPublished: true,
     maxVehicleSize: "standard",
     dailyRate: 15,
     minimumBookingDays: 1,
     availableDays: ["mon", "tue", "wed"],
-    isPublished: true,
   });
 }
 
@@ -220,6 +220,7 @@ describe("Parking Spaces API operations", () => {
         dailyRate: 22,
         minimumBookingDays: 1,
         availableDays: ["mon", "tue"],
+        imageUrls: ["https://example.com/downtown-spot.jpg"],
         isPublished: true,
       });
 
