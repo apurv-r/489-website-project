@@ -40,12 +40,7 @@ const parkingSpaceSchema = new Schema(
     },
     parkingType: {
       type: String,
-      enum: [
-        "garage",
-        "driveway",
-        "open lot",
-        "covered",
-      ],
+      enum: ["garage", "driveway", "open lot", "covered"],
       required: true,
     },
     maxVehicleSize: {
@@ -54,6 +49,12 @@ const parkingSpaceSchema = new Schema(
       default: "standard",
     },
     amenities: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    imageUrls: [
       {
         type: String,
         trim: true,
@@ -102,6 +103,14 @@ const parkingSpaceSchema = new Schema(
     timestamps: true,
   },
 );
+
+parkingSpaceSchema.path("imageUrls").validate(function (value) {
+  if (!this.isPublished) {
+    return true;
+  }
+
+  return Array.isArray(value) && value.length > 0;
+}, "Published parking spaces must include at least one image URL.");
 
 const ParkingSpace = mongoose.model("ParkingSpace", parkingSpaceSchema);
 
