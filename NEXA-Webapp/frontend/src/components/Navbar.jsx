@@ -14,6 +14,16 @@ const active = (path) => location.pathname === path ? ' active' : '';
   const [dashboardLink, setDashboardLink] = useState("/dashboard");
 
 
+  function handleAuthAction(action) {
+    if (action === 'logout') {
+      setIsSession(false);
+      setRole('');
+      setDashboardLink('/dashboard');
+    }
+  }
+
+
+
   async function checkSession() {
     axios.get(`${API_BASE_URL}/api/auth/me`, {
       withCredentials: true,
@@ -21,11 +31,15 @@ const active = (path) => location.pathname === path ? ' active' : '';
     .then(response => {
       if (response.status === 200) {
         setIsSession(true);
-        setRole(response.data.user.roleType);
+        setRole(response.data.user.roleType);    
       }
     })
     .catch(error => {
-      console.log(error);
+      setIsSession(false);
+      setRole('');
+      if (error?.response?.status !== 401) {
+        console.log(error);
+      }
     })
     .finally(() => {
       setIsLoading(false);
@@ -33,7 +47,6 @@ const active = (path) => location.pathname === path ? ' active' : '';
   }
 
   useEffect(() => {
-    checkSession();
     const nav = document.getElementById('mainNav');
     if (!nav) return;
     const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 50);
@@ -42,16 +55,23 @@ const active = (path) => location.pathname === path ? ' active' : '';
   }, []);
 
   useEffect(() => {
+    checkSession();
+
+    const onAuthChanged = () => {
+      checkSession();
+    };
+
+    window.addEventListener('auth-changed', onAuthChanged);
+    return () => window.removeEventListener('auth-changed', onAuthChanged);
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (role === "Renter") {
       setDashboardLink("/dashboard");
     } else if (role === "Host") {
       setDashboardLink("/host/dashboard");
     }
   }, [role]);
-
-  useEffect(() => {
-    console.log(window.location.pathname);
-  }, []);
 
   // default public navbar
   return ( !isLoading &&
@@ -72,10 +92,15 @@ const active = (path) => location.pathname === path ? ' active' : '';
             <li className="nav-item ms-4">
               <Link className={`nav-link${active('/search')}`} to="/search">Search Listings</Link>
             </li>
+            {( isSession &&
+              <li className="nav-item ms-4">
+                <Link className={`nav-link${active('/dashboard')}`} to={dashboardLink}>Dashboard</Link>
+              </li>
+            )}
           </ul>
           <div className="d-flex gap-2">
             {/* {(!isSession && <AuthBox/>) || <Link to={dashboardLink} className="btn btn-nexa-outline btn-nexa-sm">Dashboard</Link> } */}
-            <AuthBox isSession={isSession} dashboardLink={dashboardLink}/>
+            <AuthBox isSession={isSession} onAuthAction={handleAuthAction} />
           </div>
         </div>
       </div>
