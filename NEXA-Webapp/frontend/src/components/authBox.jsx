@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 
 export default function AuthBox({ isSession, dashboardLink }) {
-    console.log("AuthBox props:", isSession, dashboardLink);
     if (isSession) {
         return (
             <div className="auth-box">
