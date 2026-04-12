@@ -1,26 +1,130 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import axios from 'axios';
 
-const RESULTS = [
-  { id: 1, lat: 47.6205, lng: -122.3493, img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80', title: 'Private Garage — Capitol Hill', location: '0.3 mi · Capitol Hill, Seattle', tags: ['Garage'], price: '$18', rating: '4.9' },
-  { id: 2, lat: 47.6145, lng: -122.3440, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80', title: 'Spacious Driveway — Belltown', location: '0.5 mi · Belltown, Seattle', tags: ['Driveway'], price: '$12', rating: '4.7' },
-  { id: 3, lat: 47.6588, lng: -122.3130, img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80', title: 'Open Lot — University District', location: '1.2 mi · U-District, Seattle', tags: ['Open Lot'], price: '$8', rating: '4.5' },
-  { id: 4, lat: 47.6062, lng: -122.3321, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80', title: 'Covered Driveway — Fremont', location: '2.1 mi · Fremont, Seattle', tags: ['Covered'], price: '$10', rating: '4.6' },
-  { id: 5, lat: 47.6503, lng: -122.3500, img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80', title: 'Secure Garage — Queen Anne', location: '1.8 mi · Queen Anne, Seattle', tags: ['Garage', 'Covered'], price: '$22', rating: '5.0' },
-  { id: 6, lat: 47.6800, lng: -122.3860, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80', title: 'Budget Lot — Ballard', location: '3.5 mi · Ballard, Seattle', tags: ['Open Lot'], price: '$6', rating: '4.2' },
-  { id: 7, lat: 47.5951, lng: -122.3209, img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=400&q=80', title: 'Private Driveway — SoDo', location: '1.4 mi · SoDo, Seattle', tags: ['Driveway'], price: '$9', rating: '4.4' },
-  { id: 8, lat: 47.6740, lng: -122.1215, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=400&q=80', title: 'Covered Spot — Bellevue', location: '8 mi · Bellevue, WA', tags: ['Covered'], price: '$14', rating: '4.8' },
-];
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const TYPES = ['all', 'garage', 'driveway', 'open-lot', 'covered'];
 
+function toDisplayType(type) {
+  switch (String(type || '').toLowerCase()) {
+    case 'open lot':
+      return 'Open Lot';
+    case 'garage':
+      return 'Garage';
+    case 'driveway':
+      return 'Driveway';
+    case 'covered':
+      return 'Covered';
+    default:
+      return 'Parking';
+  }
+}
+
+function toTypeKey(type) {
+  const lowered = String(type || '').toLowerCase();
+
+  if (lowered === 'open lot') {
+    return 'open-lot';
+  }
+
+  return lowered;
+}
+
+function toLocationLabel(location) {
+  if (!location) {
+    return 'Location unavailable';
+  }
+
+  const city = String(location.city || '').trim();
+  const state = String(location.state || '').trim();
+
+  if (city && state) {
+    return `${city}, ${state}`;
+  }
+
+  if (city) {
+    return city;
+  }
+
+  if (state) {
+    return state;
+  }
+
+  return 'Location unavailable';
+}
+
 export default function Search() {
   const [activeType, setActiveType] = useState('all');
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchListings() {
+      setLoading(true);
+      setErrorMessage('');
+
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/parking-spaces`);
+
+        if (isMounted) {
+          console.log('Fetched listings:', response.data);
+          setListings(Array.isArray(response.data) ? response.data : []);
+        }
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        const backendMessage =
+          error.response?.data?.message ||
+          'Unable to load parking listings right now. Please try again.';
+
+        setErrorMessage(backendMessage);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchListings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const mappedListings = useMemo(
+    () =>
+      listings.map((listing) => {
+        const typeLabel = toDisplayType(listing.parkingType);
+        const typeKey = toTypeKey(listing.parkingType);
+
+        return {
+          id: listing._id,
+          img: listing.imageUrls?.[0] || '',
+          title: listing.title || `${typeLabel} Listing`,
+          location: toLocationLabel(listing.location),
+          tags: [typeLabel],
+          typeKey,
+          price: Number.isFinite(Number(listing.dailyRate))
+            ? `$${Number(listing.dailyRate).toFixed(2)}`
+            : '$0.00',
+          rating: listing.reviewCount > 0
+            ? Number(listing.ratingAverage).toFixed(1)
+            : '—',
+        };
+      }),
+    [listings],
+  );
 
   const filtered = activeType === 'all'
-    ? RESULTS
-    : RESULTS.filter(r => r.tags.some(t => t.toLowerCase().replace(' ', '-') === activeType));
+    ? mappedListings
+    : mappedListings.filter((listing) => listing.typeKey === activeType);
 
   return (
     <div className="search-page">
@@ -66,27 +170,50 @@ export default function Search() {
 
           {/* Results */}
           <div className="search-results" id="searchResults">
-            {filtered.map(r => (
-              <Link to="/details" className="search-result-card" key={r.id}>
-                <div className="search-result-img">
-                  <img src={r.img} alt={r.title} />
-                  <button className="listing-save" onClick={e => e.preventDefault()}>
-                    <i className="bi bi-heart"></i>
-                  </button>
-                </div>
-                <div className="search-result-body">
-                  <div className="d-flex justify-content-between align-items-start">
-                    <h6 className="search-result-title">{r.title}</h6>
-                    <div className="listing-rating"><i className="bi bi-star-fill"></i> {r.rating}</div>
+            {loading ? (
+              <div className="text-center py-5" style={{ color: 'var(--nexa-gray-400)' }}>
+                Loading listings...
+              </div>
+            ) : errorMessage ? (
+              <div className="alert alert-danger" role="alert">
+                {errorMessage}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-5" style={{ color: 'var(--nexa-gray-400)' }}>
+                No parking listings found.
+              </div>
+            ) : (
+              filtered.map((r) => (
+                <Link to="/details" className="search-result-card" key={r.id}>
+                  <div className="search-result-img">
+                    {r.img ? (
+                      <img src={r.img} alt={r.title} />
+                    ) : (
+                      <div
+                        className="w-100 h-100 d-flex align-items-center justify-content-center"
+                        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--nexa-gray-400)' }}
+                      >
+                        No image
+                      </div>
+                    )}
+                    <button className="listing-save" onClick={(e) => e.preventDefault()}>
+                      <i className="bi bi-heart"></i>
+                    </button>
                   </div>
-                  <p className="search-result-location"><i className="bi bi-geo-alt-fill"></i> {r.location}</p>
-                  <div className="listing-tags">{r.tags.map(t => <span className="listing-tag" key={t}>{t}</span>)}</div>
-                  <div className="search-result-footer">
-                    <div className="listing-price">{r.price} <span>/ day</span></div>
+                  <div className="search-result-body">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <h6 className="search-result-title">{r.title}</h6>
+                      <div className="listing-rating"><i className="bi bi-star-fill"></i> {r.rating}</div>
+                    </div>
+                    <p className="search-result-location"><i className="bi bi-geo-alt-fill"></i> {r.location}</p>
+                    <div className="listing-tags">{r.tags.map((t) => <span className="listing-tag" key={t}>{t}</span>)}</div>
+                    <div className="search-result-footer">
+                      <div className="listing-price">{r.price} <span>/ day</span></div>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            )}
           </div>
         </div>
 

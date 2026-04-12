@@ -200,7 +200,7 @@ export default function HostCreateListing() {
         dailyRate: Number(formData.dailyRate),
         minimumBookingDays: toMinimumBookingDays(formData.minBookingDuration),
         availableDays: selectedDays.map((day) => day.toLowerCase()),
-        isPublished: false,
+        isPublished: true, // TODO: Change to false if admin approval is required before publishing
       };
 
       const createResponse = await axios.post(

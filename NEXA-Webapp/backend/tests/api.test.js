@@ -267,7 +267,8 @@ describe("Parking Spaces API operations", () => {
   });
 
   it("lists only the authenticated host's listings", async () => {
-    const { token: hostOneToken, user: hostOne } = await createAccessToken("Host");
+    const { token: hostOneToken, user: hostOne } =
+      await createAccessToken("Host");
     const { user: hostTwo } = await createAccessToken("Host");
 
     const hostOneSpace = await createParkingSpaceDoc(hostOne._id);
@@ -280,8 +281,14 @@ describe("Parking Spaces API operations", () => {
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
     expect(response.body.length).toBeGreaterThanOrEqual(1);
-    expect(response.body.some((space) => space._id === hostOneSpace._id.toString())).toBe(true);
-    expect(response.body.every((space) => String(space.host?._id || space.host) === hostOne._id)).toBe(true);
+    expect(
+      response.body.some((space) => space._id === hostOneSpace._id.toString()),
+    ).toBe(true);
+    expect(
+      response.body.every(
+        (space) => String(space.host?._id || space.host) === hostOne._id,
+      ),
+    ).toBe(true);
   });
 });
 

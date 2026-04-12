@@ -102,7 +102,7 @@ export default function HostMyListings() {
           : "—",
         reviews: Number(listing.reviewCount) || 0,
         bookings: Number(listing.bookingCount) || 0,
-        status: listing.isPublished ? "active" : "paused",
+        status: listing.isPublished ? "active" : "pending",
       })),
     [listings],
   );
@@ -117,7 +117,7 @@ export default function HostMyListings() {
             <div>
               <h1 className="dash-page-title">My Listings</h1>
               <p className="dash-page-sub">
-                Manage your active and paused parking spaces.
+                Manage your active and pending parking spaces.
               </p>
             </div>
             <Link
@@ -201,7 +201,7 @@ export default function HostMyListings() {
                         <i className="bi bi-cash"></i> {listing.price}
                       </span>
                       <span>
-                        <i className="bi bi-star-fill"></i> {listing.rating} (
+                        <i className="bi bi-star-fill"></i> {listing.reviews > 0 ? listing.rating.toFixed(1) : "No rating"} (
                         {listing.reviews})
                       </span>
                       <span>
