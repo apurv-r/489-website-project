@@ -1,5 +1,7 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require("path");
 
 const app = require("../app");
 const User = require("../models/user");
@@ -398,5 +400,48 @@ describe("Reports API operations", () => {
       .get(`/api/reports/${createdId}`)
       .set("Authorization", authHeader(token));
     expect(getDeletedResponse.status).toBe(404);
+  });
+});
+
+describe("Uploads API operations", () => {
+  it("allows a host to upload image files", async () => {
+    const { token } = await createAccessToken("Host");
+
+    const response = await request(app)
+      .post("/api/uploads/images")
+      .set("Authorization", authHeader(token))
+      .attach("images", Buffer.from("fake-image-content"), {
+        filename: "parking-space.jpg",
+        contentType: "image/jpeg",
+      });
+
+    expect(response.status).toBe(201);
+    expect(Array.isArray(response.body.files)).toBe(true);
+    expect(response.body.files).toHaveLength(1);
+    expect(response.body.files[0].url).toContain("/uploads/");
+
+    const uploadedPath = path.join(
+      __dirname,
+      "..",
+      response.body.files[0].url.replace(/^https?:\/\/[^/]+/, ""),
+    );
+
+    if (fs.existsSync(uploadedPath)) {
+      fs.unlinkSync(uploadedPath);
+    }
+  });
+
+  it("blocks non-host users from uploading", async () => {
+    const { token } = await createAccessToken("Renter");
+
+    const response = await request(app)
+      .post("/api/uploads/images")
+      .set("Authorization", authHeader(token))
+      .attach("images", Buffer.from("fake-image-content"), {
+        filename: "parking-space.jpg",
+        contentType: "image/jpeg",
+      });
+
+    expect(response.status).toBe(403);
   });
 });

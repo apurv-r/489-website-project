@@ -74,7 +74,7 @@ export default function App() {
       <header className=''>
         <Navbar />
       </header>
-      <div 
+      {/* <div 
         style={{
           height: '100vh', 
           width: '100vw',
@@ -82,8 +82,8 @@ export default function App() {
           flexDirection: 'row',
           alignItems: 'block',
         }}
-      >
-        <LesseeSidebar {...user} />
+      > */}
+        {/* <LesseeSidebar {...user} /> */}
       
         <Routes>
           {/* Public */}
@@ -126,7 +126,7 @@ export default function App() {
         <Route path="/admin/report-review" element={<AdminReportReview />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         </Routes>
-      </div>
+      {/* </div> */}
     </BrowserRouter>
   );
 }
