@@ -33,7 +33,6 @@ export default function Booking() {
 
   return (
     <>
-      <Navbar variant="public" />
       <main className="booking-main">
         <div className="container" style={{ maxWidth: 1040, paddingTop: 88, paddingBottom: '3rem' }}>
           <nav aria-label="breadcrumb" className="mb-4">

@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import HostSidebar from '../../components/HostSidebar';
+import { useState, useEffect } from 'react';
 
 export default function HostDashboard() {
+
+  useEffect(() => {
+    console.log("hello from hostDashboard");
+  },[]);
+
   return (
     <div className="dash-page lsr-page">
       <Navbar variant="dashboard" />

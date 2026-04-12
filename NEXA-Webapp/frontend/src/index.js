@@ -11,6 +11,8 @@ import './css/search.css';
 import './css/admin.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import LesseeSidebar from './components/LesseeSidebar';
+import Navbar from './components/Navbar';
 
 // fetch("http://localhost:5000/api/test")
 //   .then((response) => {

@@ -24,7 +24,6 @@ export default function Search() {
 
   return (
     <div className="search-page">
-      <Navbar variant="public" />
       <div className="search-layout">
         {/* LEFT PANEL */}
         <div className="search-panel" id="searchPanel">

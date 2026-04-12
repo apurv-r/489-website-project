@@ -59,7 +59,7 @@ export default function Login() {
       if (response.data?.token) {
         localStorage.setItem("token", response.data.token);
       }
-
+      console.log("hello from login");
       navigate("/dashboard");
     } catch (error) {
       const backendMessage =

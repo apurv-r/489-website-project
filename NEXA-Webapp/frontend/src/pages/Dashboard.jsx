@@ -6,40 +6,39 @@ import axios from "axios"
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const USERID = "some temp id"
 
-export default function Dashboard() {
+export default function Dashboard(user) {
 
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
+  // const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUser = async () => {
-    axios.get(`${API_BASE_URL}/api/user:${USERID}`, {
-      headers: {
-        "Authorization": localStorage.getItem("token"),
-      }
-    })
-    .then(response => {
-      setUser({
-        foreName: response.data.firstName,
-        lastName: response.data.lastName,
-      })
-    })
-    .catch(error => {
-      console.log(error);
-    });
-  }
+  // // consider moving this to App.js and passing user as prop to avoid multiple calls to /me endpoint across different pages
+  // const fetchUser = async () => {
+
+  //   await axios.get(`${API_BASE_URL}/api/auth/me`, {
+  //     withCredentials: true,
+  //   })
+  //   .then( async response => {
+  //     const user = response.data.user;
+  //     // setUser(user);
+  //     setIsLoading(false);
+  //     console.log("successfully fetched user data for dashboard:", user);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   });
+  // }
 
   useEffect(() => {
-    fetchUser();
   },[]);
 
   return (
     <div className="dash-page">
-      <Navbar variant="dashboard" />
       <div className="dash-layout">
-        <LesseeSidebar {...user}/>
+        <LesseeSidebar {...user} />
         <main className="dash-main">
           <div className="dash-page-header">
             <div>
-              <h1 className="dash-page-title">Good morning, {user.foreName} 👋</h1>
+              <h1 className="dash-page-title">Good morning, {user.firstName} 👋</h1>
               <p className="dash-page-sub">Here's what's happening with your parking.</p>
             </div>
           </div>
