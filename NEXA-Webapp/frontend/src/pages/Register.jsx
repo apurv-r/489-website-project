@@ -82,6 +82,7 @@ export default function Register() {
           localStorage.setItem("token", response.data.token);
         }
 
+        window.dispatchEvent(new Event('auth-changed'));
         navigate(role === "host" ? "/host/dashboard" : "/dashboard");
       })
       .catch((error) => {

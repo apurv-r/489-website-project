@@ -59,6 +59,7 @@ export default function Login() {
       if (response.data?.token) {
         localStorage.setItem("token", response.data.token);
       }
+      window.dispatchEvent(new Event('auth-changed'));
       navigate("/dashboard");
     } catch (error) {
       const backendMessage =

@@ -1,17 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AuthBox from './authBox';
 import axios from "axios";
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function Navbar() {
+ const location = useLocation();
+const active = (path) => location.pathname === path ? ' active' : '';
 
   const [isSession, setIsSession] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [role, setRole] = useState("");
   const [dashboardLink, setDashboardLink] = useState("/dashboard");
-  const [homeLinkStatus, setHomeLinkStatus] = useState("");
-  const [searchLinkStatus, setSearchLinkStatus] = useState("");
+
+
+  function handleAuthAction(action) {
+    if (action === 'logout') {
+      setIsSession(false);
+      setRole('');
+      setDashboardLink('/dashboard');
+    }
+  }
+
+
 
   async function checkSession() {
     axios.get(`${API_BASE_URL}/api/auth/me`, {
@@ -20,11 +31,15 @@ export default function Navbar() {
     .then(response => {
       if (response.status === 200) {
         setIsSession(true);
-        setRole(response.data.user.roleType);
+        setRole(response.data.user.roleType);    
       }
     })
     .catch(error => {
-      console.log(error);
+      setIsSession(false);
+      setRole('');
+      if (error?.response?.status !== 401) {
+        console.log(error);
+      }
     })
     .finally(() => {
       setIsLoading(false);
@@ -32,7 +47,6 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    checkSession();
     const nav = document.getElementById('mainNav');
     if (!nav) return;
     const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 50);
@@ -41,18 +55,23 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    checkSession();
+
+    const onAuthChanged = () => {
+      checkSession();
+    };
+
+    window.addEventListener('auth-changed', onAuthChanged);
+    return () => window.removeEventListener('auth-changed', onAuthChanged);
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (role === "Renter") {
       setDashboardLink("/dashboard");
     } else if (role === "Host") {
       setDashboardLink("/host/dashboard");
     }
   }, [role]);
-
-  useEffect(() => {
-    setSearchLinkStatus("");
-    setHomeLinkStatus("");
-    checkSession();
-  }, [homeLinkStatus, searchLinkStatus]);
 
   // default public navbar
   return ( !isLoading &&
@@ -68,15 +87,20 @@ export default function Navbar() {
         <div className="collapse navbar-collapse" id="navMenu">
           <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className={`nav-link ${homeLinkStatus}`} to="/" onClick={() => setHomeLinkStatus("active")}>Home</Link>
+              <Link className={`nav-link${active('/')}`} to="/">Home</Link>
             </li>
             <li className="nav-item ms-4">
-              <Link className={`nav-link ${searchLinkStatus}`} to="/search" onClick={() => setSearchLinkStatus("active")}>Search Listings</Link>
+              <Link className={`nav-link${active('/search')}`} to="/search">Search Listings</Link>
             </li>
+            {( isSession &&
+              <li className="nav-item ms-4">
+                <Link className={`nav-link${active('/dashboard')}`} to={dashboardLink}>Dashboard</Link>
+              </li>
+            )}
           </ul>
           <div className="d-flex gap-2">
             {/* {(!isSession && <AuthBox/>) || <Link to={dashboardLink} className="btn btn-nexa-outline btn-nexa-sm">Dashboard</Link> } */}
-            <AuthBox isSession={isSession} dashboardLink={dashboardLink}/>
+            <AuthBox isSession={isSession} onAuthAction={handleAuthAction} />
           </div>
         </div>
       </div>

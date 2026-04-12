@@ -2,9 +2,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
 import { useState, useEffect } from 'react';
-import axios from "axios"
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-const USERID = "some temp id"
 
 export default function Dashboard(user) {
 
@@ -34,7 +32,7 @@ export default function Dashboard(user) {
   return (
     <div className="dash-page">
       <div className="dash-layout">
-        {/* <LesseeSidebar {...user} /> */}
+        <LesseeSidebar {...user} />
         <main className="dash-main">
           <div className="dash-page-header">
             <div>
