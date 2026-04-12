@@ -13,14 +13,14 @@ const BOOKINGS = [
 const STATUS_CLASS = { active: 'status-active', upcoming: 'status-upcoming', completed: 'status-completed', cancelled: 'status-cancelled' };
 const TABS = ['all', 'active', 'upcoming', 'completed', 'cancelled'];
 
-export default function MyBookings() {
+export default function MyBookings(user) {
   const [filter, setFilter] = useState('all');
   const shown = filter === 'all' ? BOOKINGS : BOOKINGS.filter(b => b.status === filter);
 
   return (
     <div className="dash-page">
       <div className="dash-layout">
-        <LesseeSidebar />
+        <LesseeSidebar {...user}/>
         <main className="dash-main">
           <div className="dash-page-header">
             <div>

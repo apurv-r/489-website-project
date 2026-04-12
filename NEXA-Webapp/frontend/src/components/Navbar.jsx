@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AuthBox from './authBox';
 import axios from "axios";
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function Navbar() {
+ const location = useLocation();
+const active = (path) => location.pathname === path ? ' active' : '';
 
   const [isSession, setIsSession] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [role, setRole] = useState("");
   const [dashboardLink, setDashboardLink] = useState("/dashboard");
-  const [homeLinkStatus, setHomeLinkStatus] = useState("");
-  const [searchLinkStatus, setSearchLinkStatus] = useState("");
+
 
   async function checkSession() {
     axios.get(`${API_BASE_URL}/api/auth/me`, {
@@ -49,10 +50,8 @@ export default function Navbar() {
   }, [role]);
 
   useEffect(() => {
-    setSearchLinkStatus("");
-    setHomeLinkStatus("");
-    checkSession();
-  }, [homeLinkStatus, searchLinkStatus]);
+    console.log(window.location.pathname);
+  }, []);
 
   // default public navbar
   return ( !isLoading &&
@@ -68,10 +67,10 @@ export default function Navbar() {
         <div className="collapse navbar-collapse" id="navMenu">
           <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className={`nav-link ${homeLinkStatus}`} to="/" onClick={() => setHomeLinkStatus("active")}>Home</Link>
+              <Link className={`nav-link${active('/')}`} to="/">Home</Link>
             </li>
             <li className="nav-item ms-4">
-              <Link className={`nav-link ${searchLinkStatus}`} to="/search" onClick={() => setSearchLinkStatus("active")}>Search Listings</Link>
+              <Link className={`nav-link${active('/search')}`} to="/search">Search Listings</Link>
             </li>
           </ul>
           <div className="d-flex gap-2">

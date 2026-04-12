@@ -10,7 +10,7 @@ const INITIAL_FAVS = [
   { id: 4, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=500&q=80', badge: 'Driveway', type: 'Driveway', name: 'Shaded Driveway · Queen Anne', addr: '515 W Highland Dr, Seattle, WA', rating: '4.7', price: '$14' },
 ];
 
-export default function Favorites() {
+export default function Favorites(user) {
   const navigate = useNavigate();
   const [favs, setFavs] = useState(INITIAL_FAVS);
 
@@ -21,7 +21,7 @@ export default function Favorites() {
   return (
     <div className="dash-page">
       <div className="dash-layout">
-        <LesseeSidebar />
+        <LesseeSidebar {...user}/>
         <main className="dash-main">
           <div className="dash-page-header">
             <div>

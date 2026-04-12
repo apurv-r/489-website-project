@@ -37,7 +37,6 @@ import AdminListingReview from './pages/admin/AdminListingReview';
 import AdminReports from './pages/admin/AdminReports';
 import AdminReportReview from './pages/admin/AdminReportReview';
 import AdminSettings from './pages/admin/AdminSettings';
-import LesseeSidebar from './components/LesseeSidebar';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -71,20 +70,9 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <header className=''>
+      <header>
         <Navbar />
       </header>
-      <div 
-        style={{
-          height: '100vh', 
-          width: '100vw',
-          display: 'flex', 
-          flexDirection: 'row',
-          alignItems: 'block',
-        }}
-      >
-        <LesseeSidebar {...user} />
-      
         <Routes>
           {/* Public */}
         <Route path="/" element={<Home />} />
@@ -97,10 +85,10 @@ export default function App() {
 
         {/* Lessee */}
         <Route path="/dashboard" element={<Dashboard {...user} />} />
-        <Route path="/my-bookings" element={<MyBookings />} />
-        <Route path="/booking-details" element={<BookingDetails />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/messages" element={<Messages />} />
+        <Route path="/my-bookings" element={<MyBookings {...user} />} />
+        <Route path="/booking-details" element={<BookingDetails {...user} />} />
+        <Route path="/favorites" element={<Favorites {...user} />} />
+        <Route path="/messages" element={<Messages {...user} />} />
 
         {/* Host */}
         <Route path="/host/dashboard" element={<HostDashboard />} />
@@ -126,7 +114,6 @@ export default function App() {
         <Route path="/admin/report-review" element={<AdminReportReview />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         </Routes>
-      </div>
     </BrowserRouter>
   );
 }

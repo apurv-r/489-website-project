@@ -25,7 +25,7 @@ const INITIAL_MESSAGES = {
   ],
 };
 
-export default function Messages() {
+export default function Messages(user) {
   const [activeThread, setActiveThread] = useState('marcus');
   const [conversations, setConversations] = useState(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
@@ -46,7 +46,7 @@ export default function Messages() {
   return (
     <div className="dash-page">
       <div className="dash-layout">
-        <LesseeSidebar />
+        <LesseeSidebar {...user}/>
         <main className="dash-main dash-main--flush">
           <div className="chat-layout">
             {/* Thread list */}

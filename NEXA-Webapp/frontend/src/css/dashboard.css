@@ -5,15 +5,19 @@
    ============================================================ */
 
 /* ── Body & layout shell ── */
-body.dash-page {
+body.dash-page,
+.dash-page {
   background: var(--nexa-dark);
   min-height: 100vh;
+  height: 100vh;
+  overflow-y: hidden;
   overflow-x: hidden;
 }
 
 .dash-layout {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - 84px);
+  height: calc(100vh - 84px);
   padding-top: 84px; /* navbar height */
 }
 
@@ -27,8 +31,8 @@ body.dash-page {
   flex-direction: column;
   padding: 1.5rem 1rem 2rem;
   position: sticky;
-  top: 64px;
-  height: calc(100vh - 64px);
+  top: 0;
+  height: calc(100vh - 84px);
   overflow-y: auto;
 }
 
@@ -159,6 +163,8 @@ body.dash-page {
 .dash-main {
   flex: 1;
   padding: 2.5rem 2rem;
+  height: calc(100vh - 84px);
+  overflow-y: auto;
   max-width: 1200px;
   min-width: 0;
   margin-left: auto;
@@ -1350,8 +1356,16 @@ body.dash-page {
 }
 
 @media (max-width: 768px) {
+  body.dash-page,
+  .dash-page {
+    height: auto;
+    overflow-y: auto;
+  }
+
   .dash-layout {
     flex-direction: column;
+    min-height: 100vh;
+    height: auto;
   }
 
   .dash-sidebar {
@@ -1382,6 +1396,8 @@ body.dash-page {
 
   .dash-main {
     padding: 1.5rem 1rem;
+    height: auto;
+    overflow-y: visible;
   }
 
   .bookings-card-img {
