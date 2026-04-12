@@ -1882,12 +1882,17 @@ body.dash-page {
   flex-direction: column;
   gap: 0.4rem;
 }
+.lsr-form-group-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
 .lsr-form-group--full {
   grid-column: 1 / -1;
 }
 .lsr-form-row-quarters {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 .lsr-label {

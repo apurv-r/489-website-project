@@ -16,7 +16,13 @@ const router = express.Router();
 
 // routes dont require auth
 publicRouter.get("/parking-spaces", parkingSpaceController.listPublic);
-publicRouter.get("/parking-spaces/:id", parkingSpaceController.getPublic);
+publicRouter.get("/parking-spaces/:id", (req, res, next) => {
+	if (req.params.id === "me") {
+		return next(); // Avoid conflict with the protected "me" route in the private (host/admin) router.
+	}
+
+	return parkingSpaceController.getPublic(req, res, next);
+});
 publicRouter.use("/test", testRouter);
 
 // routes require auth

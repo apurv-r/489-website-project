@@ -114,6 +114,8 @@ export default function HostCreateListing() {
     city: "",
     state: "",
     zipCode: "",
+    latitude: "",
+    longitude: "",
     description: "",
     dailyRate: "",
     minBookingDuration: "",
@@ -187,6 +189,8 @@ export default function HostCreateListing() {
           city: formData.city.trim(),
           state: formData.state,
           zipCode: formData.zipCode.trim(),
+          latitude: Number(formData.latitude),
+          longitude: Number(formData.longitude),
         },
         description: formData.description.trim(),
         parkingType: PARKING_TYPE_MAP[formData.parkingType],
@@ -303,6 +307,26 @@ export default function HostCreateListing() {
         nextErrors.zipCode = "ZIP code is required.";
       } else if (!/^\d{5}(?:-\d{4})?$/.test(formData.zipCode.trim())) {
         nextErrors.zipCode = "Enter a valid ZIP code.";
+      }
+      if (!formData.latitude.trim()) {
+        nextErrors.latitude = "Latitude is required.";
+      } else {
+        const latitude = Number(formData.latitude);
+        if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+          nextErrors.latitude = "Latitude must be between -90 and 90.";
+        }
+      }
+      if (!formData.longitude.trim()) {
+        nextErrors.longitude = "Longitude is required.";
+      } else {
+        const longitude = Number(formData.longitude);
+        if (
+          !Number.isFinite(longitude) ||
+          longitude < -180 ||
+          longitude > 180
+        ) {
+          nextErrors.longitude = "Longitude must be between -180 and 180.";
+        }
       }
       if (!formData.description.trim())
         nextErrors.description = "Description is required.";
@@ -425,6 +449,8 @@ export default function HostCreateListing() {
                       city: "",
                       state: "",
                       zipCode: "",
+                      latitude: "",
+                      longitude: "",
                       description: "",
                       dailyRate: "",
                       minBookingDuration: "",
@@ -562,7 +588,14 @@ export default function HostCreateListing() {
                     <small style={{ color: "#ff8080" }}>{errors.address}</small>
                   )}
                 </div>
-                <div className="lsr-form-row-quarters lsr-form-group--full">
+                <div
+                  className="lsr-form-group--full"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "1rem",
+                  }}
+                >
                   <div className="lsr-form-group">
                     <label className="lsr-label">City</label>
                     <input
@@ -578,45 +611,85 @@ export default function HostCreateListing() {
                       <small style={{ color: "#ff8080" }}>{errors.city}</small>
                     )}
                   </div>
-                  <div className="lsr-form-group">
-                    <label className="lsr-label">State</label>
-                    <select
-                      className="lsr-input"
-                      value={formData.state}
-                      onChange={(event) =>
-                        updateField("state", event.target.value)
-                      }
-                    >
-                      <option value="" disabled>
-                        Select state
-                      </option>
-                      {US_STATE_OPTIONS.map((stateCode) => (
-                        <option key={stateCode} value={stateCode}>
-                          {stateCode}
+                  <div className="lsr-form-group-row">
+                    <div className="lsr-form-group" style={{ width: "100%" }}>
+                      <label className="lsr-label">State</label>
+                      <select
+                        className="lsr-input"
+                        value={formData.state}
+                        onChange={(event) =>
+                          updateField("state", event.target.value)
+                        }
+                      >
+                        <option value="" disabled>
+                          Select state
                         </option>
-                      ))}
-                    </select>
-                    {errors.state && (
-                      <small style={{ color: "#ff8080" }}>{errors.state}</small>
-                    )}
+                        {US_STATE_OPTIONS.map((stateCode) => (
+                          <option key={stateCode} value={stateCode}>
+                            {stateCode}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.state && (
+                        <small style={{ color: "#ff8080" }}>
+                          {errors.state}
+                        </small>
+                      )}
+                    </div>
+                    <div className="lsr-form-group" style={{ width: "100%" }}>
+                      <label className="lsr-label">ZIP code</label>
+                      <input
+                        type="text"
+                        className="lsr-input"
+                        placeholder="98101"
+                        value={formData.zipCode}
+                        onChange={(event) =>
+                          updateField("zipCode", event.target.value)
+                        }
+                      />
+                      {errors.zipCode && (
+                        <small style={{ color: "#ff8080" }}>
+                          {errors.zipCode}
+                        </small>
+                      )}
+                    </div>
                   </div>
-                  <div className="lsr-form-group">
-                    <label className="lsr-label">ZIP code</label>
-                    <input
-                      type="text"
-                      className="lsr-input"
-                      placeholder="98101"
-                      value={formData.zipCode}
-                      onChange={(event) =>
-                        updateField("zipCode", event.target.value)
-                      }
-                    />
-                    {errors.zipCode && (
-                      <small style={{ color: "#ff8080" }}>
-                        {errors.zipCode}
-                      </small>
-                    )}
-                  </div>
+                </div>
+                <div className="lsr-form-group">
+                  <label className="lsr-label">Latitude (dev)</label>
+                  <input
+                    type="number"
+                    className="lsr-input"
+                    placeholder="47.6062"
+                    step="any"
+                    value={formData.latitude}
+                    onChange={(event) =>
+                      updateField("latitude", event.target.value)
+                    }
+                  />
+                  {errors.latitude && (
+                    <small style={{ color: "#ff8080" }}>
+                      {errors.latitude}
+                    </small>
+                  )}
+                </div>
+                <div className="lsr-form-group">
+                  <label className="lsr-label">Longitude (dev)</label>
+                  <input
+                    type="number"
+                    className="lsr-input"
+                    placeholder="-122.3321"
+                    step="any"
+                    value={formData.longitude}
+                    onChange={(event) =>
+                      updateField("longitude", event.target.value)
+                    }
+                  />
+                  {errors.longitude && (
+                    <small style={{ color: "#ff8080" }}>
+                      {errors.longitude}
+                    </small>
+                  )}
                 </div>
                 <div className="lsr-form-group lsr-form-group--full">
                   <label className="lsr-label">Description</label>

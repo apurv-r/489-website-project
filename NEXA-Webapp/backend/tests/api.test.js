@@ -47,6 +47,8 @@ async function createParkingSpaceDoc(hostId) {
       city: "Seattle",
       state: "WA",
       zipCode: "98101",
+      latitude: 47.6062,
+      longitude: -122.3321,
     },
     description: "Covered spot",
     parkingType: "garage",
@@ -216,6 +218,8 @@ describe("Parking Spaces API operations", () => {
           city: "Seattle",
           state: "WA",
           zipCode: "98101",
+          latitude: 47.6097,
+          longitude: -122.3331,
         },
         parkingType: "garage",
         maxVehicleSize: "standard",
@@ -260,6 +264,24 @@ describe("Parking Spaces API operations", () => {
       .get(`/api/parking-spaces/${createdId}`)
       .set("Authorization", authHeader(token));
     expect(getDeletedResponse.status).toBe(404);
+  });
+
+  it("lists only the authenticated host's listings", async () => {
+    const { token: hostOneToken, user: hostOne } = await createAccessToken("Host");
+    const { user: hostTwo } = await createAccessToken("Host");
+
+    const hostOneSpace = await createParkingSpaceDoc(hostOne._id);
+    await createParkingSpaceDoc(hostTwo._id);
+
+    const response = await request(app)
+      .get("/api/parking-spaces/me")
+      .set("Authorization", authHeader(hostOneToken));
+
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body.length).toBeGreaterThanOrEqual(1);
+    expect(response.body.some((space) => space._id === hostOneSpace._id.toString())).toBe(true);
+    expect(response.body.every((space) => String(space.host?._id || space.host) === hostOne._id)).toBe(true);
   });
 });
 
