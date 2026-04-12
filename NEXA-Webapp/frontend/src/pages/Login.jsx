@@ -70,9 +70,9 @@ export default function Login() {
   }
 
   return (
-    <>
+    <div className="auth-page">
       <Navbar variant="signup-only" />
-      <main className="auth-main auth-center" style={{ paddingTop: "80px" }}>
+      <main className="auth-main auth-center">
         <div className="auth-form-card">
           <div className="auth-form-header">
             <div className="auth-logo-mark">
@@ -143,6 +143,6 @@ export default function Login() {
           </p>
         </div>
       </main>
-    </>
+    </div>
   );
 }
