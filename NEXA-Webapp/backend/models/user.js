@@ -30,6 +30,10 @@ const userSchema = new Schema(
     lastLoginAt: {
       type: Date,
     },
+    profilePictureUrl: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
