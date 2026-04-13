@@ -7,15 +7,17 @@ async function getFutureBookingsFor(req, res, next) {
     const now = new Date();
 
     const space = await ParkingSpace.findById(parkingSpaceId);
-    // 403 Forbidden: caller is not the owning host for this parking space.
-    if (!space || space.host.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+    // 404 Not Found: only expose future availability for published spaces.
+    if (!space || !space.isPublished) {
+      return res.status(404).json({ message: "Not found" });
     }
 
     const bookings = await Booking.find({
       parkingSpace: parkingSpaceId,
       startDate: { $gte: now },
-    }).sort({ startDate: 1 });
+    })
+      .select("startDate endDate status")
+      .sort({ startDate: 1 }); // Sort by startDate ascending for easier frontend processing
 
     res.json(bookings);
   } catch (error) {

@@ -1,265 +1,778 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
 
-const IMAGES = [
-  'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=1200&q=80',
-  'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=1200&q=80',
-  'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=1200&q=80',
-  'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=1200&q=80',
-];
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-const AMENITIES = [
-  { icon: 'bi-lightning-charge-fill', label: 'EV Charging' },
-  { icon: 'bi-camera-video-fill', label: 'CCTV' },
-  { icon: 'bi-lightbulb-fill', label: 'Well Lit' },
-  { icon: 'bi-key-fill', label: 'Keypad Entry' },
-  { icon: 'bi-umbrella-fill', label: 'Covered' },
-  { icon: 'bi-bus-front-fill', label: 'Near Transit' },
-  { icon: 'bi-person-wheelchair', label: 'Accessible' },
-  { icon: 'bi-clock-history', label: '24 / 7 Access' },
-];
+const AMENITY_ICON_MAP = {
+  "EV Charging": "bi-lightning-charge-fill",
+  CCTV: "bi-camera-video-fill",
+  "Well Lit": "bi-lightbulb-fill",
+  Covered: "bi-umbrella-fill",
+  "Keypad Entry": "bi-key-fill",
+  "Near Transit": "bi-bus-front-fill",
+  Accessible: "bi-person-wheelchair",
+  "24/7 Access": "bi-clock-history",
+};
 
-const REVIEWS = [
-  { img: 'https://i.pravatar.cc/100?img=5', name: 'Marcus T.', date: 'February 2026', stars: 5, text: 'Absolutely perfect spot. Clean, secure, and the EV charger worked flawlessly. The keypad code was sent immediately after booking. Will definitely rebook.' },
-  { img: 'https://i.pravatar.cc/100?img=9', name: 'Priya K.', date: 'January 2026', stars: 4.5, text: "Great location, two minutes from the rail station. Garage was spotless. Only minor gripe — the entrance is a little narrow, but my sedan fit fine." },
-  { img: 'https://i.pravatar.cc/100?img=17', name: 'Jordan L.', date: 'December 2025', stars: 5, text: 'Saved me so much vs. the nearby pay lots. The host responded within minutes when I had a question. Highly recommend for anyone working downtown.' },
-];
+const DAY_LABELS = {
+  sun: "Sun",
+  mon: "Mon",
+  tue: "Tue",
+  wed: "Wed",
+  thu: "Thu",
+  fri: "Fri",
+  sat: "Sat",
+};
+
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function formatDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function startOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function addMonths(date, count) {
+  return new Date(date.getFullYear(), date.getMonth() + count, 1);
+}
+
+function getMonthLabel(date) {
+  return date.toLocaleDateString(undefined, {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function eachDateInRange(startDate, endDate) {
+  const dates = [];
+  const cursor = new Date(startDate);
+  cursor.setHours(0, 0, 0, 0);
+
+  const finalDate = new Date(endDate);
+  finalDate.setHours(0, 0, 0, 0);
+
+  while (cursor <= finalDate) {
+    dates.push(formatDateKey(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return dates;
+}
+
+function buildCalendarCells(monthDate, bookedDates) {
+  const firstDay = startOfMonth(monthDate);
+  const firstWeekday = firstDay.getDay();
+  const totalDays = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
+  const cells = [];
+
+  for (let i = 0; i < firstWeekday; i += 1) {
+    cells.push({ type: "empty", key: `empty-${i}` });
+  }
+
+  for (let day = 1; day <= totalDays; day += 1) {
+    const date = new Date(monthDate.getFullYear(), monthDate.getMonth(), day);
+    const dateKey = formatDateKey(date);
+    cells.push({
+      type: "day",
+      key: dateKey,
+      date,
+      dateKey,
+      day,
+      isBooked: bookedDates.has(dateKey),
+      isPast: date < new Date(new Date().setHours(0, 0, 0, 0)),
+    });
+  }
+
+  return cells;
+}
+
+function formatParkingType(type) {
+  switch (String(type || "").toLowerCase()) {
+    case "open lot":
+      return "Open Lot";
+    case "garage":
+      return "Garage";
+    case "driveway":
+      return "Driveway";
+    case "covered":
+      return "Covered";
+    default:
+      return "Parking";
+  }
+}
+
+function formatVehicleSize(size) {
+  switch (String(size || "").toLowerCase()) {
+    case "compact":
+      return "Compact";
+    case "standard":
+      return "Standard";
+    case "suv/midsize":
+      return "SUV / Midsize";
+    case "truck/large":
+      return "Truck / Large";
+    default:
+      return "Any size";
+  }
+}
+
+function formatAddress(location) {
+  if (!location) {
+    return "Address unavailable";
+  }
+
+  const parts = [location.address, location.city, location.state, location.zipCode]
+    .map((part) => String(part || "").trim())
+    .filter(Boolean);
+
+  return parts.length > 0 ? parts.join(", ") : "Address unavailable";
+}
+
+function getInitials(name) {
+  return (
+    String(name || "Host")
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("") || "H"
+  );
+}
+
+function toMapUrl(location) {
+  if (!location?.latitude || !location?.longitude) {
+    return null;
+  }
+
+  return `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
+}
 
 export default function Details() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const listingId = searchParams.get("id");
+  const [loading, setLoading] = useState(true);
+  const [calendarLoading, setCalendarLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [calendarError, setCalendarError] = useState("");
+  const [listing, setListing] = useState(null);
+  const [futureBookings, setFutureBookings] = useState([]);
   const [activeImg, setActiveImg] = useState(0);
-  const [showChat, setShowChat] = useState(false);
-  const [chatMsg, setChatMsg] = useState('');
-  const [messages, setMessages] = useState([
-    { from: 'host', text: "Hey there! Thanks for checking out my listing. Feel free to ask anything about the space 🙂" }
-  ]);
+  const [calendarMonth, setCalendarMonth] = useState(() => startOfMonth(new Date()));
 
-  function sendMsg(e) {
-    e.preventDefault();
-    if (!chatMsg.trim()) return;
-    setMessages(m => [...m, { from: 'me', text: chatMsg }]);
-    setChatMsg('');
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchListing() {
+      if (!listingId) {
+        setErrorMessage("Missing listing id. Please choose a listing from search.");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setErrorMessage("");
+
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/parking-spaces/${listingId}`);
+
+        if (isMounted) {
+          setListing(response.data);
+          setActiveImg(0);
+        }
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        const backendMessage =
+          error.response?.data?.message ||
+          "Unable to load this listing right now. Please try again.";
+
+        setErrorMessage(backendMessage);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchListing();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [listingId]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchFutureBookings() {
+      if (!listingId) {
+        setCalendarLoading(false);
+        return;
+      }
+
+      setCalendarLoading(true);
+      setCalendarError("");
+
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/bookings/future/${listingId}`);
+
+        if (isMounted) {
+          setFutureBookings(Array.isArray(response.data) ? response.data : []);
+        }
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        setCalendarError(
+          error.response?.data?.message || "Availability calendar could not be loaded right now.",
+        );
+      } finally {
+        if (isMounted) {
+          setCalendarLoading(false);
+        }
+      }
+    }
+
+    fetchFutureBookings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [listingId]);
+
+  const images = useMemo(() => listing?.imageUrls || [], [listing]);
+  const hostName = useMemo(() => {
+    const firstName = listing?.host?.firstName || "Host";
+    const lastName = listing?.host?.lastName || "";
+    return `${firstName} ${lastName}`.trim();
+  }, [listing]);
+
+  const amenities = useMemo(() => listing?.amenities || [], [listing]);
+  const availableDays = useMemo(() => listing?.availableDays || [], [listing]);
+  const mapUrl = useMemo(() => toMapUrl(listing?.location), [listing]);
+  const bookedDates = useMemo(() => {
+    const dates = new Set();
+
+    futureBookings.forEach((booking) => {
+      if (!booking?.startDate || !booking?.endDate) {
+        return;
+      }
+
+      eachDateInRange(new Date(booking.startDate), new Date(booking.endDate)).forEach((dateKey) => {
+        dates.add(dateKey);
+      });
+    });
+
+    return dates;
+  }, [futureBookings]);
+
+  const calendarCells = useMemo(
+    () => buildCalendarCells(calendarMonth, bookedDates),
+    [calendarMonth, bookedDates],
+  );
+
+  const todayKey = formatDateKey(new Date());
+
+  function prevImage() {
+    if (images.length < 2) {
+      return;
+    }
+
+    setActiveImg((current) => (current - 1 + images.length) % images.length);
   }
 
-  return (
-    <>
+  function nextImage() {
+    if (images.length < 2) {
+      return;
+    }
+
+    setActiveImg((current) => (current + 1) % images.length);
+  }
+
+  function goToPreviousMonth() {
+    setCalendarMonth((current) => addMonths(current, -1));
+  }
+
+  function goToNextMonth() {
+    setCalendarMonth((current) => addMonths(current, 1));
+  }
+
+  if (loading) {
+    return (
       <main className="details-main">
-        {/* Breadcrumb */}
+        <div
+          className="container-xl details-container text-center py-5"
+          style={{ color: "var(--nexa-gray-400)" }}
+        >
+          Loading listing details...
+        </div>
+      </main>
+    );
+  }
+
+  if (errorMessage || !listing) {
+    return (
+      <main className="details-main">
         <div className="details-breadcrumb">
           <div className="container-xl">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0">
-                <li className="breadcrumb-item"><Link to="/">Home</Link></li>
-                <li className="breadcrumb-item"><Link to="/search">Search</Link></li>
-                <li className="breadcrumb-item active">Private Garage — Capitol Hill</li>
+                <li className="breadcrumb-item">
+                  <Link to="/">Home</Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <Link to="/search">Search</Link>
+                </li>
+                <li className="breadcrumb-item active">Listing details</li>
               </ol>
             </nav>
           </div>
         </div>
-
         <div className="container-xl details-container">
-          {/* GALLERY */}
-          <div className="details-gallery">
-            <div className="gallery-carousel">
-              <button className="gallery-arrow gallery-arrow--prev" onClick={() => setActiveImg(i => (i - 1 + IMAGES.length) % IMAGES.length)}>
-                <i className="bi bi-chevron-left"></i>
-              </button>
-              <button className="gallery-arrow gallery-arrow--next" onClick={() => setActiveImg(i => (i + 1) % IMAGES.length)}>
-                <i className="bi bi-chevron-right"></i>
-              </button>
-              <div className="gallery-16-9">
-                <img src={IMAGES[activeImg]} alt="Private garage in Capitol Hill" />
-              </div>
+          <div className="alert alert-danger" role="alert">
+            {errorMessage || "Listing not found."}
+          </div>
+          <Link to="/search" className="btn btn-nexa-outline">
+            <i className="bi bi-arrow-left me-1"></i> Back to search
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="details-main">
+      <div className="details-breadcrumb">
+        <div className="container-xl">
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb mb-0">
+              <li className="breadcrumb-item">
+                <Link to="/">Home</Link>
+              </li>
+              <li className="breadcrumb-item">
+                <Link to="/search">Search</Link>
+              </li>
+              <li className="breadcrumb-item active">{listing.title}</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <div className="container-xl details-container">
+        <div className="details-gallery">
+          <div className="gallery-carousel">
+            {images.length > 1 && (
+              <>
+                <button
+                  className="gallery-arrow gallery-arrow--prev"
+                  onClick={prevImage}
+                  type="button"
+                >
+                  <i className="bi bi-chevron-left"></i>
+                </button>
+                <button
+                  className="gallery-arrow gallery-arrow--next"
+                  onClick={nextImage}
+                  type="button"
+                >
+                  <i className="bi bi-chevron-right"></i>
+                </button>
+              </>
+            )}
+            <div className="gallery-16-9">
+              {images.length > 0 ? (
+                <img src={images[activeImg] || images[0]} alt={listing.title} />
+              ) : (
+                <div
+                  className="w-100 h-100 d-flex align-items-center justify-content-center"
+                  style={{ color: "var(--nexa-gray-400)" }}
+                >
+                  No images available
+                </div>
+              )}
+            </div>
+            {images.length > 1 && (
               <div className="gallery-dots">
-                {IMAGES.map((_, i) => (
-                  <button key={i} className={`gallery-dot${i === activeImg ? ' active' : ''}`} onClick={() => setActiveImg(i)}></button>
+                {images.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={`gallery-dot${index === activeImg ? " active" : ""}`}
+                    onClick={() => setActiveImg(index)}
+                  ></button>
                 ))}
               </div>
-            </div>
+            )}
+          </div>
+
+          {images.length > 1 && (
             <div className="gallery-thumbs">
-              {IMAGES.map((src, i) => (
-                <div key={i} className={`gallery-thumb${i === activeImg ? ' active' : ''}`} onClick={() => setActiveImg(i)}>
-                  <div className="gallery-thumb-16-9"><img src={src.replace('w=1200', 'w=300')} alt={`View ${i + 1}`} /></div>
+              {images.map((src, index) => (
+                <div
+                  key={src}
+                  className={`gallery-thumb${index === activeImg ? " active" : ""}`}
+                  onClick={() => setActiveImg(index)}
+                >
+                  <div className="gallery-thumb-16-9">
+                    <img src={src} alt={`${listing.title} view ${index + 1}`} />
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* TWO-COLUMN */}
-          <div className="details-body">
-            {/* LEFT */}
-            <div className="details-left">
-              <div className="details-title-row">
-                <div>
-                  <h1 className="details-title">Private Garage — Capitol Hill</h1>
-                  <div className="details-meta">
-                    <span><i className="bi bi-geo-alt-fill"></i> 1421 10th Ave, Seattle, WA 98122</span>
-                    <span className="details-meta-dot">·</span>
-                    <span className="listing-tag" style={{ display: 'inline-block' }}>Garage</span>
-                  </div>
-                </div>
-                <div className="details-rating-badge">
-                  <i className="bi bi-star-fill"></i>
-                  <span>4.9</span>
-                  <small>(38 reviews)</small>
-                </div>
-              </div>
-
-              <hr className="details-divider" />
-
-              <div className="details-section">
-                <h2 className="details-section-title">About this space</h2>
-                <p className="details-description">
-                  A private, fully covered garage located just two blocks from the Capitol Hill light rail station. Perfect for daily commuters and visitors. The space fits standard and mid-size SUVs comfortably. Access via keypad — code sent upon booking confirmation. Security cameras monitored 24/7.
-                </p>
-                <p className="details-description">
-                  EV charging (Level 2, J1772) is available at no extra cost. Garage door height is 2.1 m — please check clearance if you drive a tall vehicle.
-                </p>
-              </div>
-
-              <hr className="details-divider" />
-
-              <div className="details-section">
-                <h2 className="details-section-title">Amenities</h2>
-                <div className="details-amenities">
-                  {AMENITIES.map(a => (
-                    <div className="amenity-item" key={a.label}>
-                      <i className={`bi ${a.icon}`}></i>
-                      <span>{a.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <hr className="details-divider" />
-
-              <div className="details-section">
-                <h2 className="details-section-title">Location</h2>
-                <p className="details-description">Exact address provided after booking confirmation.</p>
-                <div className="details-map" id="detailMap" style={{ background: 'var(--nexa-dark-card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: 'var(--nexa-gray-400)' }}><i className="bi bi-map me-2"></i>Map placeholder</span>
-                </div>
-              </div>
-
-              <hr className="details-divider" />
-
-              <div className="details-section">
-                <h2 className="details-section-title">
-                  Reviews
-                  <span className="details-review-score">
-                    <i className="bi bi-star-fill"></i> 4.9 &nbsp;·&nbsp; 38 reviews
+        <div className="details-body">
+          <div className="details-left">
+            <div className="details-title-row">
+              <div>
+                <h1 className="details-title">{listing.title}</h1>
+                <div className="details-meta">
+                  <span>
+                    <i className="bi bi-geo-alt-fill"></i> {formatAddress(listing.location)}
                   </span>
-                </h2>
-                <div className="details-reviews">
-                  {REVIEWS.map(r => (
-                    <div className="review-card" key={r.name}>
-                      <div className="review-header">
-                        <img src={r.img} alt={r.name} className="review-avatar" />
-                        <div className="review-author-info">
-                          <span className="review-name">{r.name}</span>
-                          <span className="review-date">{r.date}</span>
-                        </div>
-                        <div className="review-stars">
-                          {[1,2,3,4,5].map(s => (
-                            <i key={s} className={`bi ${s <= Math.floor(r.stars) ? 'bi-star-fill' : r.stars % 1 !== 0 && s === Math.ceil(r.stars) ? 'bi-star-half' : 'bi-star'}`}></i>
-                          ))}
-                        </div>
+                  <span className="details-meta-dot">·</span>
+                  <span className="listing-tag" style={{ display: "inline-block" }}>
+                    {formatParkingType(listing.parkingType)}
+                  </span>
+                </div>
+              </div>
+              <div className="details-rating-badge">
+                <i className="bi bi-star-fill"></i>
+                <span>
+                  {Number.isFinite(Number(listing.ratingAverage))
+                    ? Number(listing.ratingAverage).toFixed(1)
+                    : "0.0"}
+                </span>
+                <small>({Number(listing.reviewCount) || 0} reviews)</small>
+              </div>
+            </div>
+
+            <hr className="details-divider" />
+
+            <div className="details-section">
+              <h2 className="details-section-title">About this space</h2>
+              <p className="details-description">
+                {listing.description || "No description was provided for this listing."}
+              </p>
+            </div>
+
+            <hr className="details-divider" />
+
+            <div className="details-section">
+              <h2 className="details-section-title">Space details</h2>
+              <div className="details-amenities">
+                <div className="amenity-item">
+                  <i className="bi bi-car-front"></i>
+                  <span>{formatVehicleSize(listing.maxVehicleSize)}</span>
+                </div>
+                <div className="amenity-item">
+                  <i className="bi bi-calendar2-week"></i>
+                  <span>Min. {listing.minimumBookingDays || 1} day booking</span>
+                </div>
+                <div className="amenity-item">
+                  <i className="bi bi-check-circle"></i>
+                  <span>{listing.isVerified ? "Verified" : "Pending verification"}</span>
+                </div>
+                {listing.isPublished === false && (
+                  <div className="amenity-item">
+                    <i className="bi bi-binoculars"></i>
+                    <span>{listing.isPublished ? "Published" : "Draft"}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <hr className="details-divider" />
+
+            <div className="details-section">
+              <h2 className="details-section-title">Amenities</h2>
+              {amenities.length > 0 ? (
+                <div className="details-amenities">
+                  {amenities.map((amenity) => (
+                    <div className="amenity-item" key={amenity}>
+                      <i
+                        className={`bi ${AMENITY_ICON_MAP[amenity] || "bi-check-circle-fill"}`}
+                      ></i>
+                      <span>{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="details-description">No amenities listed yet.</p>
+              )}
+            </div>
+
+            <hr className="details-divider" />
+
+            <div className="details-section">
+              <h2 className="details-section-title">Availability</h2>
+              <div
+                className="details-amenities"
+                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(92px, 1fr))" }}
+              >
+                {availableDays.length > 0 ? (
+                  availableDays.map((day) => (
+                    <div className="amenity-item" key={day}>
+                      <i className="bi bi-calendar-check-fill"></i>
+                      <span>{DAY_LABELS[day] || day}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="details-description">No weekday restrictions specified.</p>
+                )}
+              </div>
+            </div>
+
+            <hr className="details-divider" />
+
+            <div className="details-section">
+              <h2 className="details-section-title">Availability Calendar</h2>
+              <div className="avail-calendar">
+                <div className="avail-cal-header">
+                  <button
+                    type="button"
+                    className="avail-cal-nav"
+                    onClick={goToPreviousMonth}
+                    aria-label="Previous month"
+                  >
+                    <i className="bi bi-chevron-left"></i>
+                  </button>
+                  <div className="avail-cal-month">{getMonthLabel(calendarMonth)}</div>
+                  <button
+                    type="button"
+                    className="avail-cal-nav"
+                    onClick={goToNextMonth}
+                    aria-label="Next month"
+                  >
+                    <i className="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+
+                {calendarLoading ? (
+                  <div className="text-center py-4" style={{ color: "var(--nexa-gray-400)" }}>
+                    Loading availability...
+                  </div>
+                ) : calendarError ? (
+                  <div className="alert alert-warning mb-0" role="alert">
+                    {calendarError}
+                  </div>
+                ) : (
+                  <>
+                    <div className="avail-cal-weekdays">
+                      {WEEKDAY_LABELS.map((weekday) => (
+                        <span key={weekday}>{weekday}</span>
+                      ))}
+                    </div>
+                    <div className="avail-cal-grid">
+                      {calendarCells.map((cell) => {
+                        if (cell.type === "empty") {
+                          return <div key={cell.key} className="cal-cell cal-empty"></div>;
+                        }
+
+                        const cellClasses = ["cal-cell"];
+
+                        if (cell.isBooked) {
+                          cellClasses.push("cal-booked");
+                        } else if (cell.dateKey === todayKey) {
+                          cellClasses.push("cal-selected");
+                        } else if (cell.isPast) {
+                          cellClasses.push("cal-past");
+                        } else {
+                          cellClasses.push("cal-free");
+                        }
+
+                        return (
+                          <div key={cell.key} className={cellClasses.join(" ")}>
+                            {cell.day}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="avail-cal-legend">
+                      <div className="avail-legend-item">
+                        <span className="avail-legend-dot avail-dot-free"></span>
+                        <span>Available</span>
                       </div>
-                      <p className="review-text">{r.text}</p>
+                      <div className="avail-legend-item">
+                        <span className="avail-legend-dot avail-dot-booked"></span>
+                        <span>Booked</span>
+                      </div>
+                      <div className="avail-legend-item">
+                        <span className="avail-legend-dot avail-dot-selected"></span>
+                        <span>Today</span>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* RIGHT */}
-            <div className="details-right">
-              <div className="booking-card">
-                <div className="booking-card-price">$5 <span>/ day</span></div>
-                <div className="booking-card-rating">
-                  <i className="bi bi-star-fill"></i> 4.9
-                  <span className="booking-card-reviews">(38 reviews)</span>
-                </div>
-                <div className="booking-dates">
-                  <div className="booking-date-field">
-                    <label>Check-in</label>
-                    <input type="date" className="form-control" />
-                  </div>
-                  <div className="booking-date-sep"><i className="bi bi-arrow-right"></i></div>
-                  <div className="booking-date-field">
-                    <label>Check-out</label>
-                    <input type="date" className="form-control" />
-                  </div>
-                </div>
-                <button className="btn btn-nexa w-100 booking-btn" onClick={() => navigate('/booking')}>
-                  <i className="bi bi-calendar-check me-2"></i>Reserve Now
-                </button>
-                <p className="booking-note">You won't be charged yet</p>
+            <div className="details-section">
+              <h2 className="details-section-title">Location</h2>
+              <p className="details-description">{formatAddress(listing.location)}</p>
+              <p className="details-description" style={{ marginTop: "0.5rem" }}>
+                Coordinates:{" "}
+                {listing.location?.latitude?.toFixed?.(6) ?? listing.location?.latitude},{" "}
+                {listing.location?.longitude?.toFixed?.(6) ?? listing.location?.longitude}
+              </p>
+              <div
+                className="details-map"
+                id="detailMap"
+                style={{
+                  background: "var(--nexa-dark-card)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
+                <span style={{ color: "var(--nexa-gray-400)" }}>
+                  <i className="bi bi-map me-2"></i>Map preview unavailable without a map provider
+                </span>
+                {mapUrl && (
+                  <a
+                    href={mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-nexa-outline btn-nexa-sm"
+                  >
+                    Open in Google Maps
+                  </a>
+                )}
               </div>
+            </div>
 
-              <div className="host-card">
-                <div className="host-card-header">
-                  <img src="https://i.pravatar.cc/100?img=33" alt="Host" className="host-avatar" />
-                  <div className="host-info">
-                    <span className="host-name">Daniel R.</span>
-                    <span className="host-since">Host since 2023</span>
-                    <div className="host-badges">
-                      <span className="host-badge"><i className="bi bi-patch-check-fill"></i> Verified</span>
-                      <span className="host-badge"><i className="bi bi-star-fill"></i> Top Host</span>
-                    </div>
+            <hr className="details-divider" />
+
+            <div className="details-section">
+              <h2 className="details-section-title">
+                Reviews
+                <span className="details-review-score">
+                  <i className="bi bi-star-fill"></i>{" "}
+                  {Number.isFinite(Number(listing.ratingAverage))
+                    ? Number(listing.ratingAverage).toFixed(1)
+                    : "0.0"}{" "}
+                  &nbsp;·&nbsp; {Number(listing.reviewCount) || 0} reviews
+                </span>
+              </h2>
+              {Number(listing.reviewCount) > 0 ? (
+                <p className="details-description">
+                  Detailed review comments are not loaded yet, but this listing has an average
+                  rating above.
+                </p>
+              ) : (
+                <p className="details-description">
+                  No reviews yet. Be the first to book this space.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="details-right">
+            <div className="booking-card">
+              <div className="booking-card-price">
+                $
+                {Number.isFinite(Number(listing.dailyRate))
+                  ? Number(listing.dailyRate).toFixed(2)
+                  : "0.00"}{" "}
+                <span>/ day</span>
+              </div>
+              <div className="booking-card-rating">
+                <i className="bi bi-star-fill"></i>{" "}
+                {Number.isFinite(Number(listing.ratingAverage))
+                  ? Number(listing.ratingAverage).toFixed(1)
+                  : "0.0"}
+                <span className="booking-card-reviews">
+                  ({Number(listing.reviewCount) || 0} reviews)
+                </span>
+              </div>
+              <div className="booking-dates">
+                <div className="booking-date-field">
+                  <label>Check-in</label>
+                  <input type="date" className="form-control" />
+                </div>
+                <div className="booking-date-sep">
+                  <i className="bi bi-arrow-right"></i>
+                </div>
+                <div className="booking-date-field">
+                  <label>Check-out</label>
+                  <input type="date" className="form-control" />
+                </div>
+              </div>
+              <button
+                className="btn btn-nexa w-100 booking-btn"
+                onClick={() => navigate("/booking")}
+              >
+                <i className="bi bi-calendar-check me-2"></i>Reserve Now
+              </button>
+              <p className="booking-note">You won't be charged yet</p>
+            </div>
+
+            <div className="host-card">
+              <div className="host-card-header">
+                <div
+                  className="host-avatar d-flex align-items-center justify-content-center"
+                  style={{
+                    background: "rgba(108,92,231,0.15)",
+                    color: "var(--nexa-white)",
+                    fontWeight: 700,
+                  }}
+                >
+                  {getInitials(hostName)}
+                </div>
+                <div className="host-info">
+                  <span className="host-name">{hostName}</span>
+                  <span className="host-since">Listing host</span>
+                  <div className="host-badges">
+                    <span className="host-badge">
+                      <i className="bi bi-patch-check-fill"></i> Verified
+                    </span>
                   </div>
                 </div>
-                <div className="host-stats">
-                  <div className="host-stat"><span className="host-stat-value">38</span><span className="host-stat-label">Reviews</span></div>
-                  <div className="host-stat"><span className="host-stat-value">4.9</span><span className="host-stat-label">Rating</span></div>
-                  <div className="host-stat"><span className="host-stat-value">&lt; 1hr</span><span className="host-stat-label">Response</span></div>
-                </div>
-                <p className="host-bio">Hi! I'm Daniel, a Capitol Hill local. I have two covered garage spots available and love helping commuters find affordable, secure parking.</p>
-                <button className="btn btn-nexa-outline w-100 chat-btn" onClick={() => setShowChat(true)}>
-                  <i className="bi bi-chat-dots-fill me-2"></i>Message Host
-                </button>
               </div>
+              <div className="host-stats">
+                <div className="host-stat">
+                  <span className="host-stat-value">{Number(listing.reviewCount) || 0}</span>
+                  <span className="host-stat-label">Reviews</span>
+                </div>
+                <div className="host-stat">
+                  <span className="host-stat-value">
+                    {Number.isFinite(Number(listing.ratingAverage))
+                      ? Number(listing.ratingAverage).toFixed(1)
+                      : "0.0"}
+                  </span>
+                  <span className="host-stat-label">Rating</span>
+                </div>
+                <div className="host-stat">
+                  <span className="host-stat-value">—</span>
+                  <span className="host-stat-label">Response</span>
+                </div>
+              </div>
+              <p className="host-bio">
+                Hosted through NEXA. Contact the host after booking for any access instructions.
+              </p>
+              <button
+                className="btn btn-nexa-outline w-100 chat-btn"
+                onClick={() => navigate("/messages")}
+              >
+                <i className="bi bi-chat-dots-fill me-2"></i>Message Host
+              </button>
             </div>
           </div>
         </div>
-      </main>
-
-      {/* CHAT MODAL */}
-      {showChat && (
-        <div className="modal fade show d-block" tabIndex="-1" style={{ background: 'rgba(0,0,0,0.6)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content chat-modal-content">
-              <div className="modal-header chat-modal-header">
-                <div className="chat-modal-host">
-                  <img src="https://i.pravatar.cc/100?img=33" alt="Host" className="chat-modal-avatar" />
-                  <div>
-                    <div className="chat-modal-name">Daniel R.</div>
-                    <div className="chat-modal-status"><span className="chat-online-dot"></span> Usually responds in &lt; 1 hr</div>
-                  </div>
-                </div>
-                <button type="button" className="btn-close btn-close-white" onClick={() => setShowChat(false)}></button>
-              </div>
-              <div className="modal-body chat-modal-body">
-                <div className="chat-messages">
-                  {messages.map((m, i) => (
-                    <div key={i} className={`chat-bubble chat-bubble--${m.from === 'me' ? 'me' : 'host'}`}>
-                      {m.from === 'host' && <img src="https://i.pravatar.cc/100?img=33" alt="Host" className="chat-bubble-avatar" />}
-                      <div className="chat-bubble-text">{m.text}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="modal-footer chat-modal-footer">
-                <form className="chat-input-row w-100 d-flex gap-2" onSubmit={sendMsg}>
-                  <input type="text" className="form-control chat-input" placeholder="Type a message…" value={chatMsg} onChange={e => setChatMsg(e.target.value)} />
-                  <button type="submit" className="btn btn-nexa chat-send-btn"><i className="bi bi-send-fill"></i></button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+      </div>
+    </main>
   );
 }
