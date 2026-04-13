@@ -55,12 +55,22 @@ export default function Login() {
         { withCredentials: true },
       );
 
+      console.log("login response:", response.data);
+
       // Transitional support: backend still returns a JWT for non-cookie clients.
       if (response.data?.token) {
         localStorage.setItem("token", response.data.token);
       }
+
       window.dispatchEvent(new Event('auth-changed'));
-      checkSession(true);
+
+      const roleType = response.data?.user?.roleType;
+      if (roleType === "Host") {
+        navigate("/host/dashboard", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+      window.document.location.reload();
     } catch (error) {
       const backendMessage =
         error.response?.data?.message ||

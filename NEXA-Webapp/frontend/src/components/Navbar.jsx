@@ -54,13 +54,6 @@ const active = (path) => location.pathname === path ? ' active' : '';
 
   useEffect(() => {
     checkSession();
-
-    const onAuthChanged = () => {
-      checkSession();
-    };
-
-    window.addEventListener('auth-changed', onAuthChanged);
-    return () => window.removeEventListener('auth-changed', onAuthChanged);
   }, [location.pathname]);
 
   useEffect(() => {
