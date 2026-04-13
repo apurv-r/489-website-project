@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -7,11 +7,12 @@ export default function Footer() {
         <div className="row g-5">
           <div className="col-lg-4 col-md-6">
             <div className="footer-brand">
-              <span className="brand-n">N</span><span className="brand-rest">EXA</span>
+              <span className="brand-n">N</span>
+              <span className="brand-rest">EXA</span>
             </div>
             <p className="footer-desc">
-              The marketplace that connects drivers with affordable, local
-              parking spaces — and helps homeowners earn from unused spots.
+              The marketplace that connects drivers with affordable, local parking spaces — and
+              helps homeowners earn from unused spots.
             </p>
             <div className="footer-socials">
               <a href="#" className="footer-social-link" aria-label="Twitter/X">
