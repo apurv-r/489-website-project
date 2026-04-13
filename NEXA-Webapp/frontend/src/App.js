@@ -48,7 +48,6 @@ export default function App() {
 
   const [user, setUser] = useState({});
 
-  // consider moving this to App.js and passing user as prop to avoid multiple calls to /me endpoint across different pages
   const fetchUser = async () => {
 
     await axios.get(`${API_BASE_URL}/api/auth/me`, {

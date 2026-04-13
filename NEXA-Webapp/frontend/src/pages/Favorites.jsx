@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
 
-const INITIAL_FAVS = [
+const FAVS = [
   { id: 1, img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80', badge: 'Garage', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', rating: '4.9', price: '$18' },
   { id: 2, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=500&q=80', badge: 'Covered', type: 'Covered Spot', name: 'Covered Spot · Pioneer Square', addr: '200 2nd Ave S, Seattle, WA', rating: '4.8', price: '$22' },
   { id: 3, img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=500&q=80', badge: 'Open Lot', type: 'Open Lot', name: 'Open Lot · Space Needle', addr: '201 4th Ave N, Seattle, WA', rating: '4.6', price: '$10' },
@@ -12,7 +12,7 @@ const INITIAL_FAVS = [
 
 export default function Favorites(user) {
   const navigate = useNavigate();
-  const [favs, setFavs] = useState(INITIAL_FAVS);
+  const [favs, setFavs] = useState(FAVS);
 
   function remove(id) {
     setFavs(f => f.filter(x => x.id !== id));
