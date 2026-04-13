@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 
 export default function Home() {
@@ -195,36 +196,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="nexa-footer">
-        <div className="container">
-          <div className="footer-grid">
-            <div>
-              <div className="footer-brand">
-                <span className="brand-n">N</span><span className="brand-rest">EXA</span>
-              </div>
-              <p className="footer-tagline">The smarter way to park.</p>
-            </div>
-            <div>
-              <h6 className="footer-heading">Explore</h6>
-              <ul className="footer-links">
-                <li><button className="btn btn-link p-0 text-start footer-link" onClick={() => navigate('/search')}>Search Listings</button></li>
-                <li><button className="btn btn-link p-0 text-start footer-link" onClick={() => navigate('/register')}>List Your Space</button></li>
-              </ul>
-            </div>
-            <div>
-              <h6 className="footer-heading">Account</h6>
-              <ul className="footer-links">
-                <li><button className="btn btn-link p-0 text-start footer-link" onClick={() => navigate('/login')}>Log In</button></li>
-                <li><button className="btn btn-link p-0 text-start footer-link" onClick={() => navigate('/register')}>Sign Up</button></li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>© 2025 NEXA. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }
