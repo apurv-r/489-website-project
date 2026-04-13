@@ -22,8 +22,6 @@ const active = (path) => location.pathname === path ? ' active' : '';
     }
   }
 
-
-
   async function checkSession() {
     axios.get(`${API_BASE_URL}/api/auth/me`, {
       withCredentials: true,

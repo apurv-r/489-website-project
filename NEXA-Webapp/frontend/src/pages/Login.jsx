@@ -10,30 +10,30 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  async function checkSession(isMounted) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+        withCredentials: true,
+      });
+
+      if (isMounted && response.status === 200) {
+        if (response.data?.user.roleType === "Renter") {
+          navigate("/dashboard", { replace: true });
+        } else if (response.data?.user.roleType === "Host") {
+          navigate("/host/dashboard", { replace: true });
+        }
+      }
+    } catch (error) {
+      if (!isMounted) {
+        return;
+      }
+    }
+  }
+
   useEffect(() => {
     let isMounted = true;
 
-    async function checkSession() {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
-          withCredentials: true,
-        });
-
-        if (isMounted && response.status === 200) {
-          if (response.data?.user.roleType === "Renter") {
-            navigate("/dashboard", { replace: true });
-          } else if (response.data?.user.roleType === "Host") {
-            navigate("/host/dashboard", { replace: true });
-          }
-        }
-      } catch (error) {
-        if (!isMounted) {
-          return;
-        }
-      }
-    }
-
-    checkSession();
+    checkSession(isMounted);
 
     return () => {
       isMounted = false;
@@ -60,7 +60,7 @@ export default function Login() {
         localStorage.setItem("token", response.data.token);
       }
       window.dispatchEvent(new Event('auth-changed'));
-      navigate("/dashboard");
+      checkSession(true);
     } catch (error) {
       const backendMessage =
         error.response?.data?.message ||

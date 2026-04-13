@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
+import axios from 'axios';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const BOOKINGS = [
   { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', ref: '#NXA-20925', status: 'active' },
@@ -16,6 +18,25 @@ const TABS = ['all', 'active', 'upcoming', 'completed', 'cancelled'];
 export default function MyBookings(user) {
   const [filter, setFilter] = useState('all');
   const shown = filter === 'all' ? BOOKINGS : BOOKINGS.filter(b => b.status === filter);
+
+  async function fetchBookings() {
+    await axios.get(`${API_BASE_URL}/api/bookings/me`, {
+      withCredentials: true,
+    })
+    .then(response => {
+      if (response.status === 200) {
+        BOOKINGS.push(...response.data);
+        console.log("successfully fetched bookings data for my-bookings:", response.data);
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
 
   return (
     <div className="dash-page">
