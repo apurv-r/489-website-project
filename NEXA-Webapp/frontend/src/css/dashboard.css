@@ -1664,7 +1664,7 @@ body.dash-page,
   color: #00d97e;
   border: 1px solid rgba(0, 217, 126, 0.3);
 }
-.lsr-badge-paused {
+.lsr-badge-pending {
   background: rgba(255, 193, 7, 0.15);
   color: #ffc107;
   border: 1px solid rgba(255, 193, 7, 0.3);
@@ -1898,8 +1898,18 @@ body.dash-page,
   flex-direction: column;
   gap: 0.4rem;
 }
+.lsr-form-group-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
 .lsr-form-group--full {
   grid-column: 1 / -1;
+}
+.lsr-form-row-quarters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 .lsr-label {
   font-size: 0.8rem;
@@ -1919,6 +1929,20 @@ body.dash-page,
   transition: border-color 0.2s;
   appearance: none;
 }
+
+select.lsr-input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23a8a8c7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 0.9rem;
+  padding-right: 2.4rem;
+  cursor: pointer;
+}
+
+select.lsr-input::-ms-expand {
+  display: none;
+}
+
 .lsr-input:focus {
   border-color: var(--nexa-primary);
 }
@@ -3116,6 +3140,9 @@ body.dash-page,
 }
 @media (max-width: 600px) {
   .lsr-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .lsr-form-row-quarters {
     grid-template-columns: 1fr;
   }
   .lsr-listings-grid {

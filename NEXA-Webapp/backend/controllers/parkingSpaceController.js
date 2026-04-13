@@ -29,7 +29,27 @@ async function getPublic(req, res, next) {
   }
 }
 
+async function listMine(req, res, next) {
+  try {
+    const isAdmin = req.user?.roleType === "Admin";
+    const filter = isAdmin
+      ? req.query.host
+        ? { host: req.query.host }
+        : {}
+      : { host: req.user._id };
+
+    const spaces = await ParkingSpace.find(filter)
+      .populate("host", "firstName lastName")
+      .sort({ createdAt: -1 });
+
+    res.json(spaces);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   listPublic,
   getPublic,
+  listMine,
 };
