@@ -114,10 +114,7 @@ export default function Search() {
           price: Number.isFinite(Number(listing.dailyRate))
             ? `$${Number(listing.dailyRate).toFixed(2)}`
             : "$0.00",
-          rating:
-            listing.reviewCount > 0
-              ? Number(listing.ratingAverage).toFixed(1)
-              : "—",
+          rating: listing.reviewCount > 0 ? Number(listing.ratingAverage).toFixed(1) : "—",
         };
       }),
     [listings],
@@ -148,18 +145,12 @@ export default function Search() {
               <div className="search-date-range">
                 <div className="position-relative">
                   <i className="bi bi-calendar3 search-filter-icon"></i>
-                  <input
-                    type="date"
-                    className="form-control search-filter-date"
-                  />
+                  <input type="date" className="form-control search-filter-date" />
                 </div>
                 <span className="date-separator">→</span>
                 <div className="position-relative">
                   <i className="bi bi-calendar3 search-filter-icon"></i>
-                  <input
-                    type="date"
-                    className="form-control search-filter-date"
-                  />
+                  <input type="date" className="form-control search-filter-date" />
                 </div>
               </div>
             </div>
@@ -197,18 +188,15 @@ export default function Search() {
               </div>
             </div>
             <div className="search-result-count">
-              <span className="text-gradient fw-bold">{filtered.length}</span>{" "}
-              parking spots found near <strong>Seattle, WA</strong>
+              <span className="text-gradient fw-bold">{filtered.length}</span> parking spots found
+              near <strong>Seattle, WA</strong>
             </div>
           </div>
 
           {/* Results */}
           <div className="search-results" id="searchResults">
             {loading ? (
-              <div
-                className="text-center py-5"
-                style={{ color: "var(--nexa-gray-400)" }}
-              >
+              <div className="text-center py-5" style={{ color: "var(--nexa-gray-400)" }}>
                 Loading listings...
               </div>
             ) : errorMessage ? (
@@ -216,15 +204,12 @@ export default function Search() {
                 {errorMessage}
               </div>
             ) : filtered.length === 0 ? (
-              <div
-                className="text-center py-5"
-                style={{ color: "var(--nexa-gray-400)" }}
-              >
+              <div className="text-center py-5" style={{ color: "var(--nexa-gray-400)" }}>
                 No parking listings found.
               </div>
             ) : (
               filtered.map((r) => (
-                <Link to="/details" className="search-result-card" key={r.id}>
+                <Link to={`/details?id=${r.id}`} className="search-result-card" key={r.id}>
                   <div className="search-result-img">
                     {r.img ? (
                       <img src={r.img} alt={r.title} />
@@ -239,10 +224,7 @@ export default function Search() {
                         No image
                       </div>
                     )}
-                    <button
-                      className="listing-save"
-                      onClick={(e) => e.preventDefault()}
-                    >
+                    <button className="listing-save" onClick={(e) => e.preventDefault()}>
                       <i className="bi bi-heart"></i>
                     </button>
                   </div>
@@ -286,10 +268,7 @@ export default function Search() {
             justifyContent: "center",
           }}
         >
-          <div
-            className="text-center"
-            style={{ color: "var(--nexa-gray-400)" }}
-          >
+          <div className="text-center" style={{ color: "var(--nexa-gray-400)" }}>
             <i className="bi bi-map fs-1 mb-2 d-block"></i>
             <p>Interactive map — integrate Leaflet here</p>
           </div>

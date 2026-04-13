@@ -1,6 +1,7 @@
 const express = require("express");
 const requireAuth = require("../middleware/requireAuth");
 const parkingSpaceController = require("../controllers/parkingSpaceController");
+const bookingController = require("../controllers/bookingController");
 
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
@@ -23,11 +24,12 @@ publicRouter.get("/parking-spaces/:id", (req, res, next) => {
 
   return parkingSpaceController.getPublic(req, res, next);
 });
+publicRouter.get("/bookings/future/:parkingSpaceId", bookingController.getFutureBookingsFor);
 publicRouter.use("/test", testRouter);
 
 // routes require auth
 privateRouter.use("/auth", authRouter);
-privateRouter.use(requireAuth);
+privateRouter.use(requireAuth); // all routes below this line require authentication
 privateRouter.use("/users", usersRouter);
 privateRouter.use("/uploads", uploadsRouter);
 privateRouter.use("/parking-spaces", parkingSpacesRouter);

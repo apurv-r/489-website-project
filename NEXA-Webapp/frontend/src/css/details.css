@@ -318,6 +318,7 @@
   font-size: 0.85rem;
   color: var(--nexa-gray-200);
   font-weight: 500;
+  line-height: 1.3rem;
 }
 
 .amenity-item i {
