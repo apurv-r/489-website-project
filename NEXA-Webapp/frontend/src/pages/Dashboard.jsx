@@ -2,31 +2,44 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+const BOOKINGS = [
+  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', ref: '#NXA-20925', status: 'active' },
+  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=120&q=80', name: 'Private Garage · Capitol Hill', dates: 'Jun 9 – Jun 12, 2025', price: '$15.75', status: 'Active', cls: 'status-active' },
+  { img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&q=80', name: 'Covered Driveway · Fremont', dates: 'May 1 – May 4, 2025', price: '$21.00', status: 'Completed', cls: 'status-completed' },
+  { img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=120&q=80', name: 'Outdoor Lot · Belltown', dates: 'Apr 14 – Apr 15, 2025', price: '$10.50', status: 'Completed', cls: 'status-completed' },
+];
 
 export default function Dashboard(user) {
 
-  // const [user, setUser] = useState({});
-  // const [isLoading, setIsLoading] = useState(true);
+  const [bookingStats, setBookingStats] = useState({ active: 0, past: 0 });
 
-  // // consider moving this to App.js and passing user as prop to avoid multiple calls to /me endpoint across different pages
-  // const fetchUser = async () => {
+  async function fetchBookings() {
+    await axios.get(`${API_BASE_URL}/api/bookings/me`, {
+      withCredentials: true,
+    })
+    .then(response => {
+      if (response.status === 200) {
+        BOOKINGS.push(...response.data);
+        console.log("successfully fetched bookings data for dashboard:", response.data);
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
 
-  //   await axios.get(`${API_BASE_URL}/api/auth/me`, {
-  //     withCredentials: true,
-  //   })
-  //   .then( async response => {
-  //     const user = response.data.user;
-  //     // setUser(user);
-  //     setIsLoading(false);
-  //     console.log("successfully fetched user data for dashboard:", user);
-  //   })
-  //   .catch(error => {
-  //     console.log(error);
-  //   });
-  // }
+  function calculateBookingStats() {
+    const active = BOOKINGS.filter(b => b.status === 'active').length;
+    const past = BOOKINGS.filter(b => b.status === 'completed').length;
+    setBookingStats({ active, past });
+  }
 
   useEffect(() => {
+    fetchBookings();
+    calculateBookingStats();
   },[]);
 
   return (
@@ -48,7 +61,7 @@ export default function Dashboard(user) {
                 <i className="bi bi-calendar2-check-fill"></i>
               </div>
               <div className="dash-stat-body">
-                <div className="dash-stat-value">2</div> {/* PROP NEEDED HERE */}
+                <div className="dash-stat-value">{bookingStats.active}</div>
                 <div className="dash-stat-label">Active Bookings</div>
               </div>
             </div>
@@ -57,7 +70,7 @@ export default function Dashboard(user) {
                 <i className="bi bi-clock-history"></i>
               </div>
               <div className="dash-stat-body">
-                <div className="dash-stat-value">1</div> {/* PROP NEEDED HERE */}
+                <div className="dash-stat-value">{bookingStats.past}</div> 
                 <div className="dash-stat-label">Past Bookings</div>
               </div>
             </div>
@@ -68,15 +81,6 @@ export default function Dashboard(user) {
               <div className="dash-stat-body">
                 <div className="dash-stat-value">2</div> {/* PROP NEEDED HERE */}
                 <div className="dash-stat-label">Unread Messages</div>
-              </div>
-            </div>
-            <div className="dash-stat-card">
-              <div className="dash-stat-icon" style={{ background: 'rgba(241,196,15,0.12)', color: '#f1c40f' }}>
-                <i className="bi bi-star-fill"></i>
-              </div>
-              <div className="dash-stat-body">
-                <div className="dash-stat-value">4.8</div> {/* PROP NEEDED HERE */}
-                <div className="dash-stat-label">Avg. Rating Given</div>
               </div>
             </div>
           </div>
@@ -90,11 +94,7 @@ export default function Dashboard(user) {
                 <Link to="/my-bookings" className="dash-card-link">View all</Link>
               </div>
               <div className="dash-booking-list">
-                {[
-                  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=120&q=80', name: 'Private Garage · Capitol Hill', dates: 'Jun 9 – Jun 12, 2025', price: '$15.75', status: 'Active', cls: 'status-active' },
-                  { img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&q=80', name: 'Covered Driveway · Fremont', dates: 'May 1 – May 4, 2025', price: '$21.00', status: 'Completed', cls: 'status-completed' },
-                  { img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=120&q=80', name: 'Outdoor Lot · Belltown', dates: 'Apr 14 – Apr 15, 2025', price: '$10.50', status: 'Completed', cls: 'status-completed' },
-                ].map((b, i) => (
+                {BOOKINGS.map((b, i) => (
                   <Link to="/booking-details" className="dash-booking-item" key={i}>
                     <img src={b.img} alt="" className="dash-booking-thumb" />
                     <div className="dash-booking-info">
