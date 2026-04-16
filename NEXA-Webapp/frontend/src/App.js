@@ -57,6 +57,7 @@ export default function App() {
       const user = response.data.user;
       setUser(user);
       console.log("successfully fetched user data for dashboard: ", user);
+      console.log("user id: ", user._id);
     })
     .catch(error => {
       console.log(error);
@@ -78,7 +79,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/details" element={<Details />} />
+        <Route path="/details" element={<Details {...user} />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/confirmation" element={<Confirmation />} />
 

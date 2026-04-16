@@ -10,7 +10,7 @@ const renterSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "ParkingSpace",
       },
-    ],
+    ]
   },
   {
     timestamps: true,
@@ -20,3 +20,4 @@ const renterSchema = new Schema(
 const Renter = User.discriminator("Renter", renterSchema);
 
 module.exports = Renter;
+

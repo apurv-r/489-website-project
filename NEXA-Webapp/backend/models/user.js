@@ -34,6 +34,14 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    messages: {
+      type: Map,
+      of: new Schema({
+        role: { type: String },
+        messageHistory: [{ type: String }],
+      }),
+      default: {},
+    },
   },
   {
     timestamps: true,

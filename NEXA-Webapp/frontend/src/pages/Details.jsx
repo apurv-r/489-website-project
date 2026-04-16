@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+import axios from 'axios';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const AMENITY_ICON_MAP = {
   "EV Charging": "bi-lightning-charge-fill",
@@ -153,7 +152,7 @@ function toMapUrl(location) {
   return `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
 }
 
-export default function Details() {
+export default function Details(user) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const listingId = searchParams.get("id");
@@ -305,6 +304,23 @@ export default function Details() {
 
   function goToNextMonth() {
     setCalendarMonth((current) => addMonths(current, 1));
+  }
+
+  async function createMessageThread() {
+    const host = listing.host;
+    console.log("listing host: ", host);
+    console.log("listing host id: ", host._id);
+    //                                                    senderId, recipientId
+    await axios.put(`${API_BASE_URL}/api/users/message/${user._id}/${host._id}`,
+    { text: `Hi ${host.firstName}, I'm interested in your parking space "${listing.title}". Is it still available?` },
+    { withCredentials: true })
+    .then(response => {
+      console.log("successfully sent message: ", response.data);
+      navigate("/messages");
+    })
+    .catch(error => {
+      console.log("error sending message: ", error);
+    });
   }
 
   if (loading) {
@@ -765,7 +781,7 @@ export default function Details() {
               </p>
               <button
                 className="btn btn-nexa-outline w-100 chat-btn"
-                onClick={() => navigate("/messages")}
+                onClick={createMessageThread}
               >
                 <i className="bi bi-chat-dots-fill me-2"></i>Message Host
               </button>
