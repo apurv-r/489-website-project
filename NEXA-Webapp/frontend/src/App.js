@@ -56,7 +56,7 @@ export default function App() {
     .then( async response => {
       const user = response.data.user;
       setUser(user);
-      console.log("successfully fetched user data for dashboard:", user);
+      console.log("successfully fetched user data for dashboard: ", user);
     })
     .catch(error => {
       console.log(error);
@@ -72,7 +72,7 @@ export default function App() {
       <header>
         <Navbar />
       </header>
-        <Routes>
+        <Routes onChange={fetchUser}>
           {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
