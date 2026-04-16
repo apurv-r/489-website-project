@@ -57,6 +57,9 @@ export default function LesseeSidebar(user) {
           <i className="bi bi-search"></i> Find Parking
         </Link>
         <div className="dash-nav-divider"></div>
+        <Link to="/settings" className={`dash-nav-link${active('/settings')}`}>
+          <i className="bi bi-gear-fill"></i> Settings
+        </Link>
         <Link to="/login" className="dash-nav-link dash-nav-logout" onClick={handleLogout}>
           <i className="bi bi-box-arrow-right"></i> Log Out
         </Link>

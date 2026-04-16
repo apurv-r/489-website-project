@@ -13,6 +13,7 @@ import MyBookings from './pages/MyBookings';
 import BookingDetails from './pages/BookingDetails';
 import Favorites from './pages/Favorites';
 import Messages from './pages/Messages';
+import Settings from './pages/Settings';
 
 // Host pages
 import HostDashboard from './pages/host/HostDashboard';
@@ -88,6 +89,7 @@ export default function App() {
         <Route path="/booking-details" element={<BookingDetails {...user} />} />
         <Route path="/favorites" element={<Favorites {...user} />} />
         <Route path="/messages" element={<Messages {...user} />} />
+        <Route path="/settings" element={<Settings />} />
 
         {/* Host */}
         <Route path="/host/dashboard" element={<HostDashboard />} />

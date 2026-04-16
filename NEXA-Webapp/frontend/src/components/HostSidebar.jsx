@@ -37,6 +37,9 @@ export default function HostSidebar() {
           <span className="dash-nav-badge">3</span>
         </Link>
         <div className="dash-nav-divider"></div>
+        <Link to="/settings" className={`dash-nav-link${active('/settings')}`}>
+          <i className="bi bi-gear-fill"></i> Settings
+        </Link>
         <Link to="/login" className="dash-nav-link dash-nav-logout">
           <i className="bi bi-box-arrow-right"></i> Log Out
         </Link>
