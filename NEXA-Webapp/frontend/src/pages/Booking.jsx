@@ -336,16 +336,16 @@ export default function Booking({ _id: userId }) {
   const bookingReviews = Number(listing?.reviewCount) || 0;
 
   const confirmationPayload = useMemo(() => {
-    const hostName = `${listing?.host?.firstName || ''} ${listing?.host?.lastName || ''}`.trim();
+    const hostName = `${listing?.host?.firstName || ""} ${listing?.host?.lastName || ""}`.trim();
     const fullAddress = [
       listing?.location?.address,
       listing?.location?.city,
       listing?.location?.state,
       listing?.location?.zipCode,
     ]
-      .map((part) => String(part || '').trim())
+      .map((part) => String(part || "").trim())
       .filter(Boolean)
-      .join(', ');
+      .join(", ");
 
     return {
       listingId,
@@ -354,8 +354,8 @@ export default function Booking({ _id: userId }) {
       imageUrl: bookingImage,
       rating: bookingRating,
       reviewCount: bookingReviews,
-      hostName: hostName || 'Host',
-      address: fullAddress || 'Address unavailable',
+      hostName: hostName || "Host",
+      address: fullAddress || "Address unavailable",
       checkIn: checkInParam,
       checkOut: checkOutParam,
       days: bookingDays,

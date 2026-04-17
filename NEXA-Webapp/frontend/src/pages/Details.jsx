@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import axios from 'axios';
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import axios from "axios";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const AMENITY_ICON_MAP = {
   "EV Charging": "bi-lightning-charge-fill",
@@ -574,7 +574,8 @@ export default function Details(user) {
   );
 
   const reserveButtonDisabled = !hasValidEndDate || sessionLoading || !isAuthenticated;
-  const reserveButtonLabel = !isAuthenticated && reserveButtonHovered ? "Log in to proceed" : "Reserve Now";
+  const reserveButtonLabel =
+    !isAuthenticated && reserveButtonHovered ? "Log in to proceed" : "Reserve Now";
 
   const displayCheckInLabel = selectedCheckInDate
     ? formatDateLabel(selectedCheckInDate)
@@ -777,16 +778,21 @@ export default function Details(user) {
     console.log("listing host: ", host);
     console.log("listing host id: ", host._id);
     //                                                    senderId, recipientId
-    await axios.put(`${API_BASE_URL}/api/users/message/${user._id}/${host._id}`,
-    { text: `Hi ${host.firstName}, I'm interested in your parking space "${listing.title}". Is it still available?` },
-    { withCredentials: true })
-    .then(response => {
-      console.log("successfully sent message: ", response.data);
-      navigate("/messages");
-    })
-    .catch(error => {
-      console.log("error sending message: ", error);
-    });
+    await axios
+      .put(
+        `${API_BASE_URL}/api/users/message/${user._id}/${host._id}`,
+        {
+          text: `Hi ${host.firstName}, I'm interested in your parking space "${listing.title}". Is it still available?`,
+        },
+        { withCredentials: true },
+      )
+      .then((response) => {
+        console.log("successfully sent message: ", response.data);
+        navigate("/messages");
+      })
+      .catch((error) => {
+        console.log("error sending message: ", error);
+      });
   }
 
   if (loading) {
@@ -1309,7 +1315,9 @@ export default function Details(user) {
                   onClick={handleReserveNow}
                   disabled={reserveButtonDisabled}
                 >
-                  <i className={`bi ${!isAuthenticated && reserveButtonHovered ? "bi-box-arrow-in-right" : "bi-calendar-check"} me-2`}></i>
+                  <i
+                    className={`bi ${!isAuthenticated && reserveButtonHovered ? "bi-box-arrow-in-right" : "bi-calendar-check"} me-2`}
+                  ></i>
                   {reserveButtonLabel}
                 </button>
               </div>
@@ -1358,10 +1366,7 @@ export default function Details(user) {
               <p className="host-bio">
                 Hosted through NEXA. Contact the host after booking for any access instructions.
               </p>
-              <button
-                className="btn btn-nexa-outline w-100 chat-btn"
-                onClick={createMessageThread}
-              >
+              <button className="btn btn-nexa-outline w-100 chat-btn" onClick={createMessageThread}>
                 <i className="bi bi-chat-dots-fill me-2"></i>Message Host
               </button>
             </div>
