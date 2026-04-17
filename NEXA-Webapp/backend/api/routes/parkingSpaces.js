@@ -12,6 +12,7 @@ router.get(
   requireRole("Host", "Admin"),
   parkingSpaceController.listMine,
 );
+router.get("/:id", parkingSpaceController.getListing);
 router.post("/", requireRole("Host", "Admin"), controller.create);
 router.put("/:id", requireRole("Host", "Admin"), controller.update);
 router.delete("/:id", requireRole("Host", "Admin"), controller.remove);

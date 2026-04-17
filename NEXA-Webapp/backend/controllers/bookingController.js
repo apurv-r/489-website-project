@@ -70,6 +70,37 @@ async function getBookingIfOwner(req, res, next) {
   }
 }
 
+async function requestParkingSpace(req, res, next) {
+  try {
+    const { parkingSpaceId, renterId } = req.params;
+    const { startDate, endDate, totalAmount } = req.body;
+
+    if (!startDate || !endDate || !totalAmount) {
+      return res.status(400).json({ message: "startDate, endDate, and totalAmount are required" });
+    }
+
+    const space = await ParkingSpace.findById(parkingSpaceId);
+    if (!space || !space.isPublished) {
+      return res.status(404).json({ message: "Parking space not found or unavailable" });
+    }
+
+    const booking = await Booking.create({
+      parkingSpace: parkingSpaceId,
+      renter: renterId,
+      host: space.host,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      totalAmount: Number(totalAmount),
+      status: "pending",
+      requestedAt: new Date(),
+    });
+
+    res.status(201).json(booking);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function updateBookingIfOwner(req, res, next) {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -127,6 +158,7 @@ module.exports = {
   createBooking,
   getMyBookings,
   getBookingIfOwner,
+  requestParkingSpace,
   updateBookingIfOwner,
   deleteBookingIfOwner,
 };

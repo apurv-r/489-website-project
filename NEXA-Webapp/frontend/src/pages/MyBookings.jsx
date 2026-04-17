@@ -6,10 +6,10 @@ import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const BOOKINGS = [
-  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', ref: '#NXA-20925', status: 'active' },
-  { img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=240&q=80', type: 'Covered Driveway', name: 'Covered Driveway · Fremont', addr: '3812 Fremont Ave N, Seattle, WA', dates: 'Jun 14 – Jun 18, 2025', duration: '4 days', total: '$21.00', ref: '#NXA-20931', status: 'active' },
-  { img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=240&q=80', type: 'Outdoor Lot', name: 'Outdoor Lot · South Lake Union', addr: '440 Terry Ave N, Seattle, WA', dates: 'Jul 1 – Jul 3, 2025', duration: '2 days', total: '$10.50', ref: '#NXA-20944', status: 'upcoming' },
-  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Covered Garage', name: 'Covered Garage · Eastlake', addr: '2200 Eastlake Ave E, Seattle, WA', dates: 'Apr 20 – Apr 22, 2025', duration: '2 days', total: '$18.00', ref: '#NXA-20881', status: 'completed' },
+  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', status: 'active' },
+  { img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=240&q=80', type: 'Covered Driveway', name: 'Covered Driveway · Fremont', addr: '3812 Fremont Ave N, Seattle, WA', dates: 'Jun 14 – Jun 18, 2025', duration: '4 days', total: '$21.00', status: 'active' },
+  { img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=240&q=80', type: 'Outdoor Lot', name: 'Outdoor Lot · South Lake Union', addr: '440 Terry Ave N, Seattle, WA', dates: 'Jul 1 – Jul 3, 2025', duration: '2 days', total: '$10.50', status: 'upcoming' },
+  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Covered Garage', name: 'Covered Garage · Eastlake', addr: '2200 Eastlake Ave E, Seattle, WA', dates: 'Apr 20 – Apr 22, 2025', duration: '2 days', total: '$18.00', status: 'completed' },
 ];
 
 const STATUS_CLASS = { active: 'status-active', upcoming: 'status-upcoming', completed: 'status-completed', cancelled: 'status-cancelled' };
@@ -17,7 +17,8 @@ const TABS = ['all', 'active', 'upcoming', 'completed', 'cancelled'];
 
 export default function MyBookings(user) {
   const [filter, setFilter] = useState('all');
-  const shown = filter === 'all' ? BOOKINGS : BOOKINGS.filter(b => b.status === filter);
+  const [bookings, setBookings] = useState(BOOKINGS);
+  const shown = filter === 'all' ? bookings : bookings.filter(b => b.status === filter);
 
   async function fetchBookings() {
     await axios.get(`${API_BASE_URL}/api/bookings/me`, {
@@ -25,7 +26,7 @@ export default function MyBookings(user) {
     })
     .then(response => {
       if (response.status === 200) {
-        BOOKINGS.push(...response.data);
+        setBookings(prev => [...prev, ...response.data]);
         console.log("successfully fetched bookings data for my-bookings:", response.data);
       }
     })
@@ -87,7 +88,6 @@ export default function MyBookings(user) {
                     <div className="bookings-meta-item"><i className="bi bi-calendar3"></i> {b.dates}</div>
                     <div className="bookings-meta-item"><i className="bi bi-moon-stars"></i> {b.duration}</div>
                     <div className="bookings-meta-item"><i className="bi bi-tag-fill"></i> {b.total} total</div>
-                    <div className="bookings-meta-item"><i className="bi bi-hash"></i> {b.ref}</div>
                   </div>
                 </div>
               </Link>

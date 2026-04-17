@@ -164,6 +164,9 @@ export default function Details(user) {
   const [futureBookings, setFutureBookings] = useState([]);
   const [activeImg, setActiveImg] = useState(0);
   const [calendarMonth, setCalendarMonth] = useState(() => startOfMonth(new Date()));
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -717,19 +720,31 @@ export default function Details(user) {
               <div className="booking-dates">
                 <div className="booking-date-field">
                   <label>Check-in</label>
-                  <input type="date" className="form-control" />
+                  <input type="date" name="startDate" className="form-control" value={startDate} onChange={e => {
+                    setStartDate(e.target.value);
+                    if (endDate && e.target.value) {
+                      const days = Math.ceil((new Date(endDate) - new Date(e.target.value)) / (1000 * 60 * 60 * 24));
+                      setTotalAmount(days > 0 ? days * (listing?.dailyRate || 0) : 0);
+                    }
+                  }} />
                 </div>
                 <div className="booking-date-sep">
                   <i className="bi bi-arrow-right"></i>
                 </div>
                 <div className="booking-date-field">
                   <label>Check-out</label>
-                  <input type="date" className="form-control" />
+                  <input type="date" name="endDate" className="form-control" value={endDate} onChange={e => {
+                    setEndDate(e.target.value);
+                    if (startDate && e.target.value) {
+                      const days = Math.ceil((new Date(e.target.value) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+                      setTotalAmount(days > 0 ? days * (listing?.dailyRate || 0) : 0);
+                    }
+                  }} />
                 </div>
               </div>
               <button
                 className="btn btn-nexa w-100 booking-btn"
-                onClick={() => navigate("/booking")}
+                onClick={() => navigate(`/booking?listingId=${listing._id}&startDate=${startDate}&endDate=${endDate}&totalAmount=${totalAmount}`)}
               >
                 <i className="bi bi-calendar-check me-2"></i>Reserve Now
               </button>
