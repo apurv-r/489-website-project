@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-export default function Booking() {
+export default function Booking({ _id: userId }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
@@ -25,10 +27,33 @@ export default function Booking() {
     setExpiry(v);
   }
 
-  function handlePay(e) {
+  async function requestBooking() {
+    const listingId = searchParams.get('listingId');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    const totalAmount = searchParams.get('totalAmount');
+
+    if (!listingId || !startDate || !endDate || !totalAmount) {
+      console.log("missing booking params:", { listingId, startDate, endDate, totalAmount });
+      setPaying(false);
+      return;
+    }
+
+    await axios.put(`${API_BASE_URL}/api/bookings/request/${listingId}/${userId}`,
+      { startDate, endDate, totalAmount },
+      { withCredentials: true })
+    .then(response => {
+      setTimeout(() => navigate(`/confirmation?listingId=${listingId}`), 2000);
+    })
+    .catch(error => {
+      console.log("error requesting booking: ", error);
+    });
+  }
+
+  async function handlePay(e) {
     e.preventDefault();
     setPaying(true);
-    setTimeout(() => navigate('/confirmation'), 2000);
+    await requestBooking();
   }
 
   return (

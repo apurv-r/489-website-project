@@ -8,6 +8,7 @@ const controller = createCrudController(User);
 router.get("/", controller.list);
 router.get("/:id", controller.getById);
 router.post("/", controller.create);
+router.put("/message/:senderId/:recipientId", controller.sendMessage);
 router.put("/:id", controller.update);
 router.delete("/:id", controller.remove);
 

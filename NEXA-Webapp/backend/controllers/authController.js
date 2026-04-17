@@ -50,7 +50,8 @@ async function register(req, res, next) {
         ? await Model.create(userData)
         : await Model.create({ ...userData, roleType: Model.modelName });
 
-    issueSession(res, user);
+    const originIP = req.headers.origin;
+    issueSession(res, user, originIP);
     const token = signToken(user);
 
     // 201 Created: a new user account was successfully created.
@@ -63,7 +64,8 @@ async function register(req, res, next) {
 async function login(req, res, next) {
   try {
     // Creates/refreshes the server-side session and sends session cookie.
-    issueSession(res, req.user);
+    const originIP = req.headers.origin;
+    issueSession(res, req.user, originIP);
     const token = signToken(req.user);
     req.user.lastLoginAt = new Date();
     await req.user.save();

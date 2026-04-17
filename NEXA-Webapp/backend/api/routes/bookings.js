@@ -12,6 +12,8 @@ router.get("/", requireRole("Admin"), controller.list);
 router.get("/future/:parkingSpaceId", bookingController.getFutureBookingsFor);
 router.get("/:id", bookingController.getBookingIfOwner);
 router.post("/", bookingController.createBooking);
+// not really sure why i did it this way lol (below)
+router.put("/request/:parkingSpaceId/:renterId", bookingController.requestParkingSpace);
 router.put("/:id", bookingController.updateBookingIfOwner);
 router.delete("/:id", bookingController.deleteBookingIfOwner);
 

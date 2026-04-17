@@ -26,11 +26,12 @@ function parseCookies(cookieHeader) {
     }, {});
 }
 
-function createSession(userId) {
+function createSession(userId, originIP = null) {
   const sessionId = crypto.randomUUID();
   sessions.set(sessionId, {
     userId: userId.toString(),
     createdAt: Date.now(),
+    originIP: originIP,
   });
   return sessionId;
 }
@@ -99,8 +100,8 @@ async function loadSessionUser(req, res, next) {
   }
 }
 
-function issueSession(res, user) {
-  const sessionId = createSession(user._id);
+function issueSession(res, user, originIP = null) {
+  const sessionId = createSession(user._id, originIP);
   setSessionCookie(res, sessionId);
   return sessionId;
 }

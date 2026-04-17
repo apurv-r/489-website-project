@@ -48,8 +48,23 @@ async function listMine(req, res, next) {
   }
 }
 
+async function getListing(req, res, next) {
+  try {
+    const space = await ParkingSpace.findById(req.params.id).populate(
+      "host",
+      "firstName lastName",
+    );
+    if (!space) {
+      return res.status(404).json({ message: "Failed to get listing: Not found" });
+    }
+    res.json(space);
+  } catch (error) {
+    next(error);
+  }
+}
 module.exports = {
   listPublic,
   getPublic,
   listMine,
+  getListing,
 };

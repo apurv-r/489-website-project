@@ -6,7 +6,7 @@ import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const BOOKINGS = [
-  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', ref: '#NXA-20925', status: 'active' },
+  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', status: 'active' },
   { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=120&q=80', name: 'Private Garage · Capitol Hill', dates: 'Jun 9 – Jun 12, 2025', price: '$15.75', status: 'Active', cls: 'status-active' },
   { img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&q=80', name: 'Covered Driveway · Fremont', dates: 'May 1 – May 4, 2025', price: '$21.00', status: 'Completed', cls: 'status-completed' },
   { img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=120&q=80', name: 'Outdoor Lot · Belltown', dates: 'Apr 14 – Apr 15, 2025', price: '$10.50', status: 'Completed', cls: 'status-completed' },
@@ -15,31 +15,113 @@ const BOOKINGS = [
 export default function Dashboard(user) {
 
   const [bookingStats, setBookingStats] = useState({ active: 0, past: 0 });
+  const [conversations, setConversations] = useState({});
+  const [threads, setThreads] = useState([]);
+  const [bookings, setBookings] = useState(BOOKINGS);
+
+  async function setThreadInfo(fetchedUser) {
+      const displayName = `${fetchedUser.firstName} ${fetchedUser.lastName[0]}.`;
+      const imgURL = fetchedUser.profilePictureUrl || `https://i.pravatar.cc/48?u=${fetchedUser._id}`;
+      const id = fetchedUser._id;
+      const thread = { id, name: displayName, img: imgURL, time: '', preview: '', unread: false, listing: '' };
+      setThreads(prev => prev.find(t => t.id === id) ? prev : [...prev, thread]);
+      const threadMessages = fetchedUser.messages?.[user._id];
+      const myRole = threadMessages?.role;
+      console.log("role: ", myRole);
+      setConversations(c => ({
+        ...c,
+        [id]: threadMessages?.messageHistory?.map(msg => ({ from: myRole === 'receiver' ? 'me' : 'them', text: msg, time: '' })) || [],
+      }));
+    }
+  
+    async function fetchUser(userid) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/users/${userid}`, {
+          withCredentials: true,
+        });
+        return response.data;
+      } catch (error) {
+        console.log("error fetching user data for messages page:", error);
+      }
+    }
+  
+    async function fetchMessages() {
+      const messages = user.messages;
+      if (!messages) return;
+  
+      for (const userId in messages) {
+        const fetchedUser = await fetchUser(userId);
+        if (fetchedUser) await setThreadInfo(fetchedUser);
+      }
+      console.log("FETCHING USER MESSAGES");
+    }
+  
+  useEffect(() => {
+    fetchMessages(); // call immediately on mount
+  
+    const interval = setInterval(() => {
+      fetchMessages();
+      console.log("conversations: ", conversations);
+  
+    }, 5000); // every 5 seconds
+  
+    return () => clearInterval(interval); // cleanup on unmount
+  
+  }, []);
+
+  function formatDates(start, end) {
+    const options = { month: 'short', day: 'numeric' };
+    const startDate = new Date(start).toLocaleDateString(undefined, options);
+    const endDate = new Date(end).toLocaleDateString(undefined, options);
+    return `${startDate} – ${endDate}`;
+  }
+
+  async function fetchListing(listingId) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/parking-spaces/${listingId}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.log("error fetching listing data for dashboard:", error);
+    }
+  }
 
   async function fetchBookings() {
-    await axios.get(`${API_BASE_URL}/api/bookings/me`, {
-      withCredentials: true,
-    })
-    .then(response => {
-      if (response.status === 200) {
-        BOOKINGS.push(...response.data);
-        console.log("successfully fetched bookings data for dashboard:", response.data);
-      }
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/bookings/me`, {
+        withCredentials: true,
+      });
+      
+      const fetchedBookings = await Promise.all(
+        response.data.map(async (booking) => {
+          const listing = await fetchListing(booking.parkingSpace);
+          return {
+            img: listing?.imageUrls[0] || '',
+            name: listing?.title || '',
+            dates: formatDates(booking.startDate, booking.endDate),
+            price: `$${booking.totalAmount.toFixed(2)}`,
+            status: booking.status.charAt(0).toUpperCase() + booking.status.slice(1),
+            cls: `status-${booking.status}`,
+          };
+        })
+      );
+      setBookings(prev => [...prev, ...fetchedBookings]);
+      calculateBookingStats();
+      console.log("successfully fetched bookings data for dashboard:", fetchedBookings);
+    } catch (error) {
+      console.log("error fetching bookings:", error);
+    }
   }
 
   function calculateBookingStats() {
-    const active = BOOKINGS.filter(b => b.status === 'active').length;
-    const past = BOOKINGS.filter(b => b.status === 'completed').length;
+    const active = bookings.filter(b => b.status === 'active').length;
+    const past = bookings.filter(b => b.status === 'completed').length;
     setBookingStats({ active, past });
   }
 
   useEffect(() => {
     fetchBookings();
-    calculateBookingStats();
   },[]);
 
   return (
@@ -79,7 +161,7 @@ export default function Dashboard(user) {
                 <i className="bi bi-chat-dots-fill"></i>
               </div>
               <div className="dash-stat-body">
-                <div className="dash-stat-value">2</div> {/* PROP NEEDED HERE */}
+                <div className="dash-stat-value">{threads.filter(t => t.unread).length}</div>
                 <div className="dash-stat-label">Unread Messages</div>
               </div>
             </div>
@@ -94,7 +176,7 @@ export default function Dashboard(user) {
                 <Link to="/my-bookings" className="dash-card-link">View all</Link>
               </div>
               <div className="dash-booking-list">
-                {BOOKINGS.map((b, i) => (
+                {bookings.map((b, i) => (
                   <Link to="/booking-details" className="dash-booking-item" key={i}>
                     <img src={b.img} alt="" className="dash-booking-thumb" />
                     <div className="dash-booking-info">
@@ -117,19 +199,16 @@ export default function Dashboard(user) {
                   <Link to="/messages" className="dash-card-link">View all</Link>
                 </div>
                 <div className="dash-msg-list">
-                  {[
-                    { img: 'https://i.pravatar.cc/40?img=12', name: 'Marcus T.', time: '2h ago', preview: 'Hey! The gate code is 4821. Let me know…', unread: true },
-                    { img: 'https://i.pravatar.cc/40?img=5', name: 'Sarah K.', time: 'Yesterday', preview: 'Your spot is ready! Pull all the way in to…', unread: true },
-                    { img: 'https://i.pravatar.cc/40?img=21', name: 'James R.', time: 'Mon', preview: 'Thanks for booking! See you on the 9th.', unread: false },
-                  ].map((m, i) => (
-                    <Link to="/messages" className={`dash-msg-item${m.unread ? ' dash-msg-unread' : ''}`} key={i}>
-                      <img src={m.img} alt="" className="dash-msg-avatar" />
-                      <div className="dash-msg-body">
-                        <div className="dash-msg-name">{m.name} <span className="dash-msg-time">{m.time}</span></div>
-                        <div className="dash-msg-preview">{m.preview}</div>
-                      </div>
-                    </Link>
-                  ))}
+                  {threads.map((m, i) => (
+                      <Link to="/messages" className={`dash-msg-item${m.unread ? ' dash-msg-unread' : ''}`} key={i}>
+                        <img src={m.img} alt="" className="dash-msg-avatar" />
+                        <div className="dash-msg-body">
+                          <div className="dash-msg-name">{m.name} <span className="dash-msg-time">{m.time}</span></div>
+                          <div className="dash-msg-preview">{m.preview}</div>
+                        </div>
+                      </Link>
+                    ))
+                  }
                 </div>
               </div>
 

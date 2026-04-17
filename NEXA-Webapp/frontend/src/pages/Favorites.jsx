@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
+import axios from "axios";
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const FAVS = [
   { id: 1, img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80', badge: 'Garage', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', rating: '4.9', price: '$18' },
@@ -17,6 +19,24 @@ export default function Favorites(user) {
   function remove(id) {
     setFavs(f => f.filter(x => x.id !== id));
   }
+
+  async function fetchFavs() {
+    await axios.get(`${API_BASE_URL}/api/auth/me`, {
+      withCredentials: true,
+    })
+    .then(response => {
+      if (response.status === 200) {
+        setFavs(f => [...f, ...response.data.user.favoritedListings]);
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
+  useEffect(() => {
+    fetchFavs();
+  }, []);
 
   return (
     <div className="dash-page">

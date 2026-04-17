@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+import axios from 'axios';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const AMENITY_ICON_MAP = {
   "EV Charging": "bi-lightning-charge-fill",
@@ -153,7 +152,7 @@ function toMapUrl(location) {
   return `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
 }
 
-export default function Details() {
+export default function Details(user) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const listingId = searchParams.get("id");
@@ -165,6 +164,9 @@ export default function Details() {
   const [futureBookings, setFutureBookings] = useState([]);
   const [activeImg, setActiveImg] = useState(0);
   const [calendarMonth, setCalendarMonth] = useState(() => startOfMonth(new Date()));
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -305,6 +307,23 @@ export default function Details() {
 
   function goToNextMonth() {
     setCalendarMonth((current) => addMonths(current, 1));
+  }
+
+  async function createMessageThread() {
+    const host = listing.host;
+    console.log("listing host: ", host);
+    console.log("listing host id: ", host._id);
+    //                                                    senderId, recipientId
+    await axios.put(`${API_BASE_URL}/api/users/message/${user._id}/${host._id}`,
+    { text: `Hi ${host.firstName}, I'm interested in your parking space "${listing.title}". Is it still available?` },
+    { withCredentials: true })
+    .then(response => {
+      console.log("successfully sent message: ", response.data);
+      navigate("/messages");
+    })
+    .catch(error => {
+      console.log("error sending message: ", error);
+    });
   }
 
   if (loading) {
@@ -701,19 +720,31 @@ export default function Details() {
               <div className="booking-dates">
                 <div className="booking-date-field">
                   <label>Check-in</label>
-                  <input type="date" className="form-control" />
+                  <input type="date" name="startDate" className="form-control" value={startDate} onChange={e => {
+                    setStartDate(e.target.value);
+                    if (endDate && e.target.value) {
+                      const days = Math.ceil((new Date(endDate) - new Date(e.target.value)) / (1000 * 60 * 60 * 24));
+                      setTotalAmount(days > 0 ? days * (listing?.dailyRate || 0) : 0);
+                    }
+                  }} />
                 </div>
                 <div className="booking-date-sep">
                   <i className="bi bi-arrow-right"></i>
                 </div>
                 <div className="booking-date-field">
                   <label>Check-out</label>
-                  <input type="date" className="form-control" />
+                  <input type="date" name="endDate" className="form-control" value={endDate} onChange={e => {
+                    setEndDate(e.target.value);
+                    if (startDate && e.target.value) {
+                      const days = Math.ceil((new Date(e.target.value) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+                      setTotalAmount(days > 0 ? days * (listing?.dailyRate || 0) : 0);
+                    }
+                  }} />
                 </div>
               </div>
               <button
                 className="btn btn-nexa w-100 booking-btn"
-                onClick={() => navigate("/booking")}
+                onClick={() => navigate(`/booking?listingId=${listing._id}&startDate=${startDate}&endDate=${endDate}&totalAmount=${totalAmount}`)}
               >
                 <i className="bi bi-calendar-check me-2"></i>Reserve Now
               </button>
@@ -765,7 +796,7 @@ export default function Details() {
               </p>
               <button
                 className="btn btn-nexa-outline w-100 chat-btn"
-                onClick={() => navigate("/messages")}
+                onClick={createMessageThread}
               >
                 <i className="bi bi-chat-dots-fill me-2"></i>Message Host
               </button>
