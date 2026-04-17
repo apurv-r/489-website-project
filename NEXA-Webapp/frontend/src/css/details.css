@@ -387,6 +387,7 @@
   border-radius: var(--nexa-radius-lg);
   padding: 20px;
   user-select: none;
+  position: relative;
 }
 
 .avail-cal-header {
@@ -455,6 +456,17 @@
   transition: var(--nexa-transition);
 }
 
+button.cal-cell {
+  border: 0;
+  background: transparent;
+  width: 100%;
+  padding: 0;
+}
+
+button.cal-cell:disabled {
+  cursor: not-allowed;
+}
+
 .cal-empty {
   background: transparent;
 }
@@ -465,9 +477,16 @@
 }
 
 .cal-booked {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05) !important;
   color: var(--nexa-gray-600);
   text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.cal-unavailable {
+  background: rgba(239, 68, 68, 0.05) !important;
+  border: 2px dashed rgba(239, 68, 68, 0.25) !important;
+  color: #ffe4e6;
   cursor: not-allowed;
 }
 
@@ -481,16 +500,53 @@
   color: var(--nexa-white);
 }
 
+.cal-hover-range {
+  background: rgba(108, 92, 231, 0.2) !important;
+  color: var(--nexa-white);
+}
+
+.cal-hover-invalid {
+  background: rgba(239, 68, 68, 0.22);
+  color: #fee2e2;
+}
+
 .cal-selected {
   background: var(--nexa-primary) !important;
   color: var(--nexa-white) !important;
   font-weight: 700;
 }
 
+.cal-today {
+  outline: 1px dashed rgba(0, 210, 255, 0.75);
+  outline-offset: -2px;
+}
+
 .cal-in-range {
-  background: rgba(108, 92, 231, 0.15);
+  background: rgba(108, 92, 231, 0.2) !important;
   color: var(--nexa-gray-100);
   border-radius: 0;
+}
+
+.avail-hover-tooltip {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  transform: translate(8px, 8px);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  color: var(--nexa-gray-100);
+  background: rgba(108, 92, 231, 0.94);
+  border: 1px solid rgba(137, 123, 255, 0.55);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  max-width: 220px;
+  min-width: 100px;
+  text-wrap: wrap;
+}
+
+.avail-hover-tooltip.is-invalid {
+  background: rgba(185, 28, 28, 0.94);
+  border-color: rgba(252, 165, 165, 0.4);
 }
 
 .cal-start.cal-in-range,
@@ -536,6 +592,10 @@
 .avail-dot-free {
   background: rgba(108, 92, 231, 0.2);
   border: 1px solid rgba(108, 92, 231, 0.3);
+}
+.avail-dot-unavailable {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 /* ── Inline map ── */
@@ -704,6 +764,14 @@
   font-size: 0.82rem;
 }
 
+.booking-date-input {
+  cursor: pointer;
+}
+
+.booking-date-input::selection {
+  background: transparent;
+}
+
 .booking-date-field .form-control:focus {
   border-color: var(--nexa-primary);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
@@ -754,6 +822,17 @@
   font-size: 0.78rem;
   color: var(--nexa-gray-500);
   margin: 0;
+}
+
+.booking-date-tooltip {
+  margin-top: 10px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  background: rgba(0, 210, 255, 0.08);
+  color: var(--nexa-gray-100);
+  font-size: 0.82rem;
 }
 
 /* ── Host Card ── */

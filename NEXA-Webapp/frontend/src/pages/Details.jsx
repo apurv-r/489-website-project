@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -26,11 +26,60 @@ const DAY_LABELS = {
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+const WEEKDAY_TOKEN_TO_INDEX = {
+  sun: 0,
+  sunday: 0,
+  mon: 1,
+  monday: 1,
+  tue: 2,
+  tues: 2,
+  tuesday: 2,
+  wed: 3,
+  wednesday: 3,
+  thu: 4,
+  thur: 4,
+  thurs: 4,
+  thursday: 4,
+  fri: 5,
+  friday: 5,
+  sat: 6,
+  saturday: 6,
+};
+
 function formatDateKey(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function parseDateKey(dateKey) {
+  if (!dateKey) {
+    return null;
+  }
+
+  const [year, month, day] = String(dateKey)
+    .split("-")
+    .map((part) => Number(part));
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return null;
+  }
+
+  return new Date(year, month - 1, day);
+}
+
+function formatDateLabel(date) {
+  if (!date) {
+    return "";
+  }
+
+  return date.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function startOfMonth(date) {
@@ -64,11 +113,18 @@ function eachDateInRange(startDate, endDate) {
   return dates;
 }
 
-function buildCalendarCells(monthDate, bookedDates) {
+function normalizeWeekdayToken(day) {
+  return String(day || "")
+    .trim()
+    .toLowerCase();
+}
+
+function buildCalendarCells(monthDate, bookedDates, availableWeekdayIndexes) {
   const firstDay = startOfMonth(monthDate);
   const firstWeekday = firstDay.getDay();
   const totalDays = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
   const cells = [];
+  const today = new Date(new Date().setHours(0, 0, 0, 0));
 
   for (let i = 0; i < firstWeekday; i += 1) {
     cells.push({ type: "empty", key: `empty-${i}` });
@@ -77,14 +133,28 @@ function buildCalendarCells(monthDate, bookedDates) {
   for (let day = 1; day <= totalDays; day += 1) {
     const date = new Date(monthDate.getFullYear(), monthDate.getMonth(), day);
     const dateKey = formatDateKey(date);
+    const isBooked = bookedDates.has(dateKey);
+    const hasWeekdayRestrictions = availableWeekdayIndexes.size > 0;
+    const isUnavailableByWeekday =
+      hasWeekdayRestrictions && !availableWeekdayIndexes.has(date.getDay());
+
+    let status = "available";
+
+    if (isBooked) {
+      status = "booked";
+    } else if (isUnavailableByWeekday) {
+      status = "unavailable";
+    }
+
     cells.push({
       type: "day",
       key: dateKey,
       date,
       dateKey,
       day,
-      isBooked: bookedDates.has(dateKey),
-      isPast: date < new Date(new Date().setHours(0, 0, 0, 0)),
+      status,
+      isPast: date < today,
+      isToday: dateKey === formatDateKey(today),
     });
   }
 
@@ -155,8 +225,13 @@ function toMapUrl(location) {
 export default function Details(user) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const calendarSectionRef = useRef(null);
+  const calendarContainerRef = useRef(null);
+  const tooltipTimerRef = useRef(null);
   const listingId = searchParams.get("id");
   const [loading, setLoading] = useState(true);
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [calendarLoading, setCalendarLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [calendarError, setCalendarError] = useState("");
@@ -164,9 +239,18 @@ export default function Details(user) {
   const [futureBookings, setFutureBookings] = useState([]);
   const [activeImg, setActiveImg] = useState(0);
   const [calendarMonth, setCalendarMonth] = useState(() => startOfMonth(new Date()));
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [selectedCheckInKey, setSelectedCheckInKey] = useState("");
+  const [selectedCheckOutKey, setSelectedCheckOutKey] = useState("");
+  const [hoverCheckOutKey, setHoverCheckOutKey] = useState("");
+  const [bookingTooltip, setBookingTooltip] = useState("");
+  const [reserveButtonHovered, setReserveButtonHovered] = useState(false);
+  const [calendarHoverTooltip, setCalendarHoverTooltip] = useState({
+    visible: false,
+    text: "",
+    x: 0,
+    y: 0,
+    invalid: false,
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -252,6 +336,41 @@ export default function Details(user) {
     };
   }, [listingId]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    async function checkSession() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+          withCredentials: true,
+        });
+
+        if (isMounted && response.status === 200) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        setIsAuthenticated(false);
+        if (error?.response?.status !== 401) {
+          console.log(error);
+        }
+      } finally {
+        if (isMounted) {
+          setSessionLoading(false);
+        }
+      }
+    }
+
+    checkSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const images = useMemo(() => listing?.imageUrls || [], [listing]);
   const hostName = useMemo(() => {
     const firstName = listing?.host?.firstName || "Host";
@@ -262,6 +381,36 @@ export default function Details(user) {
   const amenities = useMemo(() => listing?.amenities || [], [listing]);
   const availableDays = useMemo(() => listing?.availableDays || [], [listing]);
   const mapUrl = useMemo(() => toMapUrl(listing?.location), [listing]);
+  const availableWeekdayIndexes = useMemo(() => {
+    const indexes = new Set();
+
+    availableDays.forEach((day) => {
+      const token = normalizeWeekdayToken(day);
+      const weekdayIndex = WEEKDAY_TOKEN_TO_INDEX[token];
+
+      if (Number.isInteger(weekdayIndex)) {
+        indexes.add(weekdayIndex);
+      }
+    });
+
+    return indexes;
+  }, [availableDays]);
+
+  const selectedCheckInDate = useMemo(() => parseDateKey(selectedCheckInKey), [selectedCheckInKey]);
+  const selectedCheckOutDate = useMemo(
+    () => parseDateKey(selectedCheckOutKey),
+    [selectedCheckOutKey],
+  );
+  const hoverCheckOutDate = useMemo(() => parseDateKey(hoverCheckOutKey), [hoverCheckOutKey]);
+
+  const todayDate = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  }, []);
+
+  const todayKey = useMemo(() => formatDateKey(todayDate), [todayDate]);
+
   const bookedDates = useMemo(() => {
     const dates = new Set();
 
@@ -279,11 +428,325 @@ export default function Details(user) {
   }, [futureBookings]);
 
   const calendarCells = useMemo(
-    () => buildCalendarCells(calendarMonth, bookedDates),
-    [calendarMonth, bookedDates],
+    () => buildCalendarCells(calendarMonth, bookedDates, availableWeekdayIndexes),
+    [calendarMonth, bookedDates, availableWeekdayIndexes],
   );
 
-  const todayKey = formatDateKey(new Date());
+  const getDateStatus = useCallback(
+    (date) => {
+      if (!date) {
+        return "invalid";
+      }
+
+      const dateKey = formatDateKey(date);
+
+      if (bookedDates.has(dateKey)) {
+        return "booked";
+      }
+
+      if (date < todayDate) {
+        return "past";
+      }
+
+      if (availableWeekdayIndexes.size > 0 && !availableWeekdayIndexes.has(date.getDay())) {
+        return "unavailable";
+      }
+
+      return "available";
+    },
+    [bookedDates, todayDate, availableWeekdayIndexes],
+  );
+
+  const getRangeKeys = useCallback((startDate, endDate) => {
+    if (!startDate || !endDate || endDate < startDate) {
+      return [];
+    }
+
+    return eachDateInRange(startDate, endDate);
+  }, []);
+
+  const getBlockedRangeKey = useCallback(
+    (startDate, endDate) => {
+      const rangeKeys = getRangeKeys(startDate, endDate);
+
+      for (const dateKey of rangeKeys) {
+        const currentDate = parseDateKey(dateKey);
+
+        if (!currentDate) {
+          return dateKey;
+        }
+
+        const status = getDateStatus(currentDate);
+        if (status !== "available") {
+          return dateKey;
+        }
+      }
+
+      return "";
+    },
+    [getDateStatus, getRangeKeys],
+  );
+
+  const confirmedRangeKeys = useMemo(
+    () => new Set(getRangeKeys(selectedCheckInDate, selectedCheckOutDate)),
+    [selectedCheckInDate, selectedCheckOutDate, getRangeKeys],
+  );
+
+  const previewRange = useMemo(() => {
+    if (!selectedCheckInDate || selectedCheckOutDate || !hoverCheckOutDate) {
+      return { keys: new Set(), blockedKey: "" };
+    }
+
+    if (hoverCheckOutDate <= selectedCheckInDate) {
+      return { keys: new Set(), blockedKey: "" };
+    }
+
+    const rangeKeys = getRangeKeys(selectedCheckInDate, hoverCheckOutDate);
+    const blockedKey = getBlockedRangeKey(selectedCheckInDate, hoverCheckOutDate);
+
+    return { keys: new Set(rangeKeys), blockedKey };
+  }, [
+    selectedCheckInDate,
+    selectedCheckOutDate,
+    hoverCheckOutDate,
+    getRangeKeys,
+    getBlockedRangeKey,
+  ]);
+
+  const bookingSelectionBlockedKey = useMemo(() => {
+    if (!selectedCheckInDate || !selectedCheckOutDate) {
+      return "";
+    }
+
+    return getBlockedRangeKey(selectedCheckInDate, selectedCheckOutDate);
+  }, [selectedCheckInDate, selectedCheckOutDate, getBlockedRangeKey]);
+
+  const bookingSelectionError = useMemo(() => {
+    if (!selectedCheckInDate) {
+      return "";
+    }
+
+    if (!selectedCheckOutDate) {
+      return "";
+    }
+
+    if (selectedCheckOutDate <= selectedCheckInDate) {
+      return "Check-out must be after check-in.";
+    }
+
+    if (bookingSelectionBlockedKey) {
+      return "This range overlaps a booked or unavailable day.";
+    }
+
+    return "";
+  }, [selectedCheckInDate, selectedCheckOutDate, bookingSelectionBlockedKey]);
+
+  const bookingSelectionValid = Boolean(
+    selectedCheckInDate &&
+    selectedCheckOutDate &&
+    selectedCheckOutDate > selectedCheckInDate &&
+    !bookingSelectionBlockedKey,
+  );
+
+  const hasValidEndDate = bookingSelectionValid;
+
+  const selectedDays = useMemo(() => {
+    if (!bookingSelectionValid || !selectedCheckInDate || !selectedCheckOutDate) {
+      return 0;
+    }
+
+    const millisecondsInDay = 1000 * 60 * 60 * 24;
+    return (
+      Math.round(
+        (selectedCheckOutDate.getTime() - selectedCheckInDate.getTime()) / millisecondsInDay,
+      ) + 1
+    );
+  }, [bookingSelectionValid, selectedCheckInDate, selectedCheckOutDate]);
+
+  const bookingDailyRate = useMemo(() => {
+    const parsedRate = Number(listing?.dailyRate);
+    return Number.isFinite(parsedRate) && parsedRate > 0 ? parsedRate : 0;
+  }, [listing]);
+
+  const bookingTotalPrice = useMemo(
+    () => selectedDays * bookingDailyRate,
+    [selectedDays, bookingDailyRate],
+  );
+
+  const reserveButtonDisabled = !hasValidEndDate || sessionLoading || !isAuthenticated;
+  const reserveButtonLabel = !isAuthenticated && reserveButtonHovered ? "Log in to proceed" : "Reserve Now";
+
+  const displayCheckInLabel = selectedCheckInDate
+    ? formatDateLabel(selectedCheckInDate)
+    : "Select in calendar";
+  const displayCheckOutLabel = selectedCheckOutDate
+    ? formatDateLabel(selectedCheckOutDate)
+    : hoverCheckOutDate && selectedCheckInDate && hoverCheckOutDate > selectedCheckInDate
+      ? formatDateLabel(hoverCheckOutDate)
+      : "Select in calendar";
+
+  useEffect(() => {
+    return () => {
+      if (tooltipTimerRef.current) {
+        window.clearTimeout(tooltipTimerRef.current);
+      }
+    };
+  }, []);
+
+  function showBookingTooltip(message) {
+    setBookingTooltip(message);
+
+    if (tooltipTimerRef.current) {
+      window.clearTimeout(tooltipTimerRef.current);
+    }
+
+    tooltipTimerRef.current = window.setTimeout(() => {
+      setBookingTooltip("");
+    }, 2600);
+  }
+
+  function scrollToAvailabilityCalendar() {
+    calendarSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function handleBookingInputClick() {
+    showBookingTooltip("Use the interactive availability calendar below.");
+    scrollToAvailabilityCalendar();
+  }
+
+  function getCalendarPointerPosition(event) {
+    const containerRect = calendarContainerRef.current?.getBoundingClientRect();
+
+    if (!containerRect) {
+      return { x: 0, y: 0 };
+    }
+
+    return {
+      x: event.clientX - containerRect.left + 12,
+      y: event.clientY - containerRect.top + 12,
+    };
+  }
+
+  function updateCalendarHoverTooltip(cell, event) {
+    if (!selectedCheckInDate || selectedCheckOutDate) {
+      setCalendarHoverTooltip((current) => ({ ...current, visible: false }));
+      return;
+    }
+
+    const hoveredDate = parseDateKey(cell.dateKey);
+    const pointer = getCalendarPointerPosition(event);
+
+    if (!hoveredDate || hoveredDate <= selectedCheckInDate) {
+      setCalendarHoverTooltip({
+        visible: true,
+        text: "Choose a check-out date after check-in.",
+        x: pointer.x,
+        y: pointer.y,
+        invalid: true,
+      });
+      return;
+    }
+
+    const blockedKey = getBlockedRangeKey(selectedCheckInDate, hoveredDate);
+    const rangeDays = getRangeKeys(selectedCheckInDate, hoveredDate).length;
+
+    if (blockedKey) {
+      setCalendarHoverTooltip({
+        visible: true,
+        text: "Range crosses an unavailable or booked day.",
+        x: pointer.x,
+        y: pointer.y,
+        invalid: true,
+      });
+      return;
+    }
+
+    setCalendarHoverTooltip({
+      visible: true,
+      text: `${rangeDays} day${rangeDays === 1 ? "" : "s"} selected`,
+      x: pointer.x,
+      y: pointer.y,
+      invalid: false,
+    });
+  }
+
+  function handleCalendarDayClick(cell) {
+    if (cell.status !== "available" || cell.isPast) {
+      return;
+    }
+
+    if (!selectedCheckInDate || (selectedCheckInDate && selectedCheckOutDate)) {
+      setSelectedCheckInKey(cell.dateKey);
+      setSelectedCheckOutKey("");
+      setHoverCheckOutKey("");
+      setCalendarHoverTooltip((current) => ({ ...current, visible: false }));
+      return;
+    }
+
+    const chosenEndDate = parseDateKey(cell.dateKey);
+    if (!chosenEndDate || chosenEndDate <= selectedCheckInDate) {
+      setSelectedCheckInKey(cell.dateKey);
+      setSelectedCheckOutKey("");
+      setHoverCheckOutKey("");
+      setCalendarHoverTooltip((current) => ({ ...current, visible: false }));
+      return;
+    }
+
+    const blockedKey = getBlockedRangeKey(selectedCheckInDate, chosenEndDate);
+    if (blockedKey) {
+      setCalendarHoverTooltip((current) => ({
+        ...current,
+        visible: true,
+        text: "Range crosses an unavailable or booked day.",
+        invalid: true,
+      }));
+      return;
+    }
+
+    setSelectedCheckOutKey(cell.dateKey);
+    setHoverCheckOutKey("");
+    setCalendarHoverTooltip((current) => ({ ...current, visible: false }));
+  }
+
+  function handleCalendarDayEnter(cell, event) {
+    if (!selectedCheckInDate || selectedCheckOutDate) {
+      return;
+    }
+
+    setHoverCheckOutKey(cell.dateKey);
+    updateCalendarHoverTooltip(cell, event);
+  }
+
+  function handleCalendarDayMove(cell, event) {
+    if (!selectedCheckInDate || selectedCheckOutDate) {
+      return;
+    }
+
+    updateCalendarHoverTooltip(cell, event);
+  }
+
+  function handleCalendarLeave() {
+    if (!selectedCheckOutDate) {
+      setHoverCheckOutKey("");
+      setCalendarHoverTooltip((current) => ({ ...current, visible: false }));
+    }
+  }
+
+  function handleReserveNow() {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    if (!bookingSelectionValid) {
+      scrollToAvailabilityCalendar();
+      showBookingTooltip("Pick a valid check-in and check-out range first.");
+      return;
+    }
+
+    navigate(
+      `/booking?listingId=${encodeURIComponent(listingId)}&checkIn=${encodeURIComponent(selectedCheckInKey)}&checkOut=${encodeURIComponent(selectedCheckOutKey)}`,
+    );
+  }
 
   function prevImage() {
     if (images.length < 2) {
@@ -469,9 +932,9 @@ export default function Details(user) {
               <div className="details-rating-badge">
                 <i className="bi bi-star-fill"></i>
                 <span>
-                  {Number.isFinite(Number(listing.ratingAverage))
+                  {Number.isFinite(Number(listing.ratingAverage)) && listing.reviewCount > 0
                     ? Number(listing.ratingAverage).toFixed(1)
-                    : "0.0"}
+                    : "-"}
                 </span>
                 <small>({Number(listing.reviewCount) || 0} reviews)</small>
               </div>
@@ -555,9 +1018,9 @@ export default function Details(user) {
 
             <hr className="details-divider" />
 
-            <div className="details-section">
+            <div className="details-section" ref={calendarSectionRef}>
               <h2 className="details-section-title">Availability Calendar</h2>
-              <div className="avail-calendar">
+              <div className="avail-calendar" ref={calendarContainerRef}>
                 <div className="avail-cal-header">
                   <button
                     type="button"
@@ -593,28 +1056,79 @@ export default function Details(user) {
                         <span key={weekday}>{weekday}</span>
                       ))}
                     </div>
-                    <div className="avail-cal-grid">
+                    <div className="avail-cal-grid" onMouseLeave={handleCalendarLeave}>
                       {calendarCells.map((cell) => {
                         if (cell.type === "empty") {
                           return <div key={cell.key} className="cal-cell cal-empty"></div>;
                         }
 
                         const cellClasses = ["cal-cell"];
+                        const cellDate = parseDateKey(cell.dateKey);
+                        const isConfirmedStart =
+                          selectedCheckInKey === cell.dateKey && Boolean(selectedCheckOutKey);
+                        const isConfirmedEnd = selectedCheckOutKey === cell.dateKey;
+                        const isPreviewStart =
+                          selectedCheckInKey === cell.dateKey &&
+                          Boolean(hoverCheckOutKey) &&
+                          !selectedCheckOutKey;
+                        const isPreviewEnd =
+                          hoverCheckOutKey === cell.dateKey &&
+                          Boolean(selectedCheckInKey) &&
+                          !selectedCheckOutKey;
+                        const isSelectedOrPreviewStart =
+                          isConfirmedStart ||
+                          isPreviewStart ||
+                          (selectedCheckInKey === cell.dateKey && !selectedCheckOutKey);
+                        const isSelectedOrPreviewEnd = isConfirmedEnd || isPreviewEnd;
+                        const isHoverPreview = previewRange.keys.has(cell.dateKey);
+                        const isConfirmedRange = confirmedRangeKeys.has(cell.dateKey);
+                        const isRangeEndpoint = isSelectedOrPreviewStart || isSelectedOrPreviewEnd;
 
-                        if (cell.isBooked) {
+                        if (cell.status === "booked") {
                           cellClasses.push("cal-booked");
-                        } else if (cell.dateKey === todayKey) {
-                          cellClasses.push("cal-selected");
+                        } else if (cell.status === "unavailable") {
+                          cellClasses.push("cal-unavailable");
                         } else if (cell.isPast) {
                           cellClasses.push("cal-past");
                         } else {
                           cellClasses.push("cal-free");
+
+                          if (isConfirmedRange && !isRangeEndpoint) {
+                            cellClasses.push("cal-in-range");
+                          }
+
+                          if (isHoverPreview && !isRangeEndpoint) {
+                            cellClasses.push(
+                              previewRange.blockedKey ? "cal-hover-invalid" : "cal-hover-range",
+                            );
+                          }
+
+                          if (isSelectedOrPreviewStart) {
+                            cellClasses.push("cal-start", "cal-selected");
+                          }
+
+                          if (isSelectedOrPreviewEnd) {
+                            cellClasses.push("cal-end", "cal-selected");
+                          }
+
+                          if (cell.dateKey === todayKey) {
+                            cellClasses.push("cal-today");
+                          }
                         }
 
                         return (
-                          <div key={cell.key} className={cellClasses.join(" ")}>
+                          <button
+                            key={cell.key}
+                            type="button"
+                            className={cellClasses.join(" ")}
+                            onClick={() => handleCalendarDayClick(cell)}
+                            onMouseEnter={(event) => handleCalendarDayEnter(cell, event)}
+                            onMouseMove={(event) => handleCalendarDayMove(cell, event)}
+                            disabled={cell.status !== "available" || cell.isPast}
+                            aria-label={`${cell.day} ${WEEKDAY_LABELS[cellDate?.getDay?.() ?? 0]} ${cell.status}`}
+                          >
                             {cell.day}
-                          </div>
+                          </button>
                         );
                       })}
                     </div>
@@ -628,14 +1142,29 @@ export default function Details(user) {
                         <span>Booked</span>
                       </div>
                       <div className="avail-legend-item">
+                        <span className="avail-legend-dot avail-dot-unavailable"></span>
+                        <span>Unavailable</span>
+                      </div>
+                      <div className="avail-legend-item">
                         <span className="avail-legend-dot avail-dot-selected"></span>
-                        <span>Today</span>
+                        <span>Selected</span>
                       </div>
                     </div>
+                    {calendarHoverTooltip.visible && (
+                      <div
+                        className={`avail-hover-tooltip${calendarHoverTooltip.invalid ? " is-invalid" : ""}`}
+                        style={{ left: calendarHoverTooltip.x, top: calendarHoverTooltip.y }}
+                        role="status"
+                      >
+                        {calendarHoverTooltip.text}
+                      </div>
+                    )}
                   </>
                 )}
               </div>
             </div>
+
+            <hr className="details-divider" />
 
             <div className="details-section">
               <h2 className="details-section-title">Location</h2>
@@ -680,7 +1209,7 @@ export default function Details(user) {
                 Reviews
                 <span className="details-review-score">
                   <i className="bi bi-star-fill"></i>{" "}
-                  {Number.isFinite(Number(listing.ratingAverage))
+                  {Number.isFinite(Number(listing.ratingAverage)) && listing.reviewCount > 0
                     ? Number(listing.ratingAverage).toFixed(1)
                     : "0.0"}{" "}
                   &nbsp;·&nbsp; {Number(listing.reviewCount) || 0} reviews
@@ -710,9 +1239,9 @@ export default function Details(user) {
               </div>
               <div className="booking-card-rating">
                 <i className="bi bi-star-fill"></i>{" "}
-                {Number.isFinite(Number(listing.ratingAverage))
+                {Number.isFinite(Number(listing.ratingAverage)) && listing.reviewCount > 0
                   ? Number(listing.ratingAverage).toFixed(1)
-                  : "0.0"}
+                  : "-"}
                 <span className="booking-card-reviews">
                   ({Number(listing.reviewCount) || 0} reviews)
                 </span>
@@ -720,35 +1249,70 @@ export default function Details(user) {
               <div className="booking-dates">
                 <div className="booking-date-field">
                   <label>Check-in</label>
-                  <input type="date" name="startDate" className="form-control" value={startDate} onChange={e => {
-                    setStartDate(e.target.value);
-                    if (endDate && e.target.value) {
-                      const days = Math.ceil((new Date(endDate) - new Date(e.target.value)) / (1000 * 60 * 60 * 24));
-                      setTotalAmount(days > 0 ? days * (listing?.dailyRate || 0) : 0);
-                    }
-                  }} />
+                  <input
+                    type="text"
+                    className="form-control booking-date-input"
+                    readOnly
+                    value={displayCheckInLabel}
+                    onClick={handleBookingInputClick}
+                    onFocus={handleBookingInputClick}
+                    aria-describedby="booking-date-hint"
+                  />
                 </div>
                 <div className="booking-date-sep">
                   <i className="bi bi-arrow-right"></i>
                 </div>
                 <div className="booking-date-field">
                   <label>Check-out</label>
-                  <input type="date" name="endDate" className="form-control" value={endDate} onChange={e => {
-                    setEndDate(e.target.value);
-                    if (startDate && e.target.value) {
-                      const days = Math.ceil((new Date(e.target.value) - new Date(startDate)) / (1000 * 60 * 60 * 24));
-                      setTotalAmount(days > 0 ? days * (listing?.dailyRate || 0) : 0);
-                    }
-                  }} />
+                  <input
+                    type="text"
+                    className="form-control booking-date-input"
+                    readOnly
+                    value={displayCheckOutLabel}
+                    onClick={handleBookingInputClick}
+                    onFocus={handleBookingInputClick}
+                    aria-describedby="booking-date-hint"
+                  />
                 </div>
               </div>
-              <button
-                className="btn btn-nexa w-100 booking-btn"
-                onClick={() => navigate(`/booking?listingId=${listing._id}&startDate=${startDate}&endDate=${endDate}&totalAmount=${totalAmount}`)}
+              {bookingTooltip && (
+                <div className="booking-date-tooltip" id="booking-date-hint" role="status">
+                  {bookingTooltip}
+                </div>
+              )}
+              {selectedCheckInDate && (
+                <div className="booking-summary" role="status">
+                  <div className="booking-summary-row">
+                    <span>Check-in</span>
+                    <span>{displayCheckInLabel}</span>
+                  </div>
+                  <div className="booking-summary-row">
+                    <span>Check-out</span>
+                    <span>{bookingSelectionError || displayCheckOutLabel}</span>
+                  </div>
+                  <div className="booking-summary-row">
+                    <span>Days</span>
+                    <span>{hasValidEndDate ? selectedDays : "—"}</span>
+                  </div>
+                  <div className="booking-summary-row booking-summary-total">
+                    <span>Total</span>
+                    <span>{hasValidEndDate ? `$${bookingTotalPrice.toFixed(2)}` : "—"}</span>
+                  </div>
+                </div>
+              )}
+              <div
+                onMouseEnter={() => setReserveButtonHovered(true)}
+                onMouseLeave={() => setReserveButtonHovered(false)}
               >
-                <i className="bi bi-calendar-check me-2"></i>Reserve Now
-              </button>
-              <p className="booking-note">You won't be charged yet</p>
+                <button
+                  className="btn btn-nexa w-100 booking-btn"
+                  onClick={handleReserveNow}
+                  disabled={reserveButtonDisabled}
+                >
+                  <i className={`bi ${!isAuthenticated && reserveButtonHovered ? "bi-box-arrow-in-right" : "bi-calendar-check"} me-2`}></i>
+                  {reserveButtonLabel}
+                </button>
+              </div>
             </div>
 
             <div className="host-card">

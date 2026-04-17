@@ -52,6 +52,18 @@
   margin-bottom: 1.25rem;
 }
 
+.bk-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.bk-section-head .bk-section-title {
+  margin-bottom: 0;
+}
+
 .bk-divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.08);
@@ -163,6 +175,24 @@
   gap: 0.4rem;
   margin-top: 1rem;
   margin-bottom: 0;
+}
+
+.bk-demo-row {
+  display: flex;
+  align-items: center;
+}
+
+.bk-demo-btn {
+  padding: 0.4rem 0.75rem !important;
+  font-size: 0.78rem !important;
+  min-height: auto !important;
+  justify-content: flex-end;
+}
+
+.bk-field-error {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #ff9ea8;
 }
 
 .bk-policy-text {
@@ -278,4 +308,3 @@
     order: -1;
   }
 }
-
