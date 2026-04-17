@@ -517,7 +517,7 @@ button.cal-cell:disabled {
 }
 
 .cal-today {
-  outline: 1px dashed rgba(0, 210, 255, 0.75);
+  outline: 2px dashed var(--nexa-accent-alt);
   outline-offset: -2px;
 }
 
