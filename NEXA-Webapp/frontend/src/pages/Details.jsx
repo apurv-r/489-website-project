@@ -1090,6 +1090,10 @@ export default function Details(user) {
                         const isConfirmedRange = confirmedRangeKeys.has(cell.dateKey);
                         const isRangeEndpoint = isSelectedOrPreviewStart || isSelectedOrPreviewEnd;
 
+                        if (cell.dateKey === todayKey) {
+                          cellClasses.push("cal-today");
+                        }
+
                         if (cell.status === "booked") {
                           cellClasses.push("cal-booked");
                         } else if (cell.status === "unavailable") {
@@ -1115,10 +1119,6 @@ export default function Details(user) {
 
                           if (isSelectedOrPreviewEnd) {
                             cellClasses.push("cal-end", "cal-selected");
-                          }
-
-                          if (cell.dateKey === todayKey) {
-                            cellClasses.push("cal-today");
                           }
                         }
 
