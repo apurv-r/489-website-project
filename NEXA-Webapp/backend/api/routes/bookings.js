@@ -9,7 +9,7 @@ const controller = createCrudController(Booking);
 
 router.get("/me", bookingController.getMyBookings);
 router.get("/", requireRole("Admin"), controller.list);
-router.get("/future/:parkingSpaceId", bookingController.getFutureBookingsFor);
+router.get("/future/:parkingSpaceId", bookingController.getCurrentAndFutureBookingsFor);
 router.get("/:id", bookingController.getBookingIfOwner);
 router.post("/", bookingController.createBooking);
 // not really sure why i did it this way lol (below)

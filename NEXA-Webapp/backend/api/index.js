@@ -24,7 +24,7 @@ publicRouter.get("/parking-spaces/:id", (req, res, next) => {
 
   return parkingSpaceController.getPublic(req, res, next);
 });
-publicRouter.get("/bookings/future/:parkingSpaceId", bookingController.getFutureBookingsFor);
+publicRouter.get("/bookings/future/:parkingSpaceId", bookingController.getCurrentAndFutureBookingsFor);
 publicRouter.use("/test", testRouter);
 
 // routes require auth

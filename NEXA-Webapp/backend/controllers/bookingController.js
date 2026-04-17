@@ -1,20 +1,20 @@
 const Booking = require("../models/booking");
 const ParkingSpace = require("../models/parkingSpace");
 
-async function getFutureBookingsFor(req, res, next) {
+async function getCurrentAndFutureBookingsFor(req, res, next) {
   try {
     const { parkingSpaceId } = req.params;
-    const now = new Date();
+    const now = new Date().setHours(0, 0, 0, 0); // Normalize to start of day for consistent comparisons
 
     const space = await ParkingSpace.findById(parkingSpaceId);
-    // 404 Not Found: only expose future availability for published spaces.
-    if (!space || !space.isPublished) {
+    // 404 Not Found
+    if (!space) {
       return res.status(404).json({ message: "Not found" });
     }
 
     const bookings = await Booking.find({
       parkingSpace: parkingSpaceId,
-      startDate: { $gte: now },
+      endDate: { $gte: now },
     })
       .select("startDate endDate status")
       .sort({ startDate: 1 }); // Sort by startDate ascending for easier frontend processing
@@ -154,7 +154,7 @@ async function deleteBookingIfOwner(req, res, next) {
 }
 
 module.exports = {
-  getFutureBookingsFor,
+  getCurrentAndFutureBookingsFor,
   createBooking,
   getMyBookings,
   getBookingIfOwner,
