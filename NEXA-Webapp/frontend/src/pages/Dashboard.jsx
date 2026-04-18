@@ -180,7 +180,7 @@ export default function Dashboard(user) {
               <div className="dash-booking-list">
                 {bookings.map((b, i) => (
                   // <Link to={`/booking-details/${b.id}`} className="dash-booking-item" key={i}>
-                  <div className="dash-booking-item" key={i} onClick={() => navigate(`/booking-details/?bookingId=${b.id}`)}>
+                  <div className="dash-booking-item" key={i} onClick={() => navigate("/booking-details/?")}>
                     <img src={b.img} alt="" className="dash-booking-thumb" />
                     <div className="dash-booking-info">
                       <div className="dash-booking-name">{b.name}</div>
