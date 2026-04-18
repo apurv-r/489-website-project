@@ -154,9 +154,7 @@ export default function HostCreateListing() {
       const hostId = meResponse.data?.user?._id;
 
       if (!hostId) {
-        throw new Error(
-          "Unable to identify host account. Please sign in again.",
-        );
+        throw new Error("Unable to identify host account. Please sign in again.");
       }
 
       const uploadFormData = new FormData();
@@ -203,14 +201,13 @@ export default function HostCreateListing() {
         isPublished: true, // TODO: Change to false if admin approval is required before publishing
       };
 
-      const createResponse = await axios.post(
-        `${API_BASE_URL}/api/parking-spaces`,
-        payload,
-        { withCredentials: true },
-      );
+      const createResponse = await axios.post(`${API_BASE_URL}/api/parking-spaces`, payload, {
+        withCredentials: true,
+      });
 
-      // TODO: Remove this after testing
-      console.log("Listing created successfully:", createResponse.data);
+      if (!createResponse.data?._id) {
+        throw new Error("Listing creation succeeded but no ID was returned from server.");
+      }
 
       setSuccess(true);
     } catch (error) {
@@ -249,12 +246,8 @@ export default function HostCreateListing() {
       return;
     }
 
-    const onlyImages = incomingFiles.filter((file) =>
-      String(file.type || "").startsWith("image/"),
-    );
-    const sizeFiltered = onlyImages.filter(
-      (file) => file.size <= 10 * 1024 * 1024,
-    );
+    const onlyImages = incomingFiles.filter((file) => String(file.type || "").startsWith("image/"));
+    const sizeFiltered = onlyImages.filter((file) => file.size <= 10 * 1024 * 1024);
 
     if (sizeFiltered.length !== incomingFiles.length) {
       setErrors((previous) => ({
@@ -294,12 +287,9 @@ export default function HostCreateListing() {
     const nextErrors = {};
 
     if (currentStep === 0) {
-      if (!formData.title.trim())
-        nextErrors.title = "Listing title is required.";
-      if (!formData.parkingType)
-        nextErrors.parkingType = "Parking type is required.";
-      if (!formData.maxVehicleSize)
-        nextErrors.maxVehicleSize = "Max vehicle size is required.";
+      if (!formData.title.trim()) nextErrors.title = "Listing title is required.";
+      if (!formData.parkingType) nextErrors.parkingType = "Parking type is required.";
+      if (!formData.maxVehicleSize) nextErrors.maxVehicleSize = "Max vehicle size is required.";
       if (!formData.address.trim()) nextErrors.address = "Address is required.";
       if (!formData.city.trim()) nextErrors.city = "City is required.";
       if (!formData.state) nextErrors.state = "State is required.";
@@ -320,16 +310,11 @@ export default function HostCreateListing() {
         nextErrors.longitude = "Longitude is required.";
       } else {
         const longitude = Number(formData.longitude);
-        if (
-          !Number.isFinite(longitude) ||
-          longitude < -180 ||
-          longitude > 180
-        ) {
+        if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
           nextErrors.longitude = "Longitude must be between -180 and 180.";
         }
       }
-      if (!formData.description.trim())
-        nextErrors.description = "Description is required.";
+      if (!formData.description.trim()) nextErrors.description = "Description is required.";
     }
 
     if (currentStep === 2) {
@@ -376,9 +361,7 @@ export default function HostCreateListing() {
   }
 
   function toggleAmenity(a) {
-    setSelectedAmenities((arr) =>
-      arr.includes(a) ? arr.filter((x) => x !== a) : [...arr, a],
-    );
+    setSelectedAmenities((arr) => (arr.includes(a) ? arr.filter((x) => x !== a) : [...arr, a]));
   }
 
   function next() {
@@ -413,15 +396,11 @@ export default function HostCreateListing() {
                   margin: "0 auto 1.5rem",
                 }}
               >
-                <i
-                  className="bi bi-check-lg"
-                  style={{ fontSize: "2rem", color: "#00e676" }}
-                ></i>
+                <i className="bi bi-check-lg" style={{ fontSize: "2rem", color: "#00e676" }}></i>
               </div>
               <h2>Listing Submitted!</h2>
               <p style={{ color: "var(--nexa-gray-400)" }}>
-                Your listing has been submitted for review. We'll notify you
-                once it's approved.
+                Your listing has been submitted for review. We'll notify you once it's approved.
               </p>
               <div className="d-flex gap-3 justify-content-center mt-4">
                 <Link to="/host/my-listings" className="btn btn-nexa-outline">
@@ -476,14 +455,9 @@ export default function HostCreateListing() {
           <div className="dash-page-header">
             <div>
               <h1 className="dash-page-title">Create New Listing</h1>
-              <p className="dash-page-sub">
-                Fill in the details to list your parking space.
-              </p>
+              <p className="dash-page-sub">Fill in the details to list your parking space.</p>
             </div>
-            <Link
-              to="/host/my-listings"
-              className="btn btn-nexa-outline btn-nexa-sm"
-            >
+            <Link to="/host/my-listings" className="btn btn-nexa-outline btn-nexa-sm">
               <i className="bi bi-arrow-left me-1"></i> Back to Listings
             </Link>
           </div>
@@ -492,16 +466,11 @@ export default function HostCreateListing() {
           <div className="lsr-steps">
             {STEPS.map((s, i) => (
               <>
-                <div
-                  key={i}
-                  className={`lsr-step${i <= step ? " active" : ""}`}
-                >
+                <div key={i} className={`lsr-step${i <= step ? " active" : ""}`}>
                   <span className="lsr-step-num">{i + 1}</span>
                   <span className="lsr-step-label">{s}</span>
                 </div>
-                {i < STEPS.length - 1 && (
-                  <div className="lsr-step-line" key={`line-${i}`}></div>
-                )}
+                {i < STEPS.length - 1 && <div className="lsr-step-line" key={`line-${i}`}></div>}
               </>
             ))}
           </div>
@@ -509,10 +478,7 @@ export default function HostCreateListing() {
           {/* Step 1: Basic Info */}
           {step === 0 && (
             <div className="dash-card">
-              <h2
-                className="dash-card-title"
-                style={{ marginBottom: "1.5rem" }}
-              >
+              <h2 className="dash-card-title" style={{ marginBottom: "1.5rem" }}>
                 Basic Information
               </h2>
               <div className="lsr-form-grid">
@@ -523,22 +489,16 @@ export default function HostCreateListing() {
                     className="lsr-input"
                     placeholder="e.g. Private Garage · Capitol Hill"
                     value={formData.title}
-                    onChange={(event) =>
-                      updateField("title", event.target.value)
-                    }
+                    onChange={(event) => updateField("title", event.target.value)}
                   />
-                  {errors.title && (
-                    <small style={{ color: "#ff8080" }}>{errors.title}</small>
-                  )}
+                  {errors.title && <small style={{ color: "#ff8080" }}>{errors.title}</small>}
                 </div>
                 <div className="lsr-form-group">
                   <label className="lsr-label">Parking type</label>
                   <select
                     className="lsr-input"
                     value={formData.parkingType}
-                    onChange={(event) =>
-                      updateField("parkingType", event.target.value)
-                    }
+                    onChange={(event) => updateField("parkingType", event.target.value)}
                   >
                     <option value="">Select type</option>
                     <option>Garage</option>
@@ -547,9 +507,7 @@ export default function HostCreateListing() {
                     <option>Covered</option>
                   </select>
                   {errors.parkingType && (
-                    <small style={{ color: "#ff8080" }}>
-                      {errors.parkingType}
-                    </small>
+                    <small style={{ color: "#ff8080" }}>{errors.parkingType}</small>
                   )}
                 </div>
                 <div className="lsr-form-group">
@@ -557,9 +515,7 @@ export default function HostCreateListing() {
                   <select
                     className="lsr-input"
                     value={formData.maxVehicleSize}
-                    onChange={(event) =>
-                      updateField("maxVehicleSize", event.target.value)
-                    }
+                    onChange={(event) => updateField("maxVehicleSize", event.target.value)}
                   >
                     <option value="">Select size</option>
                     <option>Compact</option>
@@ -568,9 +524,7 @@ export default function HostCreateListing() {
                     <option>Truck / Large</option>
                   </select>
                   {errors.maxVehicleSize && (
-                    <small style={{ color: "#ff8080" }}>
-                      {errors.maxVehicleSize}
-                    </small>
+                    <small style={{ color: "#ff8080" }}>{errors.maxVehicleSize}</small>
                   )}
                 </div>
                 <div className="lsr-form-group lsr-form-group--full">
@@ -580,13 +534,9 @@ export default function HostCreateListing() {
                     className="lsr-input"
                     placeholder="Street address"
                     value={formData.address}
-                    onChange={(event) =>
-                      updateField("address", event.target.value)
-                    }
+                    onChange={(event) => updateField("address", event.target.value)}
                   />
-                  {errors.address && (
-                    <small style={{ color: "#ff8080" }}>{errors.address}</small>
-                  )}
+                  {errors.address && <small style={{ color: "#ff8080" }}>{errors.address}</small>}
                 </div>
                 <div
                   className="lsr-form-group--full"
@@ -603,13 +553,9 @@ export default function HostCreateListing() {
                       className="lsr-input"
                       placeholder="Seattle"
                       value={formData.city}
-                      onChange={(event) =>
-                        updateField("city", event.target.value)
-                      }
+                      onChange={(event) => updateField("city", event.target.value)}
                     />
-                    {errors.city && (
-                      <small style={{ color: "#ff8080" }}>{errors.city}</small>
-                    )}
+                    {errors.city && <small style={{ color: "#ff8080" }}>{errors.city}</small>}
                   </div>
                   <div className="lsr-form-group-row">
                     <div className="lsr-form-group" style={{ width: "100%" }}>
@@ -617,9 +563,7 @@ export default function HostCreateListing() {
                       <select
                         className="lsr-input"
                         value={formData.state}
-                        onChange={(event) =>
-                          updateField("state", event.target.value)
-                        }
+                        onChange={(event) => updateField("state", event.target.value)}
                       >
                         <option value="" disabled>
                           Select state
@@ -630,11 +574,7 @@ export default function HostCreateListing() {
                           </option>
                         ))}
                       </select>
-                      {errors.state && (
-                        <small style={{ color: "#ff8080" }}>
-                          {errors.state}
-                        </small>
-                      )}
+                      {errors.state && <small style={{ color: "#ff8080" }}>{errors.state}</small>}
                     </div>
                     <div className="lsr-form-group" style={{ width: "100%" }}>
                       <label className="lsr-label">ZIP code</label>
@@ -643,14 +583,10 @@ export default function HostCreateListing() {
                         className="lsr-input"
                         placeholder="98101"
                         value={formData.zipCode}
-                        onChange={(event) =>
-                          updateField("zipCode", event.target.value)
-                        }
+                        onChange={(event) => updateField("zipCode", event.target.value)}
                       />
                       {errors.zipCode && (
-                        <small style={{ color: "#ff8080" }}>
-                          {errors.zipCode}
-                        </small>
+                        <small style={{ color: "#ff8080" }}>{errors.zipCode}</small>
                       )}
                     </div>
                   </div>
@@ -663,15 +599,9 @@ export default function HostCreateListing() {
                     placeholder="47.6062"
                     step="any"
                     value={formData.latitude}
-                    onChange={(event) =>
-                      updateField("latitude", event.target.value)
-                    }
+                    onChange={(event) => updateField("latitude", event.target.value)}
                   />
-                  {errors.latitude && (
-                    <small style={{ color: "#ff8080" }}>
-                      {errors.latitude}
-                    </small>
-                  )}
+                  {errors.latitude && <small style={{ color: "#ff8080" }}>{errors.latitude}</small>}
                 </div>
                 <div className="lsr-form-group">
                   <label className="lsr-label">Longitude (dev)</label>
@@ -681,14 +611,10 @@ export default function HostCreateListing() {
                     placeholder="-122.3321"
                     step="any"
                     value={formData.longitude}
-                    onChange={(event) =>
-                      updateField("longitude", event.target.value)
-                    }
+                    onChange={(event) => updateField("longitude", event.target.value)}
                   />
                   {errors.longitude && (
-                    <small style={{ color: "#ff8080" }}>
-                      {errors.longitude}
-                    </small>
+                    <small style={{ color: "#ff8080" }}>{errors.longitude}</small>
                   )}
                 </div>
                 <div className="lsr-form-group lsr-form-group--full">
@@ -698,22 +624,15 @@ export default function HostCreateListing() {
                     rows={4}
                     placeholder="Describe your space — access instructions, nearby landmarks, special features…"
                     value={formData.description}
-                    onChange={(event) =>
-                      updateField("description", event.target.value)
-                    }
+                    onChange={(event) => updateField("description", event.target.value)}
                   ></textarea>
                   {errors.description && (
-                    <small style={{ color: "#ff8080" }}>
-                      {errors.description}
-                    </small>
+                    <small style={{ color: "#ff8080" }}>{errors.description}</small>
                   )}
                 </div>
               </div>
               <div style={{ marginTop: "1.5rem" }}>
-                <label
-                  className="lsr-label"
-                  style={{ marginBottom: "0.75rem", display: "block" }}
-                >
+                <label className="lsr-label" style={{ marginBottom: "0.75rem", display: "block" }}>
                   Amenities
                 </label>
                 <div className="lsr-amenity-grid">
@@ -724,9 +643,7 @@ export default function HostCreateListing() {
                         checked={selectedAmenities.includes(a)}
                         onChange={() => toggleAmenity(a)}
                       />
-                      <i
-                        className={`bi ${AMENITY_ICON_MAP[a] || "bi-check-circle"}`}
-                      ></i>
+                      <i className={`bi ${AMENITY_ICON_MAP[a] || "bi-check-circle"}`}></i>
                       {a}
                     </label>
                   ))}
@@ -738,10 +655,7 @@ export default function HostCreateListing() {
           {/* Step 2: Photos */}
           {step === 1 && (
             <div className="dash-card">
-              <h2
-                className="dash-card-title"
-                style={{ marginBottom: "1.5rem" }}
-              >
+              <h2 className="dash-card-title" style={{ marginBottom: "1.5rem" }}>
                 Photos
               </h2>
               <div
@@ -781,9 +695,7 @@ export default function HostCreateListing() {
                 <p style={{ color: "var(--nexa-gray-400)" }}>
                   Drag &amp; drop photos here, or click to browse
                 </p>
-                <p
-                  style={{ fontSize: "0.8rem", color: "var(--nexa-gray-600)" }}
-                >
+                <p style={{ fontSize: "0.8rem", color: "var(--nexa-gray-600)" }}>
                   PNG, JPG up to 10 MB each. Min. 1, max. 12 photos.
                 </p>
                 <button
@@ -812,10 +724,7 @@ export default function HostCreateListing() {
                 <div className="lsr-photo-preview">
                   {photos.map((photo, index) => (
                     <div key={photo.id} className="lsr-photo-thumb">
-                      <img
-                        src={photo.previewUrl}
-                        alt={`Uploaded ${index + 1}`}
-                      />
+                      <img src={photo.previewUrl} alt={`Uploaded ${index + 1}`} />
                       <button
                         type="button"
                         className="lsr-photo-remove"
@@ -834,10 +743,7 @@ export default function HostCreateListing() {
           {/* Step 3: Pricing & Availability */}
           {step === 2 && (
             <div className="dash-card">
-              <h2
-                className="dash-card-title"
-                style={{ marginBottom: "1.5rem" }}
-              >
+              <h2 className="dash-card-title" style={{ marginBottom: "1.5rem" }}>
                 Pricing &amp; Availability
               </h2>
               <div className="lsr-form-grid">
@@ -850,14 +756,10 @@ export default function HostCreateListing() {
                     min="0"
                     step="0.01"
                     value={formData.dailyRate}
-                    onChange={(event) =>
-                      updateField("dailyRate", event.target.value)
-                    }
+                    onChange={(event) => updateField("dailyRate", event.target.value)}
                   />
                   {errors.dailyRate && (
-                    <small style={{ color: "#ff8080" }}>
-                      {errors.dailyRate}
-                    </small>
+                    <small style={{ color: "#ff8080" }}>{errors.dailyRate}</small>
                   )}
                 </div>
                 <div className="lsr-form-group">
@@ -865,9 +767,7 @@ export default function HostCreateListing() {
                   <select
                     className="lsr-input"
                     value={formData.minBookingDuration}
-                    onChange={(event) =>
-                      updateField("minBookingDuration", event.target.value)
-                    }
+                    onChange={(event) => updateField("minBookingDuration", event.target.value)}
                   >
                     <option value="">Select duration</option>
                     <option value="1 day">1 day</option>
@@ -877,17 +777,12 @@ export default function HostCreateListing() {
                     <option value="1 month">1 month</option>
                   </select>
                   {errors.minBookingDuration && (
-                    <small style={{ color: "#ff8080" }}>
-                      {errors.minBookingDuration}
-                    </small>
+                    <small style={{ color: "#ff8080" }}>{errors.minBookingDuration}</small>
                   )}
                 </div>
               </div>
               <div style={{ marginTop: "1.5rem" }}>
-                <label
-                  className="lsr-label"
-                  style={{ marginBottom: "0.75rem", display: "block" }}
-                >
+                <label className="lsr-label" style={{ marginBottom: "0.75rem", display: "block" }}>
                   Available days
                 </label>
                 <div className="lsr-day-pills">
@@ -903,9 +798,7 @@ export default function HostCreateListing() {
                   ))}
                 </div>
                 {errors.availableDays && (
-                  <small style={{ color: "#ff8080" }}>
-                    {errors.availableDays}
-                  </small>
+                  <small style={{ color: "#ff8080" }}>{errors.availableDays}</small>
                 )}
               </div>
             </div>
@@ -914,15 +807,12 @@ export default function HostCreateListing() {
           {/* Step 4: Review */}
           {step === 3 && (
             <div className="dash-card">
-              <h2
-                className="dash-card-title"
-                style={{ marginBottom: "1.5rem" }}
-              >
+              <h2 className="dash-card-title" style={{ marginBottom: "1.5rem" }}>
                 Review Your Listing
               </h2>
               <p style={{ color: "var(--nexa-gray-400)" }}>
-                Double-check your information before submitting for review. Our
-                team will verify and publish your listing within 24 hours.
+                Double-check your information before submitting for review. Our team will verify and
+                publish your listing within 24 hours.
               </p>
               <div
                 className="alert"
@@ -934,23 +824,16 @@ export default function HostCreateListing() {
                   marginTop: "1rem",
                 }}
               >
-                <i
-                  className="bi bi-info-circle me-2"
-                  style={{ color: "var(--nexa-primary)" }}
-                ></i>
-                By submitting, you confirm this is an accurate description of
-                your space and you agree to NEXA's Host Terms.
+                <i className="bi bi-info-circle me-2" style={{ color: "var(--nexa-primary)" }}></i>
+                By submitting, you confirm this is an accurate description of your space and you
+                agree to NEXA's Host Terms.
               </div>
             </div>
           )}
 
           {/* Navigation */}
           <div className="d-flex justify-content-between mt-4">
-            <button
-              className="btn btn-nexa-outline"
-              onClick={back}
-              disabled={step === 0}
-            >
+            <button className="btn btn-nexa-outline" onClick={back} disabled={step === 0}>
               <i className="bi bi-arrow-left me-1"></i> Back
             </button>
             {step < STEPS.length - 1 ? (
@@ -958,11 +841,7 @@ export default function HostCreateListing() {
                 Next <i className="bi bi-arrow-right ms-1"></i>
               </button>
             ) : (
-              <button
-                className="btn btn-nexa"
-                onClick={submitListing}
-                disabled={isSubmitting}
-              >
+              <button className="btn btn-nexa" onClick={submitListing} disabled={isSubmitting}>
                 <i className="bi bi-send-fill me-2"></i>
                 {isSubmitting ? "Submitting..." : "Submit Listing"}
               </button>

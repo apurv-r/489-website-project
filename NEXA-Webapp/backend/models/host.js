@@ -16,6 +16,10 @@ const hostSchema = new Schema(
         ref: "ParkingSpace",
       },
     ],
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

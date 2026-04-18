@@ -106,6 +106,10 @@ const parkingSpaceSchema = new Schema(
       type: Number,
       default: 0,
     },
+    adminNotes: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,

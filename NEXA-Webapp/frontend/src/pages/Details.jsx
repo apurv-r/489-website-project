@@ -377,6 +377,9 @@ export default function Details(user) {
     const lastName = listing?.host?.lastName || "";
     return `${firstName} ${lastName}`.trim();
   }, [listing]);
+  const hostIsVerified = useMemo(() => {
+    return listing?.host?.isVerified;
+  }, [listing]);
 
   const amenities = useMemo(() => listing?.amenities || [], [listing]);
   const availableDays = useMemo(() => listing?.availableDays || [], [listing]);
@@ -1338,11 +1341,13 @@ export default function Details(user) {
                 <div className="host-info">
                   <span className="host-name">{hostName}</span>
                   <span className="host-since">Listing host</span>
-                  <div className="host-badges">
-                    <span className="host-badge">
-                      <i className="bi bi-patch-check-fill"></i> Verified
-                    </span>
-                  </div>
+                  {hostIsVerified && (
+                    <div className="host-badges">
+                      <span className="host-badge">
+                        <i className="bi bi-patch-check-fill"></i> Verified
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="host-stats">

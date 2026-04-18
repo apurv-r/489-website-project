@@ -7,13 +7,9 @@ const requireRole = require("../../middleware/requireRole");
 const router = express.Router();
 const controller = createCrudController(ParkingSpace);
 
-router.get(
-  "/me",
-  requireRole("Host", "Admin"),
-  parkingSpaceController.listMine,
-);
+router.get("/me", requireRole("Host", "Admin"), parkingSpaceController.listMine);
 router.get("/:id", parkingSpaceController.getListing);
-router.post("/", requireRole("Host", "Admin"), controller.create);
+router.post("/", requireRole("Host", "Admin"), parkingSpaceController.createListing);
 router.put("/:id", requireRole("Host", "Admin"), controller.update);
 router.delete("/:id", requireRole("Host", "Admin"), controller.remove);
 

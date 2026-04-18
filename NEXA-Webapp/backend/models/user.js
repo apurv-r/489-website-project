@@ -42,6 +42,10 @@ const userSchema = new Schema(
       }),
       default: {},
     },
+    adminNotes: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,

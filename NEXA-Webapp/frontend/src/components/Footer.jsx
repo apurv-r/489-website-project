@@ -42,6 +42,9 @@ export default function Footer() {
               <li>
                 <a href="#">Pricing</a>
               </li>
+              <li>
+                <Link to="/admin/login">Admin Portal</Link>
+              </li>
             </ul>
           </div>
 
