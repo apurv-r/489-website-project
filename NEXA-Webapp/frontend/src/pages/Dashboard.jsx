@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
 import { useState, useEffect } from 'react';
@@ -18,6 +18,7 @@ export default function Dashboard(user) {
   const [conversations, setConversations] = useState({});
   const [threads, setThreads] = useState([]);
   const [bookings, setBookings] = useState(BOOKINGS);
+  const navigate = useNavigate();
 
   async function setThreadInfo(fetchedUser) {
       const displayName = `${fetchedUser.firstName} ${fetchedUser.lastName[0]}.`;
@@ -103,6 +104,7 @@ export default function Dashboard(user) {
             price: `$${booking.totalAmount.toFixed(2)}`,
             status: booking.status.charAt(0).toUpperCase() + booking.status.slice(1),
             cls: `status-${booking.status}`,
+            id: booking._id,
           };
         })
       );
@@ -177,7 +179,8 @@ export default function Dashboard(user) {
               </div>
               <div className="dash-booking-list">
                 {bookings.map((b, i) => (
-                  <Link to="/booking-details" className="dash-booking-item" key={i}>
+                  // <Link to={`/booking-details/${b.id}`} className="dash-booking-item" key={i}>
+                  <div className="dash-booking-item" key={i} onClick={() => navigate(`/booking-details/?bookingId=${b.id}`)}>
                     <img src={b.img} alt="" className="dash-booking-thumb" />
                     <div className="dash-booking-info">
                       <div className="dash-booking-name">{b.name}</div>
@@ -185,7 +188,7 @@ export default function Dashboard(user) {
                       <div className="dash-booking-price">{b.price}</div>
                     </div>
                     <span className={`dash-booking-status ${b.cls}`}>{b.status}</span>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>

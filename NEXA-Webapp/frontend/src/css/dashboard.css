@@ -1419,6 +1419,46 @@ body.dash-page,
   }
 }
 
+/* ── Cancel booking modal ─────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: var(--nexa-dark-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--nexa-white);
+  margin-bottom: 0.75rem;
+}
+
+.modal-body-text {
+  font-size: 0.92rem;
+  color: var(--nexa-gray-400);
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
 @media (max-width: 480px) {
   .dash-stat-grid {
     grid-template-columns: 1fr 1fr;
