@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
-
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const WEEKDAY_TOKEN_TO_INDEX = {

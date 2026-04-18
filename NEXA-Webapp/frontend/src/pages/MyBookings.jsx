@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
 import axios from 'axios';
@@ -16,6 +16,7 @@ const STATUS_CLASS = { active: 'status-active', upcoming: 'status-upcoming', com
 const TABS = ['all', 'active', 'upcoming', 'completed', 'cancelled'];
 
 export default function MyBookings(user) {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [bookings, setBookings] = useState(BOOKINGS);
   const shown = filter === 'all' ? bookings : bookings.filter(b => b.status === filter);
@@ -26,8 +27,9 @@ export default function MyBookings(user) {
     })
     .then(response => {
       if (response.status === 200) {
-        setBookings(prev => [...prev, ...response.data]);
-        console.log("successfully fetched bookings data for my-bookings:", response.data);
+        const mapped = response.data.map(b => ({ ...b, id: b._id }));
+        setBookings(prev => [...prev, ...mapped]);
+        console.log("successfully fetched bookings data for my-bookings:", mapped);
       }
     })
     .catch(error => {
@@ -71,7 +73,7 @@ export default function MyBookings(user) {
               </div>
             )}
             {shown.map((b, i) => (
-              <Link to="/booking-details" className="bookings-card" key={i}>
+              <div className="bookings-card" key={b.id || i} onClick={() => navigate(`/booking-details/?bookingId=${b.id}`)} style={{ cursor: 'pointer' }}>
                 <img src={b.img} alt="" className="bookings-card-img" />
                 <div className="bookings-card-body">
                   <div className="bookings-card-top">
@@ -90,7 +92,7 @@ export default function MyBookings(user) {
                     <div className="bookings-meta-item"><i className="bi bi-tag-fill"></i> {b.total} total</div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </main>
