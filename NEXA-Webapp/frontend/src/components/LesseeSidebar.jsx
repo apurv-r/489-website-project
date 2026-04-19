@@ -33,7 +33,7 @@ export default function LesseeSidebar(user) {
   return (
     <aside className="dash-sidebar">
       <div className="dash-profile">
-        <img src="https://i.pravatar.cc/80?img=14" className="dash-profile-avatar" alt="User" />
+        <img src={user?.profilePictureUrl || 'https://i.pravatar.cc/80?img=33'} className="dash-profile-avatar" alt="User" />
         <div className="dash-profile-info">
           <div className="dash-profile-name">{user.firstName} {user.lastName}</div>
           <div className="dash-profile-role">Driver · Lessee</div>
