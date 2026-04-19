@@ -33,6 +33,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminUserDetail from "./pages/admin/AdminUserDetail";
+import AdminListings from "./pages/admin/AdminListings";
 import AdminVerificationQueue from "./pages/admin/AdminVerificationQueue";
 import AdminHostVerification from "./pages/admin/AdminHostVerification";
 import AdminListingReview from "./pages/admin/AdminListingReview";
@@ -110,6 +111,7 @@ export default function App() {
         <Route path="/admin/analytics" element={<AdminAnalytics />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/user-detail" element={<AdminUserDetail />} />
+        <Route path="/admin/listings" element={<AdminListings />} />
         <Route path="/admin/verification-queue" element={<AdminVerificationQueue />} />
         <Route path="/admin/host-verification" element={<AdminHostVerification />} />
         <Route path="/admin/listing-review" element={<AdminListingReview />} />

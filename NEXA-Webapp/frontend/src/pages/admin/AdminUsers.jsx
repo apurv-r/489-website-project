@@ -185,11 +185,13 @@ export default function AdminUsers() {
       <AdminSidebar />
       <main className="adm-main">
         {toast && <AdminToast toast={toast} onClose={() => setToast(null)} />}
-        <div className="adm-header">
-          <h1 className="adm-page-title">Users</h1>
-          <p className="adm-page-sub">
-            Manage all drivers and hosts on the platform. Total: {displayUsers.length}
-          </p>
+        <div className="adm-page-header">
+          <div>
+            <h1 className="adm-page-title">Users</h1>
+            <p className="adm-page-sub">
+              Manage all drivers and hosts on the platform. Total: {displayUsers.length}
+            </p>
+          </div>
         </div>
 
         {/* Filter bar */}

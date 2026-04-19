@@ -35,6 +35,9 @@ export default function AdminSidebar() {
           <i className="bi bi-flag-fill"></i> Reports
         </Link>
         <div className="adm-nav-label mt-3">Management</div>
+        <Link to="/admin/listings" className={`adm-nav-link${active("/admin/listings")}`}>
+          <i className="bi bi-pin-map-fill"></i> Listings
+        </Link>
         <Link to="/admin/users" className={`adm-nav-link${active("/admin/users")}`}>
           <i className="bi bi-people-fill"></i> Users
         </Link>

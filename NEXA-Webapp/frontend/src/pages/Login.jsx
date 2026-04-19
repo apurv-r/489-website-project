@@ -17,6 +17,11 @@ export default function Login() {
       });
 
       if (isMounted && response.status === 200) {
+        if (response.data?.user.accountStatus === "suspended") {
+          setErrorMessage("Your account has been suspended. Please contact support.");
+          return;
+        }
+
         if (response.data?.user.roleType === "Renter") {
           navigate("/dashboard", { replace: true });
         } else if (response.data?.user.roleType === "Host") {
@@ -65,6 +70,12 @@ export default function Login() {
       window.dispatchEvent(new Event('auth-changed'));
 
       const roleType = response.data?.user?.roleType;
+
+      if (response.data?.user.accountStatus === "suspended") {
+        setErrorMessage("Your account has been suspended. Please contact support.");
+        return;
+      }
+
       if (roleType === "Host") {
         navigate("/host/dashboard", { replace: true });
       } else {

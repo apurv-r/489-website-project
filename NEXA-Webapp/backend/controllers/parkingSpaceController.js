@@ -26,7 +26,9 @@ async function listPublic(req, res, next) {
     const isAdminRequest = req.user?.roleType === "Admin";
     if (isAdminRequest) {
       // Admins can see all spaces, including unpublished ones.
-      const spaces = await ParkingSpace.find({});
+      const spaces = await ParkingSpace.find({})
+        .populate("host", "firstName lastName email")
+        .sort({ createdAt: -1 });
       return res.json(spaces);
     }
 
