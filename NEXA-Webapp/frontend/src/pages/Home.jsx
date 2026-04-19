@@ -283,7 +283,7 @@ export default function Home() {
               },
               {
                 icon: "bi-shield-fill-check",
-                color: "teal",
+                color: "purple",
                 title: "Verified Listings",
                 desc: "Every space is reviewed and verified by our team. No fake listings, no surprises.",
               },
@@ -295,7 +295,7 @@ export default function Home() {
               },
               {
                 icon: "bi-chat-dots-fill",
-                color: "teal",
+                color: "purple",
                 title: "In-App Messaging",
                 desc: "Chat directly with your host or driver. Instructions, gate codes, and questions — all in one place.",
               },

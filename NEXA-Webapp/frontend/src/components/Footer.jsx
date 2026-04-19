@@ -86,12 +86,12 @@ export default function Footer() {
             <ul className="footer-links">
               <li>
                 <a href="mailto:support@nexa.park">
-                  <i className="bi bi-envelope me-1"></i> support@nexa.park
+                  <i className="bi bi-envelope me-1"></i> support@nexa.com
                 </a>
               </li>
               <li>
                 <a href="#">
-                  <i className="bi bi-geo-alt me-1"></i> Seattle, WA
+                  <i className="bi bi-geo-alt me-1"></i> Pullman, WA
                 </a>
               </li>
             </ul>
