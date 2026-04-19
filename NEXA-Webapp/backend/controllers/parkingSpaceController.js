@@ -27,7 +27,7 @@ async function listPublic(req, res, next) {
     if (isAdminRequest) {
       // Admins can see all spaces, including unpublished ones.
       const spaces = await ParkingSpace.find({})
-        .populate("host", "firstName lastName email")
+        .populate("host", "firstName lastName email isVerified profilePictureUrl")
         .sort({ createdAt: -1 });
       return res.json(spaces);
     }
@@ -35,7 +35,7 @@ async function listPublic(req, res, next) {
     // Only published and verified spaces are visible to unauthenticated/public users.
     const spaces = await ParkingSpace.find({ isPublished: true, isVerified: true }).populate(
       "host",
-      "firstName lastName isVerified",
+      "firstName lastName isVerified profilePictureUrl",
     );
     res.json(spaces);
   } catch (error) {
@@ -47,7 +47,7 @@ async function getPublic(req, res, next) {
   try {
     const space = await ParkingSpace.findById(req.params.id).populate(
       "host",
-      "firstName lastName isVerified",
+      "firstName lastName isVerified profilePictureUrl",
     );
     // 404 Not Found: hide unpublished or missing spaces from the public endpoint.
     if (!space || !space.isPublished) {
@@ -64,7 +64,7 @@ async function listMine(req, res, next) {
     const filter = req.query.host ? { host: req.query.host } : {};
 
     const spaces = await ParkingSpace.find(filter)
-      .populate("host", "firstName lastName isVerified")
+      .populate("host", "firstName lastName isVerified profilePictureUrl")
       .sort({ createdAt: -1 });
 
     res.json(spaces);
@@ -79,7 +79,7 @@ async function getListing(req, res, next) {
     if (isAdminRequest) {
       const space = await ParkingSpace.findById(req.params.id).populate(
         "host",
-        "firstName lastName email isVerified",
+        "firstName lastName email isVerified profilePictureUrl",
       );
       if (!space) {
         return res.status(404).json({ message: "Failed to get listing: Not found" });
@@ -89,7 +89,7 @@ async function getListing(req, res, next) {
 
     const space = await ParkingSpace.findById(req.params.id).populate(
       "host",
-      "firstName lastName isVerified",
+      "firstName lastName isVerified profilePictureUrl",
     );
     if (!space) {
       return res.status(404).json({ message: "Failed to get listing: Not found" });
