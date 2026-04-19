@@ -52,7 +52,9 @@ async function getMyBookings(req, res, next) {
     // A user can see bookings where they are either the renter or the host.
     const bookings = await Booking.find({
       $or: [{ renter: req.user._id }, { host: req.user._id }],
-    });
+    })
+      .populate("renter", "firstName lastName email")
+      .populate("parkingSpace", "title");
     res.json(bookings);
   } catch (error) {
     next(error);

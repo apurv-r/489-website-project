@@ -1,15 +1,42 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import axios from 'axios';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function HostSidebar() {
   const { pathname } = useLocation();
   const active = (path) => pathname === path ? ' active' : '';
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+          withCredentials: true,
+          headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        });
+        setUser(response.data.user);
+      } catch (err) {
+        // sidebar just won't show name if fetch fails
+      }
+    }
+    fetchUser();
+  }, []);
 
   return (
     <aside className="dash-sidebar lsr-page">
       <div className="dash-profile">
-        <img src="https://i.pravatar.cc/80?img=33" className="dash-profile-avatar" alt="Host" />
+        <img
+          src={user?.profilePictureUrl || 'https://i.pravatar.cc/80?img=33'}
+          className="dash-profile-avatar"
+          alt="Host"
+        />
         <div className="dash-profile-info">
-          <div className="dash-profile-name">Marcus T.</div>
+          <div className="dash-profile-name">
+            {user ? `${user.firstName} ${user.lastName}` : '…'}
+          </div>
           <div className="dash-profile-role">
             Host · Lessor
             <span className="lsr-mode-pill ms-1">Host Mode</span>
@@ -34,7 +61,6 @@ export default function HostSidebar() {
         </Link>
         <Link to="/host/messages" className={`dash-nav-link${active('/host/messages')}`}>
           <i className="bi bi-chat-dots-fill"></i> Messages
-          <span className="dash-nav-badge">3</span>
         </Link>
         <div className="dash-nav-divider"></div>
         <Link to="/settings" className={`dash-nav-link${active('/settings')}`}>

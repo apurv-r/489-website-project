@@ -40,6 +40,7 @@ export default function HostMyListings() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -85,6 +86,21 @@ export default function HostMyListings() {
       isMounted = false;
     };
   }, []);
+
+  async function handleDelete(id) {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API_BASE_URL}/api/parking-spaces/${id}`, {
+        withCredentials: true,
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      });
+      setListings(prev => prev.filter(l => l._id !== id));
+      setConfirmDeleteId(null);
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || 'Failed to remove listing.');
+      setConfirmDeleteId(null);
+    }
+  }
 
   const displayListings = useMemo(
     () =>
@@ -224,9 +240,30 @@ export default function HostMyListings() {
                     >
                       <i className="bi bi-pencil"></i> Edit
                     </Link>
-                    <button className="lsr-action-btn lsr-action-btn--danger">
-                      <i className="bi bi-trash"></i> Remove
-                    </button>
+                    {confirmDeleteId === listing.id ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--nexa-gray-400)' }}>Are you sure?</span>
+                        <button
+                          style={{ background: '#ff6b6b', color: '#fff', border: 'none', borderRadius: 8, padding: '0.4em 1em', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'background 0.2s' }}
+                          onMouseEnter={e => e.target.style.background = '#e55555'}
+                          onMouseLeave={e => e.target.style.background = '#ff6b6b'}
+                          onClick={() => handleDelete(listing.id)}
+                        >Yes</button>
+                        <button
+                          style={{ background: 'transparent', color: 'var(--nexa-gray-300)', border: '1px solid var(--nexa-border)', borderRadius: 8, padding: '0.4em 1em', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'background 0.2s' }}
+                          onMouseEnter={e => e.target.style.background = '#2a2a3a'}
+                          onMouseLeave={e => e.target.style.background = 'transparent'}
+                          onClick={() => setConfirmDeleteId(null)}
+                        >No</button>
+                      </div>
+                    ) : (
+                      <button
+                        className="lsr-action-btn lsr-action-btn--danger"
+                        onClick={() => setConfirmDeleteId(listing.id)}
+                      >
+                        <i className="bi bi-trash"></i> Remove
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
