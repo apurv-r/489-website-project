@@ -5,12 +5,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const BOOKINGS = [
-  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', status: 'active' },
-  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=120&q=80', name: 'Private Garage · Capitol Hill', dates: 'Jun 9 – Jun 12, 2025', price: '$15.75', status: 'Active', cls: 'status-active' },
-  { img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=120&q=80', name: 'Covered Driveway · Fremont', dates: 'May 1 – May 4, 2025', price: '$21.00', status: 'Completed', cls: 'status-completed' },
-  { img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=120&q=80', name: 'Outdoor Lot · Belltown', dates: 'Apr 14 – Apr 15, 2025', price: '$10.50', status: 'Completed', cls: 'status-completed' },
-];
+const BOOKINGS = [];
 
 export default function Dashboard(user) {
 
@@ -93,23 +88,24 @@ export default function Dashboard(user) {
       const response = await axios.get(`${API_BASE_URL}/api/bookings/me`, {
         withCredentials: true,
       });
-      
-      const fetchedBookings = await Promise.all(
-        response.data.map(async (booking) => {
-          const listing = await fetchListing(booking.parkingSpace);
-          return {
-            img: listing?.imageUrls[0] || '',
-            name: listing?.title || '',
-            dates: formatDates(booking.startDate, booking.endDate),
-            price: `$${booking.totalAmount.toFixed(2)}`,
-            status: booking.status.charAt(0).toUpperCase() + booking.status.slice(1),
-            cls: `status-${booking.status}`,
-            id: booking._id,
-          };
-        })
-      );
-      setBookings(prev => [...prev, ...fetchedBookings]);
-      calculateBookingStats();
+
+      const fetchedBookings = response.data.map((booking) => {
+        const listing = booking.parkingSpace;
+        return {
+          img: listing?.imageUrls?.[0] || '',
+          name: listing?.title || '',
+          dates: formatDates(booking.startDate, booking.endDate),
+          price: `$${booking.totalAmount.toFixed(2)}`,
+          status: booking.status,
+          cls: `status-${booking.status}`,
+          id: booking._id,
+        };
+      });
+
+      setBookings(fetchedBookings);
+      const active = fetchedBookings.filter(b => b.status === 'active').length;
+      const past = fetchedBookings.filter(b => b.status === 'completed').length;
+      setBookingStats({ active, past });
       console.log("successfully fetched bookings data for dashboard:", fetchedBookings);
     } catch (error) {
       console.log("error fetching bookings:", error);
@@ -180,8 +176,7 @@ export default function Dashboard(user) {
               <div className="dash-booking-list">
                 {bookings.map((b, i) => (
                   // <Link to={`/booking-details/${b.id}`} className="dash-booking-item" key={i}>
-                  <div className="dash-booking-item" key={i} onClick={() => navigate("/booking-details/?")}>
-                    <img src={b.img} alt="" className="dash-booking-thumb" />
+                  <div className="dash-booking-item" key={b.id || i} onClick={() => navigate(`/booking-details/?bookingId=${b.id}`)} style={{ cursor: 'pointer' }}>                    <img src={b.img} alt="" className="dash-booking-thumb" />
                     <div className="dash-booking-info">
                       <div className="dash-booking-name">{b.name}</div>
                       <div className="dash-booking-dates"><i className="bi bi-calendar3"></i> {b.dates}</div>

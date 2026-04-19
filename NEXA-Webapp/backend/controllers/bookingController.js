@@ -54,7 +54,7 @@ async function getMyBookings(req, res, next) {
       $or: [{ renter: req.user._id }, { host: req.user._id }],
     })
       .populate("renter", "firstName lastName email")
-      .populate("parkingSpace", "title");
+      .populate("parkingSpace", "title imageUrls location parkingType dailyRate description");
     res.json(bookings);
   } catch (error) {
     next(error);
