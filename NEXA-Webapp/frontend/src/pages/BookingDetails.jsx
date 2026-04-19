@@ -4,6 +4,24 @@ import LesseeSidebar from '../components/LesseeSidebar';
 import axios from "axios";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
+function StarPicker({ value, onChange }) {
+  const [hovered, setHovered] = useState(0);
+  return (
+    <div style={{ display: 'flex', gap: '0.25rem', fontSize: '1.6rem', cursor: 'pointer' }}>
+      {[1, 2, 3, 4, 5].map(star => (
+        <i
+          key={star}
+          className={`bi ${(hovered || value) >= star ? 'bi-star-fill' : 'bi-star'}`}
+          style={{ color: (hovered || value) >= star ? '#ffc107' : 'var(--nexa-gray-600)' }}
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(0)}
+          onClick={() => onChange(star)}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function BookingDetails(user) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -12,6 +30,12 @@ export default function BookingDetails(user) {
   const [listing, setListing] = useState(null);
   const [host, setHost] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [existingReview, setExistingReview] = useState(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState(false);
 
   async function fetchBooking() {
     try {
@@ -70,11 +94,45 @@ export default function BookingDetails(user) {
     return `${first} ${last[0]}.`;
   }
 
+  async function fetchReview(bId) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/reviews/booking/${bId}`, { withCredentials: true });
+      setExistingReview(response.data);
+    } catch {
+      // no review yet
+    }
+  }
+
   async function fetchPageData() {
     const bookingData = await fetchBooking();
     if (!bookingData) return;
-    await fetchListing(bookingData.parkingSpace);
-    await fetchHost(bookingData.host);
+    await Promise.all([
+      fetchListing(bookingData.parkingSpace),
+      fetchHost(bookingData.host),
+      fetchReview(bookingData._id),
+    ]);
+  }
+
+  async function submitReview() {
+    if (!reviewRating) {
+      setReviewError('Please select a star rating.');
+      return;
+    }
+    setReviewSubmitting(true);
+    setReviewError('');
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/reviews`,
+        { bookingId, rating: reviewRating, comment: reviewComment },
+        { withCredentials: true },
+      );
+      setExistingReview(response.data);
+      setReviewSuccess(true);
+    } catch (err) {
+      setReviewError(err.response?.data?.message || 'Failed to submit review.');
+    } finally {
+      setReviewSubmitting(false);
+    }
   }
 
   async function cancelBooking() {
@@ -166,7 +224,7 @@ export default function BookingDetails(user) {
               </div>
 
               {/* Price breakdown */}
-              <div className="dash-card">
+              <div className="dash-card mb-4">
                 <h2 className="dash-card-title mb-3">Price Breakdown</h2>
                 <div className="bkd-price-rows">
                   <div className="bk-price-row"><span>${`${listing ? listing.dailyRate : 'Loading...'} x ${booking ? calcDuration(booking.startDate, booking.endDate) : 'Loading...'}`} days</span><span>${booking ? booking.totalAmount.toFixed(2) : 'Loading...'}</span></div>
@@ -174,6 +232,57 @@ export default function BookingDetails(user) {
                   <div className="bk-price-row bk-price-total"><span>Total</span><span>${booking ? booking.totalAmount.toFixed(2) : 'Loading...'}</span></div>
                 </div>
               </div>
+
+              {/* Review section — only for completed bookings */}
+              {booking?.status === 'completed' && (
+                <div className="dash-card">
+                  <h2 className="dash-card-title mb-3">
+                    <i className="bi bi-star-fill me-2" style={{ color: '#ffc107' }}></i>
+                    Leave a Review
+                  </h2>
+                  {existingReview ? (
+                    <div>
+                      <p style={{ color: 'var(--nexa-gray-400)', marginBottom: '0.5rem', fontSize: '0.85rem' }}>You reviewed this booking:</p>
+                      <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '0.5rem' }}>
+                        {[1,2,3,4,5].map(s => (
+                          <i key={s} className={`bi ${existingReview.rating >= s ? 'bi-star-fill' : 'bi-star'}`} style={{ color: '#ffc107', fontSize: '1.2rem' }} />
+                        ))}
+                      </div>
+                      {existingReview.comment && (
+                        <p style={{ color: 'var(--nexa-gray-300)', margin: 0 }}>{existingReview.comment}</p>
+                      )}
+                    </div>
+                  ) : reviewSuccess ? (
+                    <p style={{ color: '#00e676' }}><i className="bi bi-check-circle me-2"></i>Review submitted! Thank you.</p>
+                  ) : (
+                    <div>
+                      <p style={{ color: 'var(--nexa-gray-400)', marginBottom: '1rem', fontSize: '0.88rem' }}>How was your experience with this parking space?</p>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <StarPicker value={reviewRating} onChange={setReviewRating} />
+                      </div>
+                      <textarea
+                        rows={3}
+                        placeholder="Share details about your experience (optional)"
+                        value={reviewComment}
+                        onChange={e => setReviewComment(e.target.value)}
+                        style={{
+                          width: '100%', background: 'var(--nexa-surface-2)', border: '1px solid var(--nexa-border)',
+                          borderRadius: 8, color: 'var(--nexa-gray-100)', padding: '0.65rem 0.9rem',
+                          fontSize: '0.88rem', resize: 'vertical', outline: 'none', marginBottom: '0.75rem',
+                        }}
+                      />
+                      {reviewError && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginBottom: '0.5rem' }}>{reviewError}</p>}
+                      <button
+                        className="btn btn-nexa btn-nexa-sm"
+                        onClick={submitReview}
+                        disabled={reviewSubmitting}
+                      >
+                        {reviewSubmitting ? 'Submitting…' : 'Submit Review'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Right column */}
