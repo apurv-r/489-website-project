@@ -495,8 +495,8 @@ export default function AdminReportReview() {
                 onChange={(e) => setNote(e.target.value)}
                 style={{
                   width: "100%",
-                  background: "var(--nexa-bg)",
-                  border: "1px solid var(--nexa-border)",
+                  background: "var(--nexa-gray-900)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
                   borderRadius: 8,
                   padding: "0.6rem 0.75rem",
                   color: "var(--nexa-gray-200)",
@@ -513,27 +513,6 @@ export default function AdminReportReview() {
               >
                 {saving ? "Saving…" : "Save Note"}
               </button>
-            </div>
-
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-              <Link
-                to={`/admin/user-detail?id=${encodeURIComponent(report.reporter?._id || "")}`}
-                className="btn btn-nexa-outline w-100"
-                style={{ fontSize: "0.78rem" }}
-              >
-                View Reporter
-              </Link>
-              <Link
-                to={
-                  report.reportedSpace
-                    ? `/admin/listing-review?id=${encodeURIComponent(report.reportedSpace?._id || report.reportedSpace)}`
-                    : `/admin/user-detail?id=${encodeURIComponent(report.reportedUser?._id || "")}`
-                }
-                className="btn btn-nexa-outline w-100"
-                style={{ fontSize: "0.78rem" }}
-              >
-                View Target
-              </Link>
             </div>
 
             <Link to="/admin/reports" className="btn btn-nexa-outline w-100">
