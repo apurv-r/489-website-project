@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import HostSidebar from '../components/HostSidebar';
@@ -13,6 +13,10 @@ export default function Settings() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [profilePictureUrl, setProfilePictureUrl] = useState('');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarMsg, setAvatarMsg] = useState({ type: '', text: '' });
+  const avatarInputRef = useRef(null);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -37,6 +41,7 @@ export default function Settings() {
         setFirstName(u.firstName || '');
         setLastName(u.lastName || '');
         setEmail(u.email || '');
+        setProfilePictureUrl(u.profilePictureUrl || '');
       } catch (err) {
         setProfileMsg({ type: 'error', text: 'Failed to load user data.' });
       } finally {
@@ -104,6 +109,34 @@ export default function Settings() {
     }
   }
 
+  async function handleAvatarUpload(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setAvatarMsg({ type: 'error', text: 'Please select an image file.' });
+      return;
+    }
+    setAvatarUploading(true);
+    setAvatarMsg({ type: '', text: '' });
+    try {
+      const token = localStorage.getItem('token');
+      const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+
+      const formData = new FormData();
+      formData.append('images', file);
+      const uploadRes = await axios.post(`${API_BASE_URL}/api/uploads/images`, formData, { withCredentials: true, headers });
+      const url = uploadRes.data?.files?.[0]?.url;
+      if (!url) throw new Error('Upload failed.');
+
+      await axios.put(`${API_BASE_URL}/api/users/${user._id}`, { profilePictureUrl: url }, { withCredentials: true, headers });
+      setProfilePictureUrl(url);
+      setAvatarMsg({ type: 'success', text: 'Profile picture updated!' });
+    } catch (err) {
+      setAvatarMsg({ type: 'error', text: err.response?.data?.message || 'Failed to upload picture.' });
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
+
   const isHost = user?.roleType === 'Host';
   const Sidebar = isHost ? HostSidebar : LesseeSidebar;
 
@@ -135,6 +168,36 @@ export default function Settings() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: 640 }}>
+
+            {/* Profile Picture */}
+            <div className="dash-card">
+              <h3 className="dash-card-title" style={{ marginBottom: '1.25rem' }}>Profile Picture</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                <img
+                  src={profilePictureUrl || 'https://i.pravatar.cc/80?img=14'}
+                  alt="Profile"
+                  style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--nexa-border)' }}
+                />
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={avatarInputRef}
+                    style={{ display: 'none' }}
+                    onChange={e => handleAvatarUpload(e.target.files[0])}
+                  />
+                  <button className="btn btn-nexa-outline" onClick={() => avatarInputRef.current.click()} disabled={avatarUploading}>
+                    {avatarUploading ? 'Uploading…' : 'Change Photo'}
+                  </button>
+                  {avatarMsg.text && (
+                    <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: avatarMsg.type === 'success' ? '#4caf50' : '#ff6b6b' }}>
+                      <i className={`bi ${avatarMsg.type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'} me-1`}></i>
+                      {avatarMsg.text}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* Profile */}
             <div className="dash-card">
