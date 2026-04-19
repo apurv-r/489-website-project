@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import L from "leaflet";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import Toast from "../components/Toast";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
@@ -46,6 +49,22 @@ const WEEKDAY_TOKEN_TO_INDEX = {
   sat: 6,
   saturday: 6,
 };
+
+const DETAIL_LOCATION_ICON = L.divIcon({
+  className: "nexa-detail-location-marker-wrap",
+  html: `
+    <div style="
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #6c5ce7;
+      border: 3px solid rgba(255,255,255,0.95);
+      box-shadow: 0 8px 14px rgba(0,0,0,0.35);
+    "></div>
+  `,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
 
 function formatDateKey(date) {
   const year = date.getFullYear();
@@ -216,11 +235,14 @@ function getInitials(name) {
 }
 
 function toMapUrl(location) {
-  if (!location?.latitude || !location?.longitude) {
+  const latitude = Number(location?.latitude);
+  const longitude = Number(location?.longitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     return null;
   }
 
-  return `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
+  return `https://www.google.com/maps?q=${latitude},${longitude}`;
 }
 
 export default function Details(user) {
@@ -306,8 +328,9 @@ export default function Details(user) {
 
   useEffect(() => {
     if (!listingId) return;
-    axios.get(`${API_BASE_URL}/api/reviews/listing/${listingId}`)
-      .then(res => setReviews(Array.isArray(res.data) ? res.data : []))
+    axios
+      .get(`${API_BASE_URL}/api/reviews/listing/${listingId}`)
+      .then((res) => setReviews(Array.isArray(res.data) ? res.data : []))
       .catch(() => {});
   }, [listingId]);
 
@@ -398,6 +421,16 @@ export default function Details(user) {
 
   const amenities = useMemo(() => listing?.amenities || [], [listing]);
   const availableDays = useMemo(() => listing?.availableDays || [], [listing]);
+  const mapPosition = useMemo(() => {
+    const latitude = Number(listing?.location?.latitude);
+    const longitude = Number(listing?.location?.longitude);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return null;
+    }
+
+    return [latitude, longitude];
+  }, [listing]);
   const mapUrl = useMemo(() => toMapUrl(listing?.location), [listing]);
   const availableWeekdayIndexes = useMemo(() => {
     const indexes = new Set();
@@ -1243,26 +1276,48 @@ export default function Details(user) {
             <div className="details-section">
               <h2 className="details-section-title">Location</h2>
               <p className="details-description">{formatAddress(listing.location)}</p>
-              <p className="details-description" style={{ marginTop: "0.5rem" }}>
-                Coordinates:{" "}
-                {listing.location?.latitude?.toFixed?.(6) ?? listing.location?.latitude},{" "}
-                {listing.location?.longitude?.toFixed?.(6) ?? listing.location?.longitude}
-              </p>
               <div
                 className="details-map"
                 id="detailMap"
                 style={{
                   background: "var(--nexa-dark-card)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  gap: "0.75rem",
+                  overflow: "hidden",
                 }}
               >
-                <span style={{ color: "var(--nexa-gray-400)" }}>
-                  <i className="bi bi-map me-2"></i>Map preview unavailable without a map provider
-                </span>
+                {mapPosition ? (
+                  <MapContainer
+                    center={mapPosition}
+                    zoom={15}
+                    style={{ height: "100%", width: "100%" }}
+                    scrollWheelZoom
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                      url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                      subdomains="abcd"
+                      maxZoom={20}
+                    />
+                    <Marker position={mapPosition} icon={DETAIL_LOCATION_ICON} />
+                  </MapContainer>
+                ) : (
+                  <div
+                    style={{
+                      height: "100%",
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    <span style={{ color: "var(--nexa-gray-400)" }}>
+                      <i className="bi bi-map me-2"></i>Location coordinates are unavailable
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div style={{ marginTop: "0.75rem" }}>
                 {mapUrl && (
                   <a
                     href={mapUrl}
@@ -1290,39 +1345,104 @@ export default function Details(user) {
                 </span>
               </h2>
               {reviews.length === 0 ? (
-                <p className="details-description">No reviews yet. Be the first to book this space.</p>
+                <p className="details-description">
+                  No reviews yet. Be the first to book this space.
+                </p>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
-                  {reviews.map(r => (
-                    <div key={r._id} style={{ borderBottom: '1px solid var(--nexa-border)', paddingBottom: '1.25rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                        <div style={{
-                          width: 38, height: 38, borderRadius: '50%', overflow: 'hidden',
-                          background: 'var(--nexa-surface-2)', flexShrink: 0,
-                        }}>
-                          {r.renter?.profilePictureUrl
-                            ? <img src={r.renter.profilePictureUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', color: 'var(--nexa-gray-400)' }}>
-                                <i className="bi bi-person-fill" />
-                              </div>
-                          }
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1.25rem",
+                    marginTop: "1rem",
+                  }}
+                >
+                  {reviews.map((r) => (
+                    <div
+                      key={r._id}
+                      style={{
+                        borderBottom: "1px solid var(--nexa-border)",
+                        paddingBottom: "1.25rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.75rem",
+                          marginBottom: "0.5rem",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 38,
+                            height: 38,
+                            borderRadius: "50%",
+                            overflow: "hidden",
+                            background: "var(--nexa-surface-2)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {r.renter?.profilePictureUrl ? (
+                            <img
+                              src={r.renter.profilePictureUrl}
+                              alt=""
+                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "1rem",
+                                color: "var(--nexa-gray-400)",
+                              }}
+                            >
+                              <i className="bi bi-person-fill" />
+                            </div>
+                          )}
                         </div>
                         <div>
-                          <p style={{ fontWeight: 600, margin: 0, fontSize: '0.92rem' }}>
-                            {r.renter ? `${r.renter.firstName} ${r.renter.lastName}` : 'Anonymous'}
+                          <p style={{ fontWeight: 600, margin: 0, fontSize: "0.92rem" }}>
+                            {r.renter ? `${r.renter.firstName} ${r.renter.lastName}` : "Anonymous"}
                           </p>
-                          <p style={{ fontSize: '0.75rem', color: 'var(--nexa-gray-500)', margin: 0 }}>
-                            {new Date(r.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                          <p
+                            style={{
+                              fontSize: "0.75rem",
+                              color: "var(--nexa-gray-500)",
+                              margin: 0,
+                            }}
+                          >
+                            {new Date(r.createdAt).toLocaleDateString("en-US", {
+                              month: "long",
+                              year: "numeric",
+                            })}
                           </p>
                         </div>
-                        <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.15rem' }}>
-                          {[1,2,3,4,5].map(s => (
-                            <i key={s} className={`bi ${r.rating >= s ? 'bi-star-fill' : 'bi-star'}`} style={{ color: '#ffc107', fontSize: '0.85rem' }} />
+                        <div style={{ marginLeft: "auto", display: "flex", gap: "0.15rem" }}>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <i
+                              key={s}
+                              className={`bi ${r.rating >= s ? "bi-star-fill" : "bi-star"}`}
+                              style={{ color: "#ffc107", fontSize: "0.85rem" }}
+                            />
                           ))}
                         </div>
                       </div>
                       {r.comment && (
-                        <p style={{ color: 'var(--nexa-gray-300)', margin: 0, lineHeight: 1.6, fontSize: '0.9rem' }}>{r.comment}</p>
+                        <p
+                          style={{
+                            color: "var(--nexa-gray-300)",
+                            margin: 0,
+                            lineHeight: 1.6,
+                            fontSize: "0.9rem",
+                          }}
+                        >
+                          {r.comment}
+                        </p>
                       )}
                     </div>
                   ))}

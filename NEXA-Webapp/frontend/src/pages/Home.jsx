@@ -1,11 +1,53 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [locationQuery, setLocationQuery] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [searchValidationMessage, setSearchValidationMessage] = useState("");
+
+  const normalizedQuery = locationQuery.trim();
+  const hasInvalidDateRange = Boolean(startDate && endDate && endDate < startDate);
+  const hasAllRequiredFields = Boolean(normalizedQuery && startDate && endDate);
 
   function handleSearch(e) {
     e.preventDefault();
+
+    if (!hasAllRequiredFields) {
+      setSearchValidationMessage("Please complete location, start date, and end date.");
+      return;
+    }
+
+    if (hasInvalidDateRange) {
+      setSearchValidationMessage("End date cannot be earlier than start date.");
+      return;
+    }
+
+    setSearchValidationMessage("");
+    const nextParams = new URLSearchParams();
+
+    if (normalizedQuery) {
+      nextParams.set("q", normalizedQuery);
+    }
+
+    if (startDate) {
+      nextParams.set("start", startDate);
+    }
+
+    if (endDate) {
+      nextParams.set("end", endDate);
+    }
+
+    const queryString = nextParams.toString();
+
+    if (queryString) {
+      navigate(`/search?${queryString}`);
+      return;
+    }
+
     navigate("/search");
   }
 
@@ -44,6 +86,11 @@ export default function Home() {
                     className="form-control form-control-lg"
                     style={{ paddingLeft: 44 }}
                     placeholder="City, address, or ZIP…"
+                    value={locationQuery}
+                    onChange={(event) => {
+                      setLocationQuery(event.target.value);
+                      setSearchValidationMessage("");
+                    }}
                   />
                 </div>
               </div>
@@ -52,17 +99,43 @@ export default function Home() {
                   <i className="bi bi-calendar-event me-1"></i>Dates
                 </label>
                 <div className="search-date-range search-date-range--hero">
-                  <input type="date" className="form-control form-control-lg" />
+                  <input
+                    type="date"
+                    className="form-control form-control-lg"
+                    value={startDate}
+                    onChange={(event) => {
+                      setStartDate(event.target.value);
+                      setSearchValidationMessage("");
+                    }}
+                  />
                   <span className="date-separator">→</span>
-                  <input type="date" className="form-control form-control-lg" />
+                  <input
+                    type="date"
+                    className="form-control form-control-lg"
+                    min={startDate || undefined}
+                    value={endDate}
+                    onChange={(event) => {
+                      setEndDate(event.target.value);
+                      setSearchValidationMessage("");
+                    }}
+                  />
                 </div>
               </div>
               <div className="search-bar-field search-bar-field--btn">
-                <button type="submit" className="btn btn-nexa btn-nexa-lg w-100">
+                <button
+                  type="submit"
+                  className="btn btn-nexa btn-nexa-lg w-100"
+                  disabled={!hasAllRequiredFields || hasInvalidDateRange}
+                >
                   <i className="bi bi-search me-1"></i> Search
                 </button>
               </div>
             </form>
+            {searchValidationMessage && (
+              <div className="mt-2" style={{ color: "#ff8080", fontSize: "0.9rem" }}>
+                {searchValidationMessage}
+              </div>
+            )}
           </div>
 
           <div className="search-hints mt-4 animate-fade-up delay-4">

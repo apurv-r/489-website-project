@@ -1,10 +1,41 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import L from "leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const DEFAULT_CENTER = [47.6062, -122.3321];
+const DEFAULT_ZOOM = 11;
 
 const TYPES = ["all", "garage", "driveway", "open-lot", "covered"];
+const WEEKDAY_TOKEN_TO_INDEX = {
+  sun: 0,
+  sunday: 0,
+  mon: 1,
+  monday: 1,
+  tue: 2,
+  tues: 2,
+  tuesday: 2,
+  wed: 3,
+  wednesday: 3,
+  thu: 4,
+  thur: 4,
+  thurs: 4,
+  thursday: 4,
+  fri: 5,
+  friday: 5,
+  sat: 6,
+  saturday: 6,
+};
 
 function toDisplayType(type) {
   switch (String(type || "").toLowerCase()) {
@@ -54,11 +85,148 @@ function toLocationLabel(location) {
   return "Location unavailable";
 }
 
+function MapBounds({ markers }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!markers.length) {
+      map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+      return;
+    }
+
+    if (markers.length === 1) {
+      map.setView(markers[0].position, 13);
+      return;
+    }
+
+    const bounds = L.latLngBounds(markers.map((marker) => marker.position));
+    map.fitBounds(bounds, { padding: [48, 48] });
+  }, [map, markers]);
+
+  return null;
+}
+
+function createPriceMarkerIcon(priceText) {
+  return L.divIcon({
+    className: "nexa-price-marker-wrap",
+    html: `
+      <div class="nexa-price-marker">
+        <span class="nexa-price-marker-label">${priceText}</span>
+        <span class="nexa-price-marker-pin"></span>
+      </div>
+    `,
+    iconSize: [70, 42],
+    iconAnchor: [35, 40],
+    popupAnchor: [0, -36],
+  });
+}
+
+function parseDateInput(dateValue) {
+  if (!dateValue) {
+    return null;
+  }
+
+  const parsed = new Date(`${dateValue}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function doesListingMatchDateWindow(listing, startDateValue, endDateValue) {
+  const startDate = parseDateInput(startDateValue);
+  const endDate = parseDateInput(endDateValue || startDateValue);
+
+  if (!startDate && !endDate) {
+    return true;
+  }
+
+  if (!startDate || !endDate || endDate < startDate) {
+    return false;
+  }
+
+  const availableWeekdays = new Set(
+    (Array.isArray(listing.availableDays) ? listing.availableDays : [])
+      .map(
+        (day) =>
+          WEEKDAY_TOKEN_TO_INDEX[
+            String(day || "")
+              .trim()
+              .toLowerCase()
+          ],
+      )
+      .filter(Number.isInteger),
+  );
+
+  if (availableWeekdays.size === 0) {
+    return true;
+  }
+
+  const cursor = new Date(startDate);
+  while (cursor <= endDate) {
+    if (!availableWeekdays.has(cursor.getDay())) {
+      return false;
+    }
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return true;
+}
+
 export default function Search() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeType, setActiveType] = useState("all");
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") || "");
+  const [startDate, setStartDate] = useState(() => searchParams.get("start") || "");
+  const [endDate, setEndDate] = useState(() => searchParams.get("end") || "");
+  const [searchValidationMessage, setSearchValidationMessage] = useState("");
+
+  useEffect(() => {
+    setSearchQuery(searchParams.get("q") || "");
+    setStartDate(searchParams.get("start") || "");
+    setEndDate(searchParams.get("end") || "");
+    setSearchValidationMessage("");
+  }, [searchParams]);
+
+  function applySearchFilters(queryText, startDateValue, endDateValue) {
+    const normalizedQuery = String(queryText || "").trim();
+    const normalizedStartDate = String(startDateValue || "").trim();
+    const normalizedEndDate = String(endDateValue || "").trim();
+
+    if (!normalizedQuery || !normalizedStartDate || !normalizedEndDate) {
+      setSearchValidationMessage("Please complete location, start date, and end date.");
+      return;
+    }
+
+    if (normalizedEndDate < normalizedStartDate) {
+      setSearchValidationMessage("End date cannot be earlier than start date.");
+      return;
+    }
+
+    setSearchValidationMessage("");
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (normalizedQuery) {
+      nextParams.set("q", normalizedQuery);
+    } else {
+      nextParams.delete("q");
+    }
+
+    if (normalizedStartDate) {
+      nextParams.set("start", normalizedStartDate);
+    } else {
+      nextParams.delete("start");
+    }
+
+    if (normalizedEndDate) {
+      nextParams.set("end", normalizedEndDate);
+    } else {
+      nextParams.delete("end");
+    }
+
+    setSearchParams(nextParams);
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -109,6 +277,24 @@ export default function Search() {
           img: listing.imageUrls?.[0] || "",
           title: listing.title || `${typeLabel} Listing`,
           location: toLocationLabel(listing.location),
+          availableDays: Array.isArray(listing.availableDays) ? listing.availableDays : [],
+          searchText: [
+            listing.title,
+            listing.parkingType,
+            listing?.location?.address,
+            listing?.location?.city,
+            listing?.location?.state,
+            listing?.location?.zipCode,
+          ]
+            .map((part) =>
+              String(part || "")
+                .trim()
+                .toLowerCase(),
+            )
+            .filter(Boolean)
+            .join(" "),
+          latitude: Number(listing?.location?.latitude),
+          longitude: Number(listing?.location?.longitude),
           tags: [typeLabel],
           typeKey,
           price: Number.isFinite(Number(listing.dailyRate))
@@ -120,10 +306,65 @@ export default function Search() {
     [listings],
   );
 
+  const appliedSearchQuery = useMemo(() => searchParams.get("q") || "", [searchParams]);
+  const appliedStartDate = useMemo(() => searchParams.get("start") || "", [searchParams]);
+  const appliedEndDate = useMemo(() => searchParams.get("end") || "", [searchParams]);
+  const normalizedSearchQuery = useMemo(
+    () => appliedSearchQuery.trim().toLowerCase(),
+    [appliedSearchQuery],
+  );
+
+  const queryFilteredListings = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return mappedListings;
+    }
+
+    return mappedListings.filter((listing) => listing.searchText.includes(normalizedSearchQuery));
+  }, [mappedListings, normalizedSearchQuery]);
+
+  const hasInvalidDateRange = useMemo(() => {
+    const parsedStart = parseDateInput(appliedStartDate);
+    const parsedEnd = parseDateInput(appliedEndDate);
+
+    if (!parsedStart || !parsedEnd) {
+      return false;
+    }
+
+    return parsedEnd < parsedStart;
+  }, [appliedEndDate, appliedStartDate]);
+
+  const dateFilteredListings = useMemo(() => {
+    if (!appliedStartDate && !appliedEndDate) {
+      return queryFilteredListings;
+    }
+
+    return queryFilteredListings.filter((listing) =>
+      doesListingMatchDateWindow(listing, appliedStartDate, appliedEndDate),
+    );
+  }, [appliedEndDate, appliedStartDate, queryFilteredListings]);
+
+  const hasAllRequiredFields = useMemo(() => {
+    return Boolean(searchQuery.trim() && startDate && endDate);
+  }, [endDate, searchQuery, startDate]);
+
+  const hasPendingInvalidDateRange = useMemo(() => {
+    return Boolean(startDate && endDate && endDate < startDate);
+  }, [endDate, startDate]);
+
+  const mapListings = useMemo(() => {
+    return dateFilteredListings
+      .filter((listing) => Number.isFinite(listing.latitude) && Number.isFinite(listing.longitude))
+      .filter((listing) => (activeType === "all" ? true : listing.typeKey === activeType))
+      .map((listing) => ({
+        ...listing,
+        position: [listing.latitude, listing.longitude],
+      }));
+  }, [activeType, dateFilteredListings]);
+
   const filtered =
     activeType === "all"
-      ? mappedListings
-      : mappedListings.filter((listing) => listing.typeKey === activeType);
+      ? dateFilteredListings
+      : dateFilteredListings.filter((listing) => listing.typeKey === activeType);
 
   return (
     <div className="search-page">
@@ -138,22 +379,58 @@ export default function Search() {
                 <input
                   type="text"
                   className="form-control"
-                  defaultValue="Seattle, WA"
+                  value={searchQuery}
                   placeholder="Location…"
+                  onChange={(event) => {
+                    setSearchQuery(event.target.value);
+                    setSearchValidationMessage("");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      applySearchFilters(searchQuery, startDate, endDate);
+                    }
+                  }}
                 />
               </div>
+
               <div className="search-date-range">
                 <div className="position-relative">
-                  <i className="bi bi-calendar3 search-filter-icon"></i>
-                  <input type="date" className="form-control search-filter-date" />
+                  <input
+                    type="date"
+                    className="form-control search-filter-date"
+                    value={startDate}
+                    onChange={(event) => {
+                      setStartDate(event.target.value);
+                      setSearchValidationMessage("");
+                    }}
+                  />
                 </div>
                 <span className="date-separator">→</span>
                 <div className="position-relative">
-                  <i className="bi bi-calendar3 search-filter-icon"></i>
-                  <input type="date" className="form-control search-filter-date" />
+                  <input
+                    type="date"
+                    className="form-control search-filter-date"
+                    min={startDate || undefined}
+                    value={endDate}
+                    onChange={(event) => {
+                      setEndDate(event.target.value);
+                      setSearchValidationMessage("");
+                    }}
+                  />
                 </div>
               </div>
+              <button
+                type="button"
+                className="btn btn-nexa"
+                style={{ flexShrink: 0, width: "10px" }}
+                disabled={!hasAllRequiredFields || hasPendingInvalidDateRange}
+                onClick={() => applySearchFilters(searchQuery, startDate, endDate)}
+              >
+                <i className="bi bi-search"></i>
+              </button>
             </div>
+
             <div className="search-filters-row">
               <div className="filter-chips">
                 {TYPES.map((t) => (
@@ -189,8 +466,28 @@ export default function Search() {
             </div>
             <div className="search-result-count">
               <span className="text-gradient fw-bold">{filtered.length}</span> parking spots found
-              near <strong>Seattle, WA</strong>
+              {normalizedSearchQuery ? (
+                <>
+                  {" "}
+                  for <strong>"{appliedSearchQuery.trim()}"</strong>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  across <strong>all locations</strong>
+                </>
+              )}
             </div>
+            {searchValidationMessage && (
+              <div className="mt-2" style={{ color: "#ff8080", fontSize: "0.85rem" }}>
+                {searchValidationMessage}
+              </div>
+            )}
+            {hasInvalidDateRange && (
+              <div className="mt-2" style={{ color: "#ff8080", fontSize: "0.85rem" }}>
+                End date cannot be earlier than start date.
+              </div>
+            )}
           </div>
 
           {/* Results */}
@@ -257,21 +554,62 @@ export default function Search() {
           </div>
         </div>
 
-        {/* MAP PLACEHOLDER */}
-        <div
-          className="search-map"
-          id="searchMap"
-          style={{
-            background: "var(--nexa-dark-light)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div className="text-center" style={{ color: "var(--nexa-gray-400)" }}>
-            <i className="bi bi-map fs-1 mb-2 d-block"></i>
-            <p>Interactive map — integrate Leaflet here</p>
-          </div>
+        <div className="search-map" id="searchMap">
+          {mapListings.length > 0 ? (
+            <MapContainer
+              center={mapListings[0].position}
+              zoom={DEFAULT_ZOOM}
+              scrollWheelZoom
+              className="search-map-canvas"
+            >
+              <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+              <MapBounds markers={mapListings} />
+              {mapListings.map((listing) => (
+                <Marker
+                  key={listing.id}
+                  position={listing.position}
+                  icon={createPriceMarkerIcon(listing.price)}
+                >
+                  <Popup className="nexa-popup-wrapper">
+                    <div className="nexa-popup">
+                      <strong>{listing.title}</strong>
+                      <div className="nexa-popup-price">{listing.price} / day</div>
+                      <div
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "var(--nexa-gray-300)",
+                          marginBottom: 8,
+                        }}
+                      >
+                        {listing.location}
+                      </div>
+                      <Link to={`/details?id=${listing.id}`} className="nexa-popup-link">
+                        View details
+                      </Link>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          ) : (
+            <div
+              className="text-center"
+              style={{
+                color: "var(--nexa-gray-400)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+                padding: "2rem",
+              }}
+            >
+              <div>
+                <i className="bi bi-map fs-1 mb-2 d-block"></i>
+                <p className="mb-1">No map pins available for these results.</p>
+                <small>Listings need latitude and longitude to appear on the map.</small>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

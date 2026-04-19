@@ -1,12 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import L from "leaflet";
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import Navbar from "../../components/Navbar";
 import HostSidebar from "../../components/HostSidebar";
 
 const STEPS = ["Basic Info", "Photos", "Pricing & Availability", "Review"];
 const DAY_OPTIONS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const DEFAULT_MAP_CENTER = [47.6062, -122.3321];
+const DEFAULT_MAP_ZOOM = 11;
 
 const PARKING_TYPE_MAP = {
   Garage: "garage",
@@ -97,6 +102,59 @@ const US_STATE_OPTIONS = [
   "WY",
 ];
 
+const LOCATION_PICKER_ICON = L.divIcon({
+  className: "nexa-location-picker-wrap",
+  html: `
+    <div style="
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #6c5ce7;
+      border: 3px solid rgba(255,255,255,0.95);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+    "></div>
+  `,
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
+
+function LocationPinSelector({ position, onSelect }) {
+  useMapEvents({
+    click(event) {
+      onSelect(event.latlng.lat, event.latlng.lng);
+    },
+  });
+
+  if (!position) {
+    return null;
+  }
+
+  return (
+    <Marker
+      position={position}
+      icon={LOCATION_PICKER_ICON}
+      draggable
+      eventHandlers={{
+        dragend: (event) => {
+          const marker = event.target;
+          const nextPosition = marker.getLatLng();
+          onSelect(nextPosition.lat, nextPosition.lng);
+        },
+      }}
+    />
+  );
+}
+
+function MapViewportController({ center, zoom }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setView(center, zoom, { animate: true });
+  }, [map, center, zoom]);
+
+  return null;
+}
+
 export default function HostCreateListing() {
   const [minListingPrice, setMinListingPrice] = useState(5);
   const [maxPhotosPerListing, setMaxPhotosPerListing] = useState(12);
@@ -104,9 +162,13 @@ export default function HostCreateListing() {
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocatingAddress, setIsLocatingAddress] = useState(false);
+  const [geocodeMessage, setGeocodeMessage] = useState("");
   const [photos, setPhotos] = useState([]);
   const [errors, setErrors] = useState({});
   const [selectedDays, setSelectedDays] = useState(DAY_OPTIONS);
+  const [mapCenter, setMapCenter] = useState(DEFAULT_MAP_CENTER);
+  const [mapZoom, setMapZoom] = useState(DEFAULT_MAP_ZOOM);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -159,9 +221,79 @@ export default function HostCreateListing() {
     };
   }, []);
 
+  const selectedPinPosition = useMemo(() => {
+    const latitude = Number(formData.latitude);
+    const longitude = Number(formData.longitude);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return null;
+    }
+
+    return [latitude, longitude];
+  }, [formData.latitude, formData.longitude]);
+
   function updateField(field, value) {
     setFormData((previous) => ({ ...previous, [field]: value }));
     setErrors((previous) => ({ ...previous, [field]: "" }));
+  }
+
+  function updatePinCoordinates(latitude, longitude) {
+    updateField("latitude", latitude.toFixed(6));
+    updateField("longitude", longitude.toFixed(6));
+  }
+
+  async function findAddressOnMap() {
+    const queryParts = [formData.address, formData.city, formData.state, formData.zipCode]
+      .map((entry) => String(entry || "").trim())
+      .filter(Boolean);
+
+    if (queryParts.length < 2) {
+      setGeocodeMessage("Enter at least address and city/state to find your location.");
+      return;
+    }
+
+    setIsLocatingAddress(true);
+    setGeocodeMessage("");
+
+    try {
+      const response = await axios.get("https://nominatim.openstreetmap.org/search", {
+        params: {
+          q: queryParts.join(", "),
+          format: "json",
+          limit: 1,
+        },
+      });
+
+      const firstResult = Array.isArray(response.data) ? response.data[0] : null;
+
+      if (!firstResult) {
+        setGeocodeMessage(
+          "Couldn't find that address. Try adding more detail or place a pin manually.",
+        );
+        return;
+      }
+
+      const latitude = Number(firstResult.lat);
+      const longitude = Number(firstResult.lon);
+
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        setGeocodeMessage(
+          "Address lookup returned invalid coordinates. Please place a pin manually.",
+        );
+        return;
+      }
+
+      updatePinCoordinates(latitude, longitude);
+      setMapCenter([latitude, longitude]);
+      setMapZoom(15);
+      setGeocodeMessage("Location found. Adjust the pin if needed.");
+    } catch {
+      setGeocodeMessage(
+        "Address lookup is temporarily unavailable. You can still place the pin manually.",
+      );
+    } finally {
+      setIsLocatingAddress(false);
+    }
   }
 
   function toMinimumBookingDays(durationLabel) {
@@ -471,6 +603,9 @@ export default function HostCreateListing() {
                     setErrors({});
                     setSelectedAmenities([]);
                     setSelectedDays(DAY_OPTIONS);
+                    setMapCenter(DEFAULT_MAP_CENTER);
+                    setMapZoom(DEFAULT_MAP_ZOOM);
+                    setGeocodeMessage("");
                     setFormData({
                       title: "",
                       parkingType: "",
@@ -642,30 +777,87 @@ export default function HostCreateListing() {
                     </div>
                   </div>
                 </div>
-                <div className="lsr-form-group">
-                  <label className="lsr-label">Latitude (dev)</label>
-                  <input
-                    type="number"
-                    className="lsr-input"
-                    placeholder="47.6062"
-                    step="any"
-                    value={formData.latitude}
-                    onChange={(event) => updateField("latitude", event.target.value)}
-                  />
-                  {errors.latitude && <small style={{ color: "#ff8080" }}>{errors.latitude}</small>}
-                </div>
-                <div className="lsr-form-group">
-                  <label className="lsr-label">Longitude (dev)</label>
-                  <input
-                    type="number"
-                    className="lsr-input"
-                    placeholder="-122.3321"
-                    step="any"
-                    value={formData.longitude}
-                    onChange={(event) => updateField("longitude", event.target.value)}
-                  />
-                  {errors.longitude && (
-                    <small style={{ color: "#ff8080" }}>{errors.longitude}</small>
+                <div className="lsr-form-group lsr-form-group--full">
+                  <div
+                    style={{
+                      justifyContent: "space-between",
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <div>
+                      <label className="lsr-label">Pin location</label>
+                      <small
+                        style={{
+                          color: "var(--nexa-gray-500)",
+                          display: "block",
+                          marginBottom: "0.6rem",
+                        }}
+                      >
+                        Click anywhere on the map to place your pin. Drag the pin to fine-tune the
+                        spot.
+                      </small>
+                    </div>
+
+                    <div className="d-flex justify-content-end">
+                      <button
+                        type="button"
+                        className="btn btn-nexa-outline btn-nexa-sm"
+                        onClick={findAddressOnMap}
+                        disabled={isLocatingAddress}
+                      >
+                        <i className="bi bi-geo-alt-fill me-1"></i>
+                        {isLocatingAddress ? "Finding..." : "Find on map"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      border: "1px solid rgba(255, 255, 255, 0.12)",
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <MapContainer
+                      center={mapCenter}
+                      zoom={mapZoom}
+                      style={{ height: "320px", width: "100%" }}
+                      scrollWheelZoom
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                        subdomains="abcd"
+                        maxZoom={20}
+                      />
+                      <MapViewportController center={mapCenter} zoom={mapZoom} />
+                      <LocationPinSelector
+                        position={selectedPinPosition}
+                        onSelect={updatePinCoordinates}
+                      />
+                    </MapContainer>
+                  </div>
+
+                  {geocodeMessage && (
+                    <small
+                      style={{
+                        color: geocodeMessage.startsWith("Location found")
+                          ? "#75f2c3"
+                          : "var(--nexa-gray-400)",
+                        display: "block",
+                        marginTop: "0.45rem",
+                      }}
+                    >
+                      {geocodeMessage}
+                    </small>
+                  )}
+
+                  {(errors.latitude || errors.longitude) && (
+                    <small style={{ color: "#ff8080", display: "block", marginTop: "0.45rem" }}>
+                      {errors.latitude || errors.longitude}
+                    </small>
                   )}
                 </div>
                 <div className="lsr-form-group lsr-form-group--full">
