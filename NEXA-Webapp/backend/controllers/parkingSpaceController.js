@@ -77,7 +77,10 @@ async function getListing(req, res, next) {
   try {
     const isAdminRequest = req.user?.roleType === "Admin";
     if (isAdminRequest) {
-      const space = await ParkingSpace.findById(req.params.id);
+      const space = await ParkingSpace.findById(req.params.id).populate(
+        "host",
+        "firstName lastName email isVerified",
+      );
       if (!space) {
         return res.status(404).json({ message: "Failed to get listing: Not found" });
       }
