@@ -6,4 +6,5 @@ module.exports = {
   ParkingSpace: require("./parkingSpace"),
   Booking: require("./booking"),
   Report: require("./report"),
+  Review: require("./review"),
 };

@@ -251,6 +251,7 @@ export default function Details(user) {
   const [reportTitle, setReportTitle] = useState("");
   const [reportDescription, setReportDescription] = useState("");
   const [toast, setToast] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [calendarHoverTooltip, setCalendarHoverTooltip] = useState({
     visible: false,
     text: "",
@@ -301,6 +302,13 @@ export default function Details(user) {
     return () => {
       isMounted = false;
     };
+  }, [listingId]);
+
+  useEffect(() => {
+    if (!listingId) return;
+    axios.get(`${API_BASE_URL}/api/reviews/listing/${listingId}`)
+      .then(res => setReviews(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
   }, [listingId]);
 
   useEffect(() => {
@@ -1281,15 +1289,44 @@ export default function Details(user) {
                   &nbsp;·&nbsp; {Number(listing.reviewCount) || 0} reviews
                 </span>
               </h2>
-              {Number(listing.reviewCount) > 0 ? (
-                <p className="details-description">
-                  Detailed review comments are not loaded yet, but this listing has an average
-                  rating above.
-                </p>
+              {reviews.length === 0 ? (
+                <p className="details-description">No reviews yet. Be the first to book this space.</p>
               ) : (
-                <p className="details-description">
-                  No reviews yet. Be the first to book this space.
-                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
+                  {reviews.map(r => (
+                    <div key={r._id} style={{ borderBottom: '1px solid var(--nexa-border)', paddingBottom: '1.25rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                        <div style={{
+                          width: 38, height: 38, borderRadius: '50%', overflow: 'hidden',
+                          background: 'var(--nexa-surface-2)', flexShrink: 0,
+                        }}>
+                          {r.renter?.profilePictureUrl
+                            ? <img src={r.renter.profilePictureUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', color: 'var(--nexa-gray-400)' }}>
+                                <i className="bi bi-person-fill" />
+                              </div>
+                          }
+                        </div>
+                        <div>
+                          <p style={{ fontWeight: 600, margin: 0, fontSize: '0.92rem' }}>
+                            {r.renter ? `${r.renter.firstName} ${r.renter.lastName}` : 'Anonymous'}
+                          </p>
+                          <p style={{ fontSize: '0.75rem', color: 'var(--nexa-gray-500)', margin: 0 }}>
+                            {new Date(r.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                          </p>
+                        </div>
+                        <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.15rem' }}>
+                          {[1,2,3,4,5].map(s => (
+                            <i key={s} className={`bi ${r.rating >= s ? 'bi-star-fill' : 'bi-star'}`} style={{ color: '#ffc107', fontSize: '0.85rem' }} />
+                          ))}
+                        </div>
+                      </div>
+                      {r.comment && (
+                        <p style={{ color: 'var(--nexa-gray-300)', margin: 0, lineHeight: 1.6, fontSize: '0.9rem' }}>{r.comment}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
