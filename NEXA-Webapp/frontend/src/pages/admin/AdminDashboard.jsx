@@ -140,16 +140,26 @@ export default function AdminDashboard() {
       .sort((left, right) => new Date(right?.createdAt || 0) - new Date(left?.createdAt || 0))
       .slice(0, 3)
       .map((report) => {
-        const reporter = userMapById.get(String(report?.reporter));
+        const reporter =
+          report?.reporter && typeof report.reporter === "object"
+            ? report.reporter
+            : userMapById.get(String(report?.reporter));
         const targetListing =
-          listings.find((listing) => String(listing?._id) === String(report?.reportedSpace)) ||
-          null;
+          report?.reportedSpace && typeof report.reportedSpace === "object"
+            ? report.reportedSpace
+            : listings.find((listing) => String(listing?._id) === String(report?.reportedSpace)) ||
+              null;
+        const targetUser =
+          report?.reportedUser && typeof report.reportedUser === "object"
+            ? report.reportedUser
+            : userMapById.get(String(report?.reportedUser));
+        const targetLabel = targetListing?.title || formatName(targetUser) || "Platform item";
 
         return {
           id: report?._id,
           type: report?.title || toTitleCase(report?.category) || "Report",
           reporter: formatName(reporter),
-          target: targetListing?.title || "Platform item",
+          target: targetLabel,
           date: formatShortDate(report?.createdAt),
           status: String(report?.status || "open").toLowerCase(),
         };
@@ -344,9 +354,11 @@ export default function AdminDashboard() {
                   <div
                     key={r.id}
                     style={{
-                      padding: "0.6rem",
-                      background: "var(--nexa-bg)",
-                      borderRadius: 8,
+                      padding: "0.75rem 0.85rem",
+                      background: "rgba(255,255,255,0.025)",
+                      border: "1px solid var(--nexa-border)",
+                      borderRadius: 10,
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",

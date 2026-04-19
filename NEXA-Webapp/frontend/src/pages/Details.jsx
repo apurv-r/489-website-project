@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import Toast from "../components/Toast";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const AMENITY_ICON_MAP = {
@@ -244,6 +245,12 @@ export default function Details(user) {
   const [hoverCheckOutKey, setHoverCheckOutKey] = useState("");
   const [bookingTooltip, setBookingTooltip] = useState("");
   const [reserveButtonHovered, setReserveButtonHovered] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportCategory, setReportCategory] = useState("inaccurate listing");
+  const [reportTitle, setReportTitle] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
+  const [toast, setToast] = useState(null);
   const [calendarHoverTooltip, setCalendarHoverTooltip] = useState({
     visible: false,
     text: "",
@@ -571,15 +578,6 @@ export default function Details(user) {
     return Number.isFinite(parsedRate) && parsedRate > 0 ? parsedRate : 0;
   }, [listing]);
 
-  const bookingTotalPrice = useMemo(
-    () => selectedDays * bookingDailyRate,
-    [selectedDays, bookingDailyRate],
-  );
-
-  const reserveButtonDisabled = !hasValidEndDate || sessionLoading || !isAuthenticated;
-  const reserveButtonLabel =
-    !isAuthenticated && reserveButtonHovered ? "Log in to proceed" : "Reserve Now";
-
   const displayCheckInLabel = selectedCheckInDate
     ? formatDateLabel(selectedCheckInDate)
     : "Select in calendar";
@@ -588,6 +586,15 @@ export default function Details(user) {
     : hoverCheckOutDate && selectedCheckInDate && hoverCheckOutDate > selectedCheckInDate
       ? formatDateLabel(hoverCheckOutDate)
       : "Select in calendar";
+
+  const bookingTotalPrice = useMemo(
+    () => selectedDays * bookingDailyRate,
+    [selectedDays, bookingDailyRate],
+  );
+
+  const reserveButtonDisabled = !hasValidEndDate || sessionLoading || !isAuthenticated;
+  const reserveButtonLabel =
+    !isAuthenticated && reserveButtonHovered ? "Log in to proceed" : "Reserve Now";
 
   useEffect(() => {
     return () => {
@@ -752,6 +759,55 @@ export default function Details(user) {
     );
   }
 
+  function openReportModal() {
+    if (!isAuthenticated) {
+      setToast({ type: "error", message: "Please log in to report a listing." });
+      return;
+    }
+
+    setShowReportModal(true);
+  }
+
+  async function handleSubmitReport(event) {
+    event.preventDefault();
+
+    if (!listing?._id) {
+      return;
+    }
+
+    if (!reportTitle.trim() || !reportDescription.trim()) {
+      setToast({ type: "error", message: "Please complete the report title and description." });
+      return;
+    }
+
+    try {
+      setReportSubmitting(true);
+      await axios.post(
+        `${API_BASE_URL}/api/reports`,
+        {
+          reportedSpace: listing._id,
+          category: reportCategory,
+          title: reportTitle.trim(),
+          description: reportDescription.trim(),
+        },
+        { withCredentials: true },
+      );
+
+      setShowReportModal(false);
+      setReportTitle("");
+      setReportDescription("");
+      setReportCategory("inaccurate listing");
+      setToast({ type: "success", message: "Report submitted successfully." });
+    } catch (error) {
+      setToast({
+        type: "error",
+        message: error.response?.data?.message || "Unable to submit report right now.",
+      });
+    } finally {
+      setReportSubmitting(false);
+    }
+  }
+
   function prevImage() {
     if (images.length < 2) {
       return;
@@ -843,6 +899,7 @@ export default function Details(user) {
 
   return (
     <main className="details-main">
+      {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
       <div className="details-breadcrumb">
         <div className="container-xl">
           <nav aria-label="breadcrumb">
@@ -1374,10 +1431,136 @@ export default function Details(user) {
               <button className="btn btn-nexa-outline w-100 chat-btn" onClick={createMessageThread}>
                 <i className="bi bi-chat-dots-fill me-2"></i>Message Host
               </button>
+              <div style={{ minHeight: "0.75rem" }}></div>
+              <button
+                className="btn btn-nexa-outline w-100 chat-btn"
+                onClick={openReportModal}
+                style={{
+                  background: "rgba(220,53,69,0.12)",
+                  color: "#dc3545",
+                  border: "1px solid rgba(220,53,69,0.35)",
+                }}
+              >
+                <i className="bi bi-flag-fill me-2"></i>Report Listing
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {showReportModal && (
+        <div
+          onClick={() => !reportSubmitting && setShowReportModal(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.55)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1300,
+            padding: "1rem",
+          }}
+        >
+          <div
+            className="adm-card"
+            onClick={(event) => event.stopPropagation()}
+            style={{ width: "100%", maxWidth: 520 }}
+          >
+            <h3 className="adm-card-title" style={{ marginBottom: "0.5rem" }}>
+              Report Listing
+            </h3>
+            <p style={{ margin: 0, color: "var(--nexa-gray-400)", fontSize: "0.9rem" }}>
+              Tell us what looks wrong with this listing. Your report will be reviewed by an admin.
+            </p>
+
+            <form
+              onSubmit={handleSubmitReport}
+              style={{ display: "grid", gap: "0.85rem", marginTop: "1rem" }}
+            >
+              <label style={{ display: "grid", gap: "0.35rem" }}>
+                <span style={{ fontSize: "0.82rem", color: "var(--nexa-gray-300)" }}>Category</span>
+                <select
+                  value={reportCategory}
+                  onChange={(event) => setReportCategory(event.target.value)}
+                  style={{
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,0.24)",
+                    background: "var(--nexa-surface)",
+                    color: "var(--nexa-gray-200)",
+                    boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.18)",
+                  }}
+                >
+                  <option value="inaccurate listing">Inaccurate listing</option>
+                  <option value="fraud">Fraud</option>
+                  <option value="safety issue">Safety issue</option>
+                  <option value="duplicate">Duplicate</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+              <label style={{ display: "grid", gap: "0.35rem" }}>
+                <span style={{ fontSize: "0.82rem", color: "var(--nexa-gray-300)" }}>Title</span>
+                <input
+                  type="text"
+                  value={reportTitle}
+                  onChange={(event) => setReportTitle(event.target.value)}
+                  placeholder="Short summary of the issue"
+                  style={{
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,0.24)",
+                    background: "var(--nexa-surface)",
+                    color: "var(--nexa-gray-200)",
+                    boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.18)",
+                  }}
+                />
+              </label>
+              <label style={{ display: "grid", gap: "0.35rem" }}>
+                <span style={{ fontSize: "0.82rem", color: "var(--nexa-gray-300)" }}>
+                  Description
+                </span>
+                <textarea
+                  rows={5}
+                  value={reportDescription}
+                  onChange={(event) => setReportDescription(event.target.value)}
+                  placeholder="Explain what’s wrong with the listing"
+                  style={{
+                    padding: "0.7rem 0.75rem",
+                    borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,0.24)",
+                    background: "var(--nexa-surface)",
+                    color: "var(--nexa-gray-200)",
+                    boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.18)",
+                    resize: "vertical",
+                  }}
+                />
+              </label>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "0.6rem",
+                  marginTop: "0.25rem",
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-nexa-outline"
+                  disabled={reportSubmitting}
+                  onClick={() => setShowReportModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-nexa" disabled={reportSubmitting}>
+                  {reportSubmitting ? "Submitting..." : "Submit Report"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import AdminSidebar from "../../components/AdminSidebar";
-import AdminToast from "../../components/AdminToast";
+import Toast from "../../components/Toast";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 const FALLBACK_PHOTO = "https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=500&q=75";
@@ -581,7 +581,7 @@ export default function AdminListingReview() {
           </div>
         </div>
 
-        <AdminToast
+        <Toast
           open={showNoteSavedToast}
           variant="success"
           message="Admin note saved successfully."

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import AdminSidebar from "../../components/AdminSidebar";
-import AdminToast from "../../components/AdminToast";
+import Toast from "../../components/Toast";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
@@ -230,7 +230,7 @@ export default function AdminUserDetail() {
     <div className="adm-layout">
       <AdminSidebar />
       <main className="adm-main">
-        {toast && <AdminToast toast={toast} onClose={() => setToast(null)} />}
+        {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
 
         <div className="adm-header">
           <nav

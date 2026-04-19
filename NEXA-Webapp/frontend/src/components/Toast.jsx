@@ -2,18 +2,23 @@ import { useEffect, useState } from "react";
 
 const TOAST_FADE_MS = 220;
 
-export default function AdminToast({
+export default function Toast({
+  toast,
   open,
   message,
   onClose,
   variant = "success",
   autoHideDuration = 2400,
 }) {
-  const [shouldRender, setShouldRender] = useState(open);
-  const [isVisible, setIsVisible] = useState(open);
+  const resolvedOpen = Boolean(toast) || Boolean(open);
+  const resolvedMessage = toast?.message || message || "";
+  const resolvedVariant = toast?.type || variant;
+
+  const [shouldRender, setShouldRender] = useState(resolvedOpen);
+  const [isVisible, setIsVisible] = useState(resolvedOpen);
 
   useEffect(() => {
-    if (open) {
+    if (resolvedOpen) {
       setShouldRender(true);
       const frameId = requestAnimationFrame(() => {
         setIsVisible(true);
@@ -31,10 +36,10 @@ export default function AdminToast({
     }, TOAST_FADE_MS);
 
     return () => clearTimeout(hideTimer);
-  }, [open, shouldRender]);
+  }, [resolvedOpen, shouldRender]);
 
   useEffect(() => {
-    if (!open || !autoHideDuration) {
+    if (!resolvedOpen || !autoHideDuration) {
       return undefined;
     }
 
@@ -43,7 +48,7 @@ export default function AdminToast({
     }, autoHideDuration);
 
     return () => clearTimeout(dismissTimer);
-  }, [open, autoHideDuration, onClose]);
+  }, [resolvedOpen, autoHideDuration, onClose]);
 
   if (!shouldRender) {
     return null;
@@ -51,13 +56,13 @@ export default function AdminToast({
 
   return (
     <div
-      className={`adm-toast adm-toast-${variant} ${isVisible ? "is-visible" : "is-hidden"}`}
+      className={`adm-toast adm-toast-${resolvedVariant} ${isVisible ? "is-visible" : "is-hidden"}`}
       role="status"
       aria-live="polite"
     >
       <div className="adm-toast-content">
         <i className="bi bi-check-circle-fill adm-toast-icon" aria-hidden="true"></i>
-        <span className="adm-toast-message">{message}</span>
+        <span className="adm-toast-message">{resolvedMessage}</span>
       </div>
       <button
         type="button"

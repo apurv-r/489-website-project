@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import AdminSidebar from "../../components/AdminSidebar";
-import AdminToast from "../../components/AdminToast";
+import Toast from "../../components/Toast";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 const PAGE_SIZE = 10;
@@ -184,7 +184,7 @@ export default function AdminUsers() {
     <div className="adm-layout">
       <AdminSidebar />
       <main className="adm-main">
-        {toast && <AdminToast toast={toast} onClose={() => setToast(null)} />}
+        {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
         <div className="adm-page-header">
           <div>
             <h1 className="adm-page-title">Users</h1>

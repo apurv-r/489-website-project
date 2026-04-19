@@ -33,16 +33,8 @@
   --nexa-white: #fafafe;
 
   /* gradients */
-  --nexa-gradient: linear-gradient(
-    135deg,
-    var(--nexa-primary) 0%,
-    var(--nexa-accent) 100%
-  );
-  --nexa-gradient-dark: linear-gradient(
-    135deg,
-    var(--nexa-dark) 0%,
-    var(--nexa-dark-light) 100%
-  );
+  --nexa-gradient: linear-gradient(135deg, var(--nexa-primary) 0%, var(--nexa-accent) 100%);
+  --nexa-gradient-dark: linear-gradient(135deg, var(--nexa-dark) 0%, var(--nexa-dark-light) 100%);
   --nexa-gradient-card: linear-gradient(
     160deg,
     rgba(108, 92, 231, 0.08) 0%,
@@ -78,6 +70,7 @@ body {
   color: var(--nexa-gray-100);
   line-height: 1.7;
   overflow-x: hidden;
+  color-scheme: dark;
 }
 
 h1,
@@ -104,6 +97,43 @@ a:hover {
 img {
   max-width: 100%;
   height: auto;
+}
+
+select,
+.form-select,
+.adm-select {
+  background-color: var(--nexa-dark-light);
+  border: 1px solid rgba(108, 92, 231, 0.18);
+  color: var(--nexa-gray-100);
+  border-radius: var(--nexa-radius);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.95rem;
+  transition: var(--nexa-transition);
+  color-scheme: dark;
+}
+
+select:focus,
+.form-select:focus,
+.adm-select:focus {
+  outline: none;
+  border-color: var(--nexa-primary);
+  box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.18);
+  background-color: var(--nexa-dark-light);
+  color: var(--nexa-gray-100);
+}
+
+select option,
+.form-select option,
+.adm-select option {
+  background: var(--nexa-dark-light);
+  color: var(--nexa-gray-100);
+}
+
+select optgroup,
+.form-select optgroup,
+.adm-select optgroup {
+  background: var(--nexa-dark-light);
+  color: var(--nexa-gray-100);
 }
 
 ::selection {
@@ -237,11 +267,7 @@ img {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    var(--nexa-accent) 0%,
-    var(--nexa-primary) 100%
-  );
+  background: linear-gradient(135deg, var(--nexa-accent) 0%, var(--nexa-primary) 100%);
   opacity: 0;
   transition: var(--nexa-transition);
   z-index: -1;
@@ -898,11 +924,7 @@ img {
   left: calc(50% + 36px);
   width: calc(100% - 72px);
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    var(--nexa-primary) 0%,
-    rgba(108, 92, 231, 0.1) 100%
-  );
+  background: linear-gradient(90deg, var(--nexa-primary) 0%, rgba(108, 92, 231, 0.1) 100%);
 }
 
 /* ---------- Section Headers ---------- */
@@ -1280,4 +1302,3 @@ img {
     padding: 28px;
   }
 }
-
