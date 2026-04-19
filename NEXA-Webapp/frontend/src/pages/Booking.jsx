@@ -104,6 +104,7 @@ export default function Booking({ _id: userId }) {
   const [error, setError] = useState("");
   const [listing, setListing] = useState(null);
   const [futureBookings, setFutureBookings] = useState([]);
+  const [serviceFeePercent, setServiceFeePercent] = useState(5);
 
   const checkInDate = useMemo(() => parseDateKey(checkInParam), [checkInParam]);
   const checkOutDate = useMemo(() => parseDateKey(checkOutParam), [checkOutParam]);
@@ -130,7 +131,7 @@ export default function Booking({ _id: userId }) {
   }, [checkInDate, checkOutDate]);
 
   const bookingSubtotal = bookingDays * bookingDailyRate;
-  const serviceFee = bookingSubtotal * 0.05;
+  const serviceFee = bookingSubtotal * (serviceFeePercent / 100);
   const bookingTotal = bookingSubtotal + serviceFee;
 
   useEffect(() => {
@@ -407,9 +408,12 @@ export default function Booking({ _id: userId }) {
       setError("");
 
       try {
-        const [listingResponse, bookingsResponse] = await Promise.all([
+        const [listingResponse, bookingsResponse, settingsResponse] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/parking-spaces/${listingId}`),
           axios.get(`${API_BASE_URL}/api/bookings/future/${listingId}`),
+          axios.get(`${API_BASE_URL}/api/platform-settings`, {
+            withCredentials: true,
+          }),
         ]);
 
         if (!isMounted) {
@@ -418,6 +422,11 @@ export default function Booking({ _id: userId }) {
 
         setListing(listingResponse.data);
         setFutureBookings(Array.isArray(bookingsResponse.data) ? bookingsResponse.data : []);
+
+        const nextServiceFee = Number(settingsResponse.data?.serviceFee);
+        if (Number.isFinite(nextServiceFee) && nextServiceFee >= 0) {
+          setServiceFeePercent(nextServiceFee);
+        }
       } catch (requestError) {
         if (!isMounted) {
           return;
@@ -771,7 +780,7 @@ export default function Booking({ _id: userId }) {
                   <span>${bookingSubtotal.toFixed(2)}</span>
                 </div>
                 <div className="bk-price-row">
-                  <span>Service fee (5%)</span>
+                  <span>Service fee ({serviceFeePercent}%)</span>
                   <span>${serviceFee.toFixed(2)}</span>
                 </div>
               </div>

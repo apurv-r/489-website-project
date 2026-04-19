@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
@@ -98,6 +98,8 @@ const US_STATE_OPTIONS = [
 ];
 
 export default function HostCreateListing() {
+  const [minListingPrice, setMinListingPrice] = useState(5);
+  const [maxPhotosPerListing, setMaxPhotosPerListing] = useState(12);
   const [step, setStep] = useState(0);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [success, setSuccess] = useState(false);
@@ -120,6 +122,42 @@ export default function HostCreateListing() {
     dailyRate: "",
     minBookingDuration: "",
   });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadPlatformSettings() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/platform-settings`, {
+          withCredentials: true,
+        });
+
+        if (!isMounted) {
+          return;
+        }
+
+        const settings = response.data || {};
+        const minPrice = Number(settings.minListingPrice);
+        const maxPhotos = Number(settings.maxPhotosPerListing);
+
+        if (Number.isFinite(minPrice) && minPrice >= 0) {
+          setMinListingPrice(minPrice);
+        }
+
+        if (Number.isFinite(maxPhotos) && maxPhotos >= 1) {
+          setMaxPhotosPerListing(maxPhotos);
+        }
+      } catch {
+        // Keep defaults if settings are unavailable.
+      }
+    }
+
+    loadPlatformSettings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   function updateField(field, value) {
     setFormData((previous) => ({ ...previous, [field]: value }));
@@ -257,14 +295,23 @@ export default function HostCreateListing() {
     }
 
     setPhotos((previous) => {
-      const remainingSlots = Math.max(0, 12 - previous.length);
+      const remainingSlots = Math.max(0, maxPhotosPerListing - previous.length);
       const accepted = sizeFiltered.slice(0, remainingSlots).map((file) => ({
         id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
         file,
         previewUrl: URL.createObjectURL(file),
       }));
 
-      if (accepted.length > 0) {
+      const exceededPhotoLimit = sizeFiltered.length > remainingSlots;
+
+      if (exceededPhotoLimit) {
+        setErrors((current) => ({
+          ...current,
+          photos: `You can upload up to ${maxPhotosPerListing} photos per listing.`,
+        }));
+      }
+
+      if (accepted.length > 0 && !exceededPhotoLimit) {
         setErrors((current) => ({ ...current, photos: "" }));
       }
 
@@ -318,8 +365,8 @@ export default function HostCreateListing() {
     }
 
     if (currentStep === 2) {
-      if (!formData.dailyRate || Number(formData.dailyRate) <= 0) {
-        nextErrors.dailyRate = "Daily rate must be greater than 0.";
+      if (!formData.dailyRate || Number(formData.dailyRate) < Number(minListingPrice)) {
+        nextErrors.dailyRate = `Daily rate must be at least $${Number(minListingPrice).toFixed(2)}.`;
       }
       if (!formData.minBookingDuration) {
         nextErrors.minBookingDuration = "Minimum booking duration is required.";
@@ -331,6 +378,10 @@ export default function HostCreateListing() {
 
     if (currentStep === 1 && photos.length < 1) {
       nextErrors.photos = "Upload at least one image before continuing.";
+    }
+
+    if (currentStep === 1 && photos.length > maxPhotosPerListing) {
+      nextErrors.photos = `You can upload up to ${maxPhotosPerListing} photos per listing.`;
     }
 
     setErrors((previous) => ({ ...previous, ...nextErrors }));
@@ -696,7 +747,7 @@ export default function HostCreateListing() {
                   Drag &amp; drop photos here, or click to browse
                 </p>
                 <p style={{ fontSize: "0.8rem", color: "var(--nexa-gray-600)" }}>
-                  PNG, JPG up to 10 MB each. Min. 1, max. 12 photos.
+                  PNG, JPG up to 10 MB each. Min. 1, max. {maxPhotosPerListing} photos.
                 </p>
                 <button
                   type="button"
@@ -753,11 +804,14 @@ export default function HostCreateListing() {
                     type="number"
                     className="lsr-input"
                     placeholder="0.00"
-                    min="0"
+                    min={String(minListingPrice)}
                     step="0.01"
                     value={formData.dailyRate}
                     onChange={(event) => updateField("dailyRate", event.target.value)}
                   />
+                  <small style={{ color: "var(--nexa-gray-500)" }}>
+                    Minimum allowed by platform: ${Number(minListingPrice).toFixed(2)}
+                  </small>
                   {errors.dailyRate && (
                     <small style={{ color: "#ff8080" }}>{errors.dailyRate}</small>
                   )}

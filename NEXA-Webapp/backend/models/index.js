@@ -7,4 +7,5 @@ module.exports = {
   Booking: require("./booking"),
   Report: require("./report"),
   Review: require("./review"),
+  PlatformSettings: require("./platformSettings"),
 };

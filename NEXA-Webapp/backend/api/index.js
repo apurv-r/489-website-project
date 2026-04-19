@@ -10,6 +10,7 @@ const bookingsRouter = require("./routes/bookings");
 const reportsRouter = require("./routes/reports");
 const uploadsRouter = require("./routes/uploads");
 const reviewsRouter = require("./routes/reviews");
+const platformSettingsRouter = require("./routes/platformSettings");
 
 const privateRouter = express.Router();
 const publicRouter = express.Router();
@@ -24,8 +25,14 @@ publicRouter.get("/parking-spaces/:id", (req, res, next) => {
 
   return parkingSpaceController.getPublic(req, res, next);
 });
-publicRouter.get("/bookings/future/:parkingSpaceId", bookingController.getCurrentAndFutureBookingsFor);
-publicRouter.get("/reviews/listing/:listingId", require("../controllers/reviewController").getReviewsForListing);
+publicRouter.get(
+  "/bookings/future/:parkingSpaceId",
+  bookingController.getCurrentAndFutureBookingsFor,
+);
+publicRouter.get(
+  "/reviews/listing/:listingId",
+  require("../controllers/reviewController").getReviewsForListing,
+);
 
 // routes require auth
 privateRouter.use("/auth", authRouter);
@@ -36,6 +43,7 @@ privateRouter.use("/parking-spaces", parkingSpacesRouter);
 privateRouter.use("/bookings", bookingsRouter);
 privateRouter.use("/reports", reportsRouter);
 privateRouter.use("/reviews", reviewsRouter);
+privateRouter.use("/platform-settings", platformSettingsRouter);
 
 router.use(publicRouter);
 router.use(privateRouter);
