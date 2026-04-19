@@ -33,6 +33,7 @@ const userSchema = new Schema(
     profilePictureUrl: {
       type: String,
       trim: true,
+      default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5I_4rHVF4v-nVo2bwqXOee-T6iTQ8Sc22oQ&s"
     },
     messages: {
       type: Map,
