@@ -46,6 +46,11 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    accountStatus: {
+      type: String,
+      enum: ["active", "suspended"],
+      default: "active",
+    },
   },
   {
     timestamps: true,

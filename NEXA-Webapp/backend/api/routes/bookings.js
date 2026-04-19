@@ -8,7 +8,7 @@ const router = express.Router();
 const controller = createCrudController(Booking);
 
 router.get("/me", bookingController.getMyBookings);
-router.get("/", requireRole("Admin"), controller.list);
+router.get("/", requireRole("Admin"), bookingController.listBookingsForAdmin);
 router.get("/future/:parkingSpaceId", bookingController.getCurrentAndFutureBookingsFor);
 router.get("/:id", bookingController.getBookingIfOwner);
 router.post("/", bookingController.createBooking);

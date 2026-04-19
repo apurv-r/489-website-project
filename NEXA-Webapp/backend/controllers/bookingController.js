@@ -1,6 +1,18 @@
 const Booking = require("../models/booking");
 const ParkingSpace = require("../models/parkingSpace");
 
+async function listBookingsForAdmin(req, res, next) {
+  try {
+    const query = req.query || {};
+    const bookings = await Booking.find(query)
+      .populate("parkingSpace", "title")
+      .sort({ createdAt: -1 });
+    res.json(bookings);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function getCurrentAndFutureBookingsFor(req, res, next) {
   try {
     const { parkingSpaceId } = req.params;
@@ -154,6 +166,7 @@ async function deleteBookingIfOwner(req, res, next) {
 }
 
 module.exports = {
+  listBookingsForAdmin,
   getCurrentAndFutureBookingsFor,
   createBooking,
   getMyBookings,
