@@ -164,8 +164,7 @@ export default function AdminVerificationQueue() {
     return listings
       .filter((listing) => !listing?.isVerified)
       .map((listing) => {
-        const host = hostById.get(String(listing?.host));
-        console.log("Listing host:", host);
+        const host = hostById.get(String(listing?.host._id));
         const status = getQueueStatus(listing);
 
         return {

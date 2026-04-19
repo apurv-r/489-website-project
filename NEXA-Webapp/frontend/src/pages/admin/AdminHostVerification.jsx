@@ -58,7 +58,9 @@ function getBadgeClass(status) {
 }
 
 function getHostListingSummary(hostId, allListings, bookingsByListingId) {
-  const hostListings = allListings.filter((listing) => String(listing?.host) === String(hostId));
+  const hostListings = allListings.filter(
+    (listing) => String(listing?.host?._id) === String(hostId),
+  );
 
   if (hostListings.length === 0) {
     return [];
@@ -154,7 +156,7 @@ export default function AdminHostVerification() {
       .map((host) => {
         const status = formatHostStatus(host);
         const hostListings = listings.filter(
-          (listing) => String(listing?.host) === String(host?._id),
+          (listing) => String(listing?.host?._id) === String(host?._id),
         );
         const listingsSummary = getHostListingSummary(host?._id, listings, bookingsByListingId);
         const totalBookings = hostListings.reduce((sum, listing) => {
