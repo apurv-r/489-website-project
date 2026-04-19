@@ -5,12 +5,7 @@ import LesseeSidebar from '../components/LesseeSidebar';
 import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const BOOKINGS = [
-  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', dates: 'Jun 9 – Jun 12, 2025', duration: '3 days', total: '$15.75', status: 'active' },
-  { img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=240&q=80', type: 'Covered Driveway', name: 'Covered Driveway · Fremont', addr: '3812 Fremont Ave N, Seattle, WA', dates: 'Jun 14 – Jun 18, 2025', duration: '4 days', total: '$21.00', status: 'active' },
-  { img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=240&q=80', type: 'Outdoor Lot', name: 'Outdoor Lot · South Lake Union', addr: '440 Terry Ave N, Seattle, WA', dates: 'Jul 1 – Jul 3, 2025', duration: '2 days', total: '$10.50', status: 'upcoming' },
-  { img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=240&q=80', type: 'Covered Garage', name: 'Covered Garage · Eastlake', addr: '2200 Eastlake Ave E, Seattle, WA', dates: 'Apr 20 – Apr 22, 2025', duration: '2 days', total: '$18.00', status: 'completed' },
-];
+const BOOKINGS = [];
 
 const STATUS_CLASS = { active: 'status-active', upcoming: 'status-upcoming', completed: 'status-completed', cancelled: 'status-cancelled' };
 const TABS = ['all', 'active', 'upcoming', 'completed', 'cancelled'];
@@ -19,22 +14,71 @@ export default function MyBookings(user) {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [bookings, setBookings] = useState(BOOKINGS);
+  const [bookingStats, setBookingStats] = useState({ active: 0, past: 0 });
   const shown = filter === 'all' ? bookings : bookings.filter(b => b.status === filter);
 
+
+  async function fetchListing(listingId) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/parking-spaces/${listingId}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.log("error fetching listing data for dashboard:", error);
+    }
+  }
+
+  function formatDates(start, end) {
+    const options = { month: 'short', day: 'numeric' };
+    const startDate = new Date(start).toLocaleDateString(undefined, options);
+    const endDate = new Date(end).toLocaleDateString(undefined, options);
+    return `${startDate} – ${endDate}`;
+  }
+
+  function calculateBookingStats() {
+    const active = bookings.filter(b => b.status === 'active').length;
+    const past = bookings.filter(b => b.status === 'completed').length;
+    setBookingStats({ active, past });
+  }
+
+  function calcDuration(start, end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const duration = Math.round((endDate - startDate) / msPerDay);
+      return Math.max(0, duration);
+  }
+
   async function fetchBookings() {
-    await axios.get(`${API_BASE_URL}/api/bookings/me`, {
-      withCredentials: true,
-    })
-    .then(response => {
-      if (response.status === 200) {
-        const mapped = response.data.map(b => ({ ...b, id: b._id }));
-        setBookings(prev => [...prev, ...mapped]);
-        console.log("successfully fetched bookings data for my-bookings:", mapped);
-      }
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/bookings/me`, {
+        withCredentials: true,
+      });
+
+      const fetchedBookings = response.data.map((booking) => {
+        const listing = booking.parkingSpace;
+        const duration = calcDuration(booking.startDate, booking.endDate);
+        return {
+          img: listing?.imageUrls?.[0] || '',
+          type: listing?.parkingType || '',
+          name: listing?.title || '',
+          addr: listing?.location?.address || '',
+          dates: formatDates(booking.startDate, booking.endDate),
+          duration: `${duration} day${duration !== 1 ? 's' : ''}`,
+          total: `$${booking.totalAmount.toFixed(2)}`,
+          price: `$${booking.totalAmount.toFixed(2)}`,
+          status: booking.status,
+          cls: `status-${booking.status}`,
+          id: booking._id,
+        };
+      });
+
+      setBookings(fetchedBookings);
+      console.log("successfully fetched bookings data for my-bookings:", fetchedBookings);
+    } catch (error) {
+      console.log("error fetching bookings:", error);
+    }
   }
 
   useEffect(() => {
@@ -89,7 +133,7 @@ export default function MyBookings(user) {
                   <div className="bookings-card-meta">
                     <div className="bookings-meta-item"><i className="bi bi-calendar3"></i> {b.dates}</div>
                     <div className="bookings-meta-item"><i className="bi bi-moon-stars"></i> {b.duration}</div>
-                    <div className="bookings-meta-item"><i className="bi bi-tag-fill"></i> {b.total} total</div>
+                    <div className="bookings-meta-item"><i className="bi bi-tag-fill"></i> {b.total}</div>
                   </div>
                 </div>
               </div>

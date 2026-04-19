@@ -26,6 +26,7 @@ export default function HostListingDetails() {
 
   const [listing, setListing] = useState(null);
   const [bookings, setBookings] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -41,9 +42,10 @@ export default function HostListingDetails() {
         const token = localStorage.getItem('token');
         const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 
-        const [listingRes, bookingsRes] = await Promise.all([
+        const [listingRes, bookingsRes, reviewsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/parking-spaces/${id}`, { withCredentials: true, headers }),
           axios.get(`${API_BASE_URL}/api/bookings/me`, { withCredentials: true, headers }),
+          axios.get(`${API_BASE_URL}/api/reviews/listing/${id}`),
         ]);
 
         setListing(listingRes.data);
@@ -51,6 +53,7 @@ export default function HostListingDetails() {
           b => b.parkingSpace?._id === id || b.parkingSpace === id
         );
         setBookings(spaceBookings);
+        setReviews(Array.isArray(reviewsRes.data) ? reviewsRes.data : []);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load listing.');
       } finally {
@@ -176,6 +179,35 @@ export default function HostListingDetails() {
                           <span style={{ fontSize: '0.72rem', fontWeight: 600, color: STATUS_COLORS[b.status], textTransform: 'uppercase', letterSpacing: '0.05em' }}>{b.status}</span>
                         </div>
                         <Link to={`/host/booking-details?id=${b._id}`} className="btn btn-nexa-outline btn-nexa-sm ms-3">View</Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Reviews */}
+              <div className="dash-card" style={{ marginTop: '1.5rem' }}>
+                <h3 className="dash-card-title">Reviews ({reviews.length})</h3>
+                {reviews.length === 0 ? (
+                  <p style={{ color: 'var(--nexa-gray-500)', marginTop: '1rem' }}>No reviews yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+                    {reviews.map(r => (
+                      <div key={r._id} style={{ borderBottom: '1px solid var(--nexa-border)', paddingBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                          <p style={{ fontWeight: 600, margin: 0, fontSize: '0.9rem' }}>
+                            {r.renter ? `${r.renter.firstName} ${r.renter.lastName}` : 'Anonymous'}
+                          </p>
+                          <div style={{ display: 'flex', gap: '0.15rem' }}>
+                            {[1,2,3,4,5].map(s => (
+                              <i key={s} className={`bi ${r.rating >= s ? 'bi-star-fill' : 'bi-star'}`} style={{ color: '#ffc107', fontSize: '0.8rem' }} />
+                            ))}
+                          </div>
+                        </div>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--nexa-gray-500)', margin: '0 0 0.4rem' }}>
+                          {new Date(r.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        </p>
+                        {r.comment && <p style={{ color: 'var(--nexa-gray-300)', margin: 0, fontSize: '0.875rem' }}>{r.comment}</p>}
                       </div>
                     ))}
                   </div>

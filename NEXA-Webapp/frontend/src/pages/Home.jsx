@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Footer from "../components/Footer";
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -8,6 +11,14 @@ export default function Home() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
+
+  const [featuredListings, setFeaturedListings] = useState([]);
+
+  useEffect(() => {
+    axios.get(`${API_BASE_URL}/api/parking-spaces`)
+      .then(res => setFeaturedListings((res.data || []).slice(0, 3)))
+      .catch(() => {});
+  }, []);
 
   const normalizedQuery = locationQuery.trim();
   const hasInvalidDateRange = Boolean(startDate && endDate && endDate < startDate);
@@ -239,100 +250,78 @@ export default function Home() {
       </section>
 
       {/* FEATURED LISTINGS */}
-      <section className="section-padding bg-dark-light" id="listings">
-        <div className="container">
-          <div className="section-header text-center">
-            <span className="section-tag">
-              <i className="bi bi-star"></i> Featured Listings
-            </span>
-            <h2>
-              Popular <span className="text-gradient">Parking Spots</span>
-            </h2>
-            <p>Hand-picked spaces loved by our community of drivers.</p>
-          </div>
-          <div className="row g-4">
-            {[
-              {
-                img: "https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=500&q=80",
-                badge: "Featured",
-                title: "Private Garage — Capitol Hill",
-                location: "Seattle, WA",
-                tags: ["Garage", "Covered", "24/7 Access"],
-                price: "$18",
-                rating: "4.9",
-                reviews: 42,
-              },
-              {
-                img: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=500&q=80",
-                badge: "Popular",
-                title: "Spacious Driveway — Belltown",
-                location: "Seattle, WA",
-                tags: ["Driveway", "Easy Access"],
-                price: "$12",
-                rating: "4.7",
-                reviews: 28,
-              },
-              {
-                img: "https://images.unsplash.com/photo-1621929747188-0b4dc28498d6?w=500&q=80",
-                badge: "New",
-                title: "Open Lot — University District",
-                location: "Seattle, WA",
-                tags: ["Open Lot", "Budget", "Near Transit"],
-                price: "$8",
-                rating: "4.5",
-                reviews: 15,
-              },
-            ].map((card, i) => (
-              <div className="col-lg-4 col-md-6" key={i}>
-                <div
-                  className="listing-card"
-                  onClick={() => navigate("/details")}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="listing-img">
-                    <img src={card.img} alt={card.title} />
-                    <span className="listing-badge">{card.badge}</span>
-                    <button
-                      className="listing-save"
-                      aria-label="Save listing"
-                      onClick={(e) => e.stopPropagation()}
+      {featuredListings.length > 0 && (
+        <section className="section-padding bg-dark-light" id="listings">
+          <div className="container">
+            <div className="section-header text-center">
+              <span className="section-tag">
+                <i className="bi bi-star"></i> Featured Listings
+              </span>
+              <h2>
+                Popular <span className="text-gradient">Parking Spots</span>
+              </h2>
+              <p>Hand-picked spaces loved by our community of drivers.</p>
+            </div>
+            <div className="row g-4">
+              {featuredListings.map((listing) => {
+                const location = [listing.location?.city, listing.location?.state].filter(Boolean).join(", ");
+                const amenities = (listing.amenities || []).slice(0, 3);
+                return (
+                  <div className="col-lg-4 col-md-6" key={listing._id}>
+                    <div
+                      className="listing-card"
+                      onClick={() => navigate(`/details?id=${listing._id}`)}
+                      style={{ cursor: "pointer" }}
                     >
-                      <i className="bi bi-heart"></i>
-                    </button>
-                  </div>
-                  <div className="listing-body">
-                    <h6 className="listing-title">{card.title}</h6>
-                    <p className="listing-location">
-                      <i className="bi bi-geo-alt-fill"></i> {card.location}
-                    </p>
-                    <div className="listing-tags">
-                      {card.tags.map((t) => (
-                        <span className="listing-tag" key={t}>
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="listing-footer">
-                      <div className="listing-price">
-                        {card.price} <span>/ day</span>
+                      <div className="listing-img">
+                        {listing.imageUrls?.[0]
+                          ? <img src={listing.imageUrls[0]} alt={listing.title} />
+                          : <div style={{ width: '100%', height: '100%', background: 'var(--nexa-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nexa-gray-500)' }}><i className="bi bi-image fs-2" /></div>
+                        }
+                        <span className="listing-badge">Featured</span>
+                        <button
+                          className="listing-save"
+                          aria-label="Save listing"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <i className="bi bi-heart"></i>
+                        </button>
                       </div>
-                      <div className="listing-rating">
-                        <i className="bi bi-star-fill"></i> {card.rating}{" "}
-                        <span>({card.reviews})</span>
+                      <div className="listing-body">
+                        <h6 className="listing-title">{listing.title}</h6>
+                        <p className="listing-location">
+                          <i className="bi bi-geo-alt-fill"></i> {location || "Location unavailable"}
+                        </p>
+                        <div className="listing-tags">
+                          {listing.parkingType && <span className="listing-tag">{listing.parkingType}</span>}
+                          {amenities.map((a) => (
+                            <span className="listing-tag" key={a}>{a}</span>
+                          ))}
+                        </div>
+                        <div className="listing-footer">
+                          <div className="listing-price">
+                            ${Number(listing.dailyRate).toFixed(0)} <span>/ day</span>
+                          </div>
+                          <div className="listing-rating">
+                            <i className="bi bi-star-fill"></i>{" "}
+                            {listing.reviewCount > 0 ? Number(listing.ratingAverage).toFixed(1) : "New"}{" "}
+                            <span>({listing.reviewCount || 0})</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                );
+              })}
+            </div>
+            <div className="text-center mt-5">
+              <button className="btn btn-nexa-outline" onClick={() => navigate("/search")}>
+                View All Listings <i className="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
           </div>
-          <div className="text-center mt-5">
-            <button className="btn btn-nexa-outline" onClick={() => navigate("/search")}>
-              View All Listings <i className="bi bi-arrow-right ms-1"></i>
-            </button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* WHY NEXA */}
       <section className="section-padding" id="features">
