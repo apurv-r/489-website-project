@@ -217,7 +217,7 @@ export default function HostMyListings() {
                         <i className="bi bi-cash"></i> {listing.price}
                       </span>
                       <span>
-                        <i className="bi bi-star-fill"></i> {listing.reviews > 0 ? listing.rating.toFixed(1) : "No rating"} (
+                        <i className="bi bi-star-fill"></i> {listing.reviews > 0 ? listing.rating : "No rating"} (
                         {listing.reviews})
                       </span>
                       <span>
