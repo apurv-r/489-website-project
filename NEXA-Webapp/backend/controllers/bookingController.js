@@ -78,6 +78,8 @@ async function getBookingIfOwner(req, res, next) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
+    await booking.populate("renter", "firstName lastName email");
+    await booking.populate("parkingSpace", "title imageUrls location parkingType maxVehicleSize dailyRate");
     res.json(booking);
   } catch (error) {
     next(error);
