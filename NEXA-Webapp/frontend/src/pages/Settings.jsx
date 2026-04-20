@@ -158,7 +158,7 @@ export default function Settings() {
     <div className="dash-page">
       <Navbar variant="dashboard" />
       <div className="dash-layout">
-        <Sidebar />
+        <LesseeSidebar {...user}/>
         <main className="dash-main">
           <div className="dash-page-header">
             <div>
