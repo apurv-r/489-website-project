@@ -2,8 +2,10 @@ const express = require("express");
 const User = require("../../models/user");
 const Host = require("../../models/host");
 const Admin = require("../../models/admin");
+const Renter = require("../../models/renter");
 const createCrudController = require("../../controllers/crudFactory");
 const requireRole = require("../../middleware/requireRole");
+const requireAuth = require("../../middleware/requireAuth");
 
 const router = express.Router();
 const controller = createCrudController(User);
@@ -73,6 +75,44 @@ router.patch("/:id", requireRole("Admin"), async (req, res, next) => {
     return next(error);
   }
 });
+router.get("/:id/favorites", requireAuth, async (req, res, next) => {
+  try {
+    const renter = await Renter.findById(req.params.id).populate("favoritedListings");
+    if (!renter) return res.status(404).json({ message: "User not found" });
+    res.json(renter.favoritedListings || []);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/:id/favorites/:listingId", requireAuth, async (req, res, next) => {
+  try {
+    const updated = await Renter.findByIdAndUpdate(
+      req.params.id,
+      { $addToSet: { favoritedListings: req.params.listingId } },
+      { returnDocument: "after" },
+    );
+    if (!updated) return res.status(404).json({ message: "User not found" });
+    res.json({ favoritedListings: updated.favoritedListings });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete("/:id/favorites/:listingId", requireAuth, async (req, res, next) => {
+  try {
+    const updated = await Renter.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { favoritedListings: req.params.listingId } },
+      { returnDocument: "after" },
+    );
+    if (!updated) return res.status(404).json({ message: "User not found" });
+    res.json({ favoritedListings: updated.favoritedListings });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.put("/:id", controller.update);
 router.delete("/:id", requireRole("Admin"), async (req, res, next) => {
   try {

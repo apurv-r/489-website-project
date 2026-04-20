@@ -171,7 +171,7 @@ function doesListingMatchDateWindow(listing, startDateValue, endDateValue) {
   return true;
 }
 
-export default function Search() {
+export default function Search(user) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeType, setActiveType] = useState("all");
   const [listings, setListings] = useState([]);
@@ -181,6 +181,14 @@ export default function Search() {
   const [startDate, setStartDate] = useState(() => searchParams.get("start") || "");
   const [endDate, setEndDate] = useState(() => searchParams.get("end") || "");
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
+  const [favoriteIds, setFavoriteIds] = useState(new Set());
+
+  useEffect(() => {
+    if (!user?._id) return;
+    axios.get(`${API_BASE_URL}/api/users/${user._id}/favorites`, { withCredentials: true })
+      .then(res => setFavoriteIds(new Set(res.data.map(l => l._id))))
+      .catch(() => {});
+  }, [user?._id]);
 
   useEffect(() => {
     setSearchQuery(searchParams.get("q") || "");
@@ -188,6 +196,21 @@ export default function Search() {
     setEndDate(searchParams.get("end") || "");
     setSearchValidationMessage("");
   }, [searchParams]);
+
+  function handleFavorite(id) {
+    if (!user?._id) return;
+    const isFav = favoriteIds.has(id);
+    const method = isFav ? 'delete' : 'put';
+    axios[method](`${API_BASE_URL}/api/users/${user._id}/favorites/${id}`, {}, { withCredentials: true })
+      .then(() => {
+        setFavoriteIds(prev => {
+          const next = new Set(prev);
+          isFav ? next.delete(id) : next.add(id);
+          return next;
+        });
+      })
+      .catch(err => console.log('error toggling favorite:', err));
+  }
 
   function applySearchFilters(queryText, startDateValue, endDateValue) {
     const normalizedQuery = String(queryText || "").trim();
@@ -521,8 +544,11 @@ export default function Search() {
                         No image
                       </div>
                     )}
-                    <button className="listing-save" onClick={(e) => e.preventDefault()}>
-                      <i className="bi bi-heart"></i>
+                    <button
+                      className="listing-save"
+                      onClick={(e) => { e.preventDefault(); handleFavorite(r.id); }}
+                    >
+                      <i className={`bi bi-heart${favoriteIds.has(r.id) ? '-fill' : ''}`}></i>
                     </button>
                   </div>
                   <div className="search-result-body">
