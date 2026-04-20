@@ -27,11 +27,13 @@ function createCrudController(Model) {
         const { senderId, recipientId } = req.params;
         const { text } = req.body;
 
+        const message = { text, senderId };
+
         const updatedSender = await Model.findByIdAndUpdate(
           senderId,
           {
             $set: { [`messages.${recipientId}.role`]: "sender" },
-            $push: { [`messages.${recipientId}.messageHistory`]: text },
+            $push: { [`messages.${recipientId}.messageHistory`]: message },
           },
           { returnDocument: "after", runValidators: true },
         );
@@ -40,7 +42,7 @@ function createCrudController(Model) {
           recipientId,
           {
             $set: { [`messages.${senderId}.role`]: "receiver" },
-            $push: { [`messages.${senderId}.messageHistory`]: text },
+            $push: { [`messages.${senderId}.messageHistory`]: message },
           },
           { returnDocument: "after", runValidators: true },
         );

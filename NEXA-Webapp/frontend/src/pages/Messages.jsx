@@ -72,11 +72,13 @@ export default function Messages(user) {
     const thread = { id, name: displayName, img: imgURL, time: '', preview: '', unread: false, listing: '' };
     setThreads(prev => prev.find(t => t.id === id) ? prev : [...prev, thread]);
     const threadMessages = fetchedUser.messages?.[user._id];
-    const myRole = threadMessages?.role;
-    console.log("role: ", myRole);
     setConversations(c => ({
       ...c,
-      [id]: threadMessages?.messageHistory?.map(msg => ({ from: myRole === 'receiver' ? 'me' : 'them', text: msg, time: '' })) || [],
+      [id]: threadMessages?.messageHistory?.map(msg => ({
+        from: msg.senderId === user._id ? 'me' : 'them',
+        text: msg.text,
+        time: '',
+      })) || [],
     }));
   }
 
