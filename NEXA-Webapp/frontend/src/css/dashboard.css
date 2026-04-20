@@ -405,6 +405,12 @@ body.dash-page,
   border: 1px solid rgba(231, 76, 60, 0.25);
 }
 
+.status-declined {
+  background: rgba(231, 76, 60, 0.12);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.25);
+}
+
 /* ── Messages preview list (overview card) ── */
 .dash-msg-list {
   display: flex;

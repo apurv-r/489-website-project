@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const BOOKINGS = [];
 
 function getEffectiveStatus(status, startDate, endDate) {
-  if (status === 'cancelled') return 'cancelled';
+  if (status === 'cancelled' || status === 'declined' || status === 'pending') return status;
   const now = new Date();
   const start = new Date(startDate);
   const end = new Date(endDate);

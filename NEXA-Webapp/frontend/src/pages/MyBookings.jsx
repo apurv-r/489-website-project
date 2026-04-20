@@ -7,11 +7,10 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const BOOKINGS = [];
 
-const STATUS_CLASS = { active: 'status-active', upcoming: 'status-upcoming', completed: 'status-completed', cancelled: 'status-cancelled' };
 const TABS = ['all', 'active', 'upcoming', 'completed', 'cancelled'];
 
 function getEffectiveStatus(status, startDate, endDate) {
-  if (status === 'cancelled') return 'cancelled';
+  if (status === 'cancelled' || status === 'declined' || status === 'pending') return status;
   const now = new Date();
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -137,7 +136,7 @@ export default function MyBookings(user) {
                       <h3 className="bookings-card-name">{b.name}</h3>
                       <div className="bookings-card-addr"><i className="bi bi-geo-alt-fill"></i> {b.addr}</div>
                     </div>
-                    <span className={`dash-booking-status ${STATUS_CLASS[b.status]}`}>
+                    <span className={`dash-booking-status ${b.cls}`}>
                       {b.status.charAt(0).toUpperCase() + b.status.slice(1)}
                     </span>
                   </div>

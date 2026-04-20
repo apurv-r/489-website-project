@@ -25,6 +25,16 @@ function calcDuration(start, end) {
   return Math.max(0, Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)));
 }
 
+function getEffectiveStatus(status, startDate, endDate) {
+  if (status === 'cancelled' || status === 'declined' || status === 'pending') return status;
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (now > end) return 'completed';
+  if (now >= start) return 'active';
+  return 'upcoming';
+}
+
 export default function HostBookingDetails() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
@@ -68,9 +78,7 @@ export default function HostBookingDetails() {
     setActionLoading(true);
     setActionError('');
     try {
-      const token = localStorage.getItem('token');
-      const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-      const res = await axios.put(`${API_BASE_URL}/api/bookings/${id}`, { status }, { withCredentials: true, headers });
+      const res = await axios.put(`${API_BASE_URL}/api/bookings/${id}`, { status }, { withCredentials: true });
       setBooking(res.data);
     } catch (err) {
       setActionError(err.response?.data?.message || 'Action failed.');
@@ -134,9 +142,24 @@ export default function HostBookingDetails() {
               {/* Guest profile */}
               <div className="dash-card lsr-lessee-profile">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--nexa-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, color: 'var(--nexa-lsr)', border: '2px solid var(--nexa-lsr)', flexShrink: 0 }}>
-                    {guestInitial}
-                  </div>
+                  {booking.renter?.profilePictureUrl ? (
+                    <img
+                      src={booking.renter.profilePictureUrl}
+                      alt={guestName}
+                      style={{
+                        width: 60,
+                        height: 60,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: '2px solid var(--nexa-lsr)',
+                        flexShrink: 0,
+                      }}
+                    />
+                  ) : (
+                    <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--nexa-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, color: 'var(--nexa-lsr)', border: '2px solid var(--nexa-lsr)', flexShrink: 0 }}>
+                      {guestInitial}
+                    </div>
+                  )}
                   <div>
                     <h3 style={{ margin: 0, fontWeight: 700 }}>{guestName}</h3>
                     {booking.renter?.email && (
@@ -175,17 +198,17 @@ export default function HostBookingDetails() {
 
               {/* Reservation */}
               <div className="dash-card">
-                <h3 className="dash-card-title">Reservation</h3>
+                <h3 className="dash-card-title" style={{ marginBottom: '1.25rem' }}>Reservation</h3>
                 <div className="lsr-res-grid">
                   {[
                     { label: 'Check-in', value: formatDate(booking.startDate) },
                     { label: 'Check-out', value: formatDate(booking.endDate) },
                     { label: 'Duration', value: `${duration} day${duration !== 1 ? 's' : ''}` },
-                    { label: 'Status', value: booking.status },
+                    { label: 'Status', value: getEffectiveStatus(booking.status, booking.startDate, booking.endDate) },
                   ].map(item => (
                     <div key={item.label}>
                       <p style={{ fontSize: '0.75rem', color: 'var(--nexa-gray-500)', margin: 0 }}>{item.label}</p>
-                      <p style={{ fontWeight: 600, margin: 0, textTransform: 'capitalize', color: item.label === 'Status' ? STATUS_COLORS[booking.status] : undefined }}>{item.value}</p>
+                      <p style={{ fontWeight: 600, margin: 0, textTransform: 'capitalize', color: item.label === 'Status' ? STATUS_COLORS[getEffectiveStatus(booking.status, booking.startDate, booking.endDate)] : undefined }}>{item.value}</p>
                     </div>
                   ))}
                 </div>

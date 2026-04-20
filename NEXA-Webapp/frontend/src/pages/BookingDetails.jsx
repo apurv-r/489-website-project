@@ -23,7 +23,7 @@ function StarPicker({ value, onChange }) {
 }
 
 function getEffectiveStatus(status, startDate, endDate) {
-  if (status === "cancelled") return "cancelled";
+  if (status === 'cancelled' || status === 'declined' || status === 'pending') return status;
   const now = new Date();
   const start = new Date(startDate);
   const end = new Date(endDate);

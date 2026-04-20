@@ -53,7 +53,7 @@ async function getMyBookings(req, res, next) {
     const bookings = await Booking.find({
       $or: [{ renter: req.user._id }, { host: req.user._id }],
     })
-      .populate("renter", "firstName lastName email")
+      .populate("renter", "firstName lastName email profilePictureUrl")
       .populate("parkingSpace", "title imageUrls location parkingType dailyRate description");
     res.json(bookings);
   } catch (error) {
@@ -78,7 +78,7 @@ async function getBookingIfOwner(req, res, next) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    await booking.populate("renter", "firstName lastName email");
+    await booking.populate("renter", "firstName lastName email profilePictureUrl");
     await booking.populate("parkingSpace", "title imageUrls location parkingType maxVehicleSize dailyRate");
     res.json(booking);
   } catch (error) {
