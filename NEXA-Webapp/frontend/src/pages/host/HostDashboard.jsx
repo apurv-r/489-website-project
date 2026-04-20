@@ -45,7 +45,7 @@ export default function HostDashboard() {
           axios.get(`${API_BASE_URL}/api/bookings/me`, { withCredentials: true, headers }),
         ]);
 
-        setUser(userRes.data);
+        setUser(userRes.data.user || userRes.data);
         setListings(Array.isArray(listingsRes.data) ? listingsRes.data : []);
         setBookings(Array.isArray(bookingsRes.data) ? bookingsRes.data : []);
       } catch (err) {
