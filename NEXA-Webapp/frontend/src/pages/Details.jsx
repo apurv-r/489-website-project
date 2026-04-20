@@ -1548,9 +1548,18 @@ export default function Details(user) {
                     background: "rgba(108,92,231,0.15)",
                     color: "var(--nexa-white)",
                     fontWeight: 700,
+                    overflow: "hidden",
                   }}
                 >
-                  {getInitials(hostName)}
+                  {listing?.host?.profilePictureUrl ? (
+                    <img
+                      src={listing.host.profilePictureUrl}
+                      alt={hostName}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    getInitials(hostName)
+                  )}
                 </div>
                 <div className="host-info">
                   <span className="host-name">{hostName}</span>
