@@ -39,7 +39,7 @@ const userSchema = new Schema(
       type: Map,
       of: new Schema({
         role: { type: String },
-        messageHistory: [{ type: String }],
+        messageHistory: [{ type: Schema.Types.Mixed }],
       }),
       default: {},
     },

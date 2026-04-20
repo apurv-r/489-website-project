@@ -41,29 +41,35 @@ import AdminReports from "./pages/admin/AdminReports";
 import AdminReportReview from "./pages/admin/AdminReportReview";
 import AdminSettings from "./pages/admin/AdminSettings";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "./components/Navbar";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
+function RequireAuth({ user, loading, children }) {
+  if (loading) return null;
+  if (!user?._id) return <Navigate to="/" replace />;
+  return children;
+}
+
 export default function App() {
   const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
-    await axios
-      .get(`${API_BASE_URL}/api/auth/me`, {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
         withCredentials: true,
-      })
-      .then(async (response) => {
-        const user = response.data.user;
-        setUser(user);
-        console.log("successfully fetched user data for dashboard: ", user);
-        console.log("user id: ", user._id);
-      })
-      .catch((error) => {
-        console.log(error);
       });
+      const user = response.data.user;
+      setUser(user);
+      console.log("successfully fetched user data for dashboard: ", user);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -75,7 +81,7 @@ export default function App() {
       <header>
         <Navbar />
       </header>
-      <Routes onChange={fetchUser}>
+      <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -86,24 +92,24 @@ export default function App() {
         <Route path="/confirmation" element={<Confirmation />} />
 
         {/* Lessee */}
-        <Route path="/dashboard" element={<Dashboard {...user} />} />
-        <Route path="/my-bookings" element={<MyBookings {...user} />} />
-        <Route path="/booking-details" element={<BookingDetails {...user} />} />
-        <Route path="/favorites" element={<Favorites {...user} />} />
-        <Route path="/messages" element={<Messages {...user} />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/dashboard" element={<RequireAuth user={user} loading={loading}><Dashboard {...user} /></RequireAuth>} />
+        <Route path="/my-bookings" element={<RequireAuth user={user} loading={loading}><MyBookings {...user} /></RequireAuth>} />
+        <Route path="/booking-details" element={<RequireAuth user={user} loading={loading}><BookingDetails {...user} /></RequireAuth>} />
+        <Route path="/favorites" element={<RequireAuth user={user} loading={loading}><Favorites {...user} /></RequireAuth>} />
+        <Route path="/messages" element={<RequireAuth user={user} loading={loading}><Messages {...user} /></RequireAuth>} />
+        <Route path="/settings" element={<RequireAuth user={user} loading={loading}><Settings /></RequireAuth>} />
 
         {/* Host */}
-        <Route path="/host/dashboard" element={<HostDashboard />} />
-        <Route path="/host/my-listings" element={<HostMyListings />} />
-        <Route path="/host/create-listing" element={<HostCreateListing />} />
-        <Route path="/host/listing-details" element={<HostListingDetails />} />
-        <Route path="/host/edit-listing" element={<HostEditListing />} />
-        <Route path="/host/bookings" element={<HostBookings />} />
-        <Route path="/host/booking-details" element={<HostBookingDetails />} />
-        <Route path="/host/earnings" element={<HostEarnings />} />
-        <Route path="/host/availability" element={<HostAvailability />} />
-        <Route path="/host/messages" element={<HostMessages />} />
+        <Route path="/host/dashboard" element={<RequireAuth user={user} loading={loading}><HostDashboard /></RequireAuth>} />
+        <Route path="/host/my-listings" element={<RequireAuth user={user} loading={loading}><HostMyListings /></RequireAuth>} />
+        <Route path="/host/create-listing" element={<RequireAuth user={user} loading={loading}><HostCreateListing /></RequireAuth>} />
+        <Route path="/host/listing-details" element={<RequireAuth user={user} loading={loading}><HostListingDetails /></RequireAuth>} />
+        <Route path="/host/edit-listing" element={<RequireAuth user={user} loading={loading}><HostEditListing /></RequireAuth>} />
+        <Route path="/host/bookings" element={<RequireAuth user={user} loading={loading}><HostBookings /></RequireAuth>} />
+        <Route path="/host/booking-details" element={<RequireAuth user={user} loading={loading}><HostBookingDetails /></RequireAuth>} />
+        <Route path="/host/earnings" element={<RequireAuth user={user} loading={loading}><HostEarnings /></RequireAuth>} />
+        <Route path="/host/availability" element={<RequireAuth user={user} loading={loading}><HostAvailability /></RequireAuth>} />
+        <Route path="/host/messages" element={<RequireAuth user={user} loading={loading}><HostMessages {...user} /></RequireAuth>} />
 
         {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
