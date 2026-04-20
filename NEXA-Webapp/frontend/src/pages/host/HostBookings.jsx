@@ -17,6 +17,16 @@ const STATUS_STYLES = {
   cancelled: { bg: 'rgba(255,107,107,0.12)', color: '#ff6b6b' },
 };
 
+function getEffectiveStatus(status, startDate, endDate) {
+  if (status === 'cancelled' || status === 'declined' || status === 'pending') return status;
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (now > end) return 'completed';
+  if (now >= start) return 'active';
+  return 'approved';
+}
+
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -46,8 +56,8 @@ export default function HostBookings() {
     fetchBookings();
   }, []);
 
-  const filtered = filter === 'All' ? bookings : bookings.filter(b => b.status === filter);
-  const countFor = (status) => bookings.filter(b => b.status === status).length;
+  const filtered = filter === 'All' ? bookings : bookings.filter(b => getEffectiveStatus(b.status, b.startDate, b.endDate) === filter);
+  const countFor = (status) => bookings.filter(b => getEffectiveStatus(b.status, b.startDate, b.endDate) === status).length;
 
   return (
     <div className="dash-page lsr-page">
@@ -90,7 +100,8 @@ export default function HostBookings() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {filtered.map(b => {
-                  const st = STATUS_STYLES[b.status] || STATUS_STYLES.pending;
+                  const effectiveStatus = getEffectiveStatus(b.status, b.startDate, b.endDate);
+                  const st = STATUS_STYLES[effectiveStatus] || STATUS_STYLES.pending;
                   const guestName = b.renter ? `${b.renter.firstName} ${b.renter.lastName}` : 'Unknown Guest';
                   const listingTitle = b.parkingSpace?.title || 'Unknown Listing';
                   return (
@@ -113,7 +124,7 @@ export default function HostBookings() {
                         padding: '0.25em 0.8em', borderRadius: 20, fontSize: '0.75rem',
                         fontWeight: 600, whiteSpace: 'nowrap', textTransform: 'capitalize',
                         background: st.bg, color: st.color,
-                      }}>{b.status}</span>
+                      }}>{effectiveStatus}</span>
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <Link to={`/host/booking-details?id=${b._id}`} className="btn btn-nexa-outline btn-nexa-sm">View</Link>
                         <Link to="/host/messages" className="btn btn-nexa-outline btn-nexa-sm">

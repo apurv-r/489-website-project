@@ -1,42 +1,50 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import LesseeSidebar from '../components/LesseeSidebar';
 import axios from "axios";
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const FAVS = [
-  { id: 1, img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80', badge: 'Garage', type: 'Private Garage', name: 'Private Garage · Capitol Hill', addr: '1421 10th Ave, Seattle, WA', rating: '4.9', price: '$18' },
-  { id: 2, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=500&q=80', badge: 'Covered', type: 'Covered Spot', name: 'Covered Spot · Pioneer Square', addr: '200 2nd Ave S, Seattle, WA', rating: '4.8', price: '$22' },
-  { id: 3, img: 'https://images.unsplash.com/photo-1590674899484-d5640e854abe?w=500&q=80', badge: 'Open Lot', type: 'Open Lot', name: 'Open Lot · Space Needle', addr: '201 4th Ave N, Seattle, WA', rating: '4.6', price: '$10' },
-  { id: 4, img: 'https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=500&q=80', badge: 'Driveway', type: 'Driveway', name: 'Shaded Driveway · Queen Anne', addr: '515 W Highland Dr, Seattle, WA', rating: '4.7', price: '$14' },
-];
-
 export default function Favorites(user) {
   const navigate = useNavigate();
-  const [favs, setFavs] = useState(FAVS);
-
-  function remove(id) {
-    setFavs(f => f.filter(x => x.id !== id));
-  }
+  const [favs, setFavs] = useState([]);
 
   async function fetchFavs() {
-    await axios.get(`${API_BASE_URL}/api/auth/me`, {
-      withCredentials: true,
-    })
-    .then(response => {
-      if (response.status === 200) {
-        setFavs(f => [...f, ...response.data.user.favoritedListings]);
-      }
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    if (!user?._id) return;
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/users/${user._id}/favorites`, {
+        withCredentials: true,
+      });
+      setFavs(response.data.map(listing => ({
+        id: listing._id,
+        img: listing.imageUrls?.[0] || '',
+        badge: listing.parkingType || 'Parking',
+        type: listing.parkingType || 'Parking',
+        name: listing.title || '',
+        addr: listing.location?.address || '',
+        rating: listing.reviewCount > 0 ? Number(listing.ratingAverage).toFixed(1) : '—',
+        price: `$${Number(listing.dailyRate).toFixed(2)}`,
+        listingId: listing._id,
+      })));
+    } catch (error) {
+      console.log('error fetching favorites:', error);
+    }
+  }
+
+  async function remove(id) {
+    if (!user?._id) return;
+    try {
+      await axios.delete(`${API_BASE_URL}/api/users/${user._id}/favorites/${id}`, {
+        withCredentials: true,
+      });
+      setFavs(f => f.filter(x => x.id !== id));
+    } catch (error) {
+      console.log('error removing favorite:', error);
+    }
   }
 
   useEffect(() => {
     fetchFavs();
-  }, []);
+  }, [user?._id]);
 
   return (
     <div className="dash-page">
@@ -63,7 +71,7 @@ export default function Favorites(user) {
             <div className="fav-grid">
               {favs.map(card => (
                 <div className="fav-card" key={card.id}>
-                  <Link to="/details" className="fav-card-img-wrap">
+                  <Link to={`/details?id=${card.id}`} className="fav-card-img-wrap">
                     <img src={card.img} alt={card.name} className="fav-card-img" />
                     <span className="fav-card-badge">{card.badge}</span>
                   </Link>

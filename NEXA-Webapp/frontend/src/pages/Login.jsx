@@ -26,6 +26,8 @@ export default function Login() {
           navigate("/dashboard", { replace: true });
         } else if (response.data?.user.roleType === "Host") {
           navigate("/host/dashboard", { replace: true });
+        } else if (response.data?.user.roleType === "Admin") {
+          navigate("/admin/dashboard", { replace: true });
         }
       }
     } catch (error) {
@@ -78,6 +80,8 @@ export default function Login() {
 
       if (roleType === "Host") {
         navigate("/host/dashboard", { replace: true });
+      } else if (roleType === "Admin") {
+        navigate("/admin/dashboard", { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
       }
