@@ -7,6 +7,16 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const BOOKINGS = [];
 
+function getEffectiveStatus(status, startDate, endDate) {
+  if (status === 'cancelled') return 'cancelled';
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (now > end) return 'completed';
+  if (now >= start) return 'active';
+  return 'upcoming';
+}
+
 export default function Dashboard(user) {
 
   const [bookingStats, setBookingStats] = useState({ active: 0, past: 0 });
@@ -91,13 +101,14 @@ export default function Dashboard(user) {
 
       const fetchedBookings = response.data.map((booking) => {
         const listing = booking.parkingSpace;
+        const effectiveStatus = getEffectiveStatus(booking.status, booking.startDate, booking.endDate);
         return {
           img: listing?.imageUrls?.[0] || '',
           name: listing?.title || '',
           dates: formatDates(booking.startDate, booking.endDate),
           price: `$${booking.totalAmount.toFixed(2)}`,
-          status: booking.status,
-          cls: `status-${booking.status}`,
+          status: effectiveStatus,
+          cls: `status-${effectiveStatus}`,
           id: booking._id,
         };
       });

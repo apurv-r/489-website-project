@@ -10,6 +10,16 @@ const BOOKINGS = [];
 const STATUS_CLASS = { active: 'status-active', upcoming: 'status-upcoming', completed: 'status-completed', cancelled: 'status-cancelled' };
 const TABS = ['all', 'active', 'upcoming', 'completed', 'cancelled'];
 
+function getEffectiveStatus(status, startDate, endDate) {
+  if (status === 'cancelled') return 'cancelled';
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (now > end) return 'completed';
+  if (now >= start) return 'active';
+  return 'upcoming';
+}
+
 export default function MyBookings(user) {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
@@ -59,6 +69,7 @@ export default function MyBookings(user) {
       const fetchedBookings = response.data.map((booking) => {
         const listing = booking.parkingSpace;
         const duration = calcDuration(booking.startDate, booking.endDate);
+        const effectiveStatus = getEffectiveStatus(booking.status, booking.startDate, booking.endDate);
         return {
           img: listing?.imageUrls?.[0] || '',
           type: listing?.parkingType || '',
@@ -68,8 +79,8 @@ export default function MyBookings(user) {
           duration: `${duration} day${duration !== 1 ? 's' : ''}`,
           total: `$${booking.totalAmount.toFixed(2)}`,
           price: `$${booking.totalAmount.toFixed(2)}`,
-          status: booking.status,
-          cls: `status-${booking.status}`,
+          status: effectiveStatus,
+          cls: `status-${effectiveStatus}`,
           id: booking._id,
         };
       });

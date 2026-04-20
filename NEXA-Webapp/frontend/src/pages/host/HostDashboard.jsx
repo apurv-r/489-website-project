@@ -27,6 +27,16 @@ function getGreeting() {
   return 'Good evening';
 }
 
+function getEffectiveStatus(status, startDate, endDate) {
+  if (status === 'cancelled' || status === 'declined' || status === 'pending') return status;
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (now > end) return 'completed';
+  if (now >= start) return 'active';
+  return 'approved';
+}
+
 export default function HostDashboard() {
   const [user, setUser] = useState(null);
   const [listings, setListings] = useState([]);
@@ -58,7 +68,10 @@ export default function HostDashboard() {
   }, []);
 
   const activeListings = listings.filter(l => l.isPublished).length;
-  const activeBookings = bookings.filter(b => b.status === 'active' || b.status === 'approved').length;
+  const activeBookings = bookings.filter(b => {
+    const s = getEffectiveStatus(b.status, b.startDate, b.endDate);
+    return s === 'active' || s === 'approved';
+  }).length;
 
   const now = new Date();
   const thisMonthEarnings = bookings
@@ -139,6 +152,7 @@ export default function HostDashboard() {
                   const guestName = b.renter ? `${b.renter.firstName} ${b.renter.lastName}` : 'Guest';
                   const listingTitle = b.parkingSpace?.title || 'Unknown Listing';
                   const img = b.parkingSpace?.imageUrls?.[0] || '';
+                  const effectiveStatus = getEffectiveStatus(b.status, b.startDate, b.endDate);
                   return (
                     <Link to={`/host/booking-details?id=${b._id}`} className="dash-booking-item" key={b._id}>
                       {img
@@ -150,7 +164,7 @@ export default function HostDashboard() {
                         <div className="dash-booking-dates"><i className="bi bi-calendar3"></i> {formatDate(b.startDate)} – {formatDate(b.endDate)}</div>
                         <div className="dash-booking-price">${b.totalAmount?.toFixed(2)}</div>
                       </div>
-                      <span className={`dash-booking-status ${STATUS_CLASS[b.status] || ''}`} style={{ textTransform: 'capitalize' }}>{b.status}</span>
+                      <span className={`dash-booking-status ${STATUS_CLASS[effectiveStatus] || ''}`} style={{ textTransform: 'capitalize' }}>{effectiveStatus}</span>
                     </Link>
                   );
                 })}
