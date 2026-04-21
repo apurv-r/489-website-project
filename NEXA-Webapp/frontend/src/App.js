@@ -65,6 +65,7 @@ export default function App() {
       setUser(user);
       console.log("successfully fetched user data for dashboard: ", user);
     } catch (error) {
+      setUser({});
       console.log(error);
     } finally {
       setLoading(false);
@@ -73,6 +74,8 @@ export default function App() {
 
   useEffect(() => {
     fetchUser();
+    window.addEventListener('auth-changed', fetchUser);
+    return () => window.removeEventListener('auth-changed', fetchUser);
   }, []);
 
   return (
