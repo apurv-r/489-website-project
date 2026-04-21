@@ -24,12 +24,7 @@ function toAddress(location) {
     return "Address unavailable";
   }
 
-  const parts = [
-    location.address,
-    location.city,
-    location.state,
-    location.zipCode,
-  ]
+  const parts = [location.address, location.city, location.state, location.zipCode]
     .map((part) => String(part || "").trim())
     .filter(Boolean);
 
@@ -51,15 +46,12 @@ export default function HostMyListings() {
 
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `${API_BASE_URL}/api/parking-spaces/me`,
-          {
-            withCredentials: true,
-            headers: {
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
+        const response = await axios.get(`${API_BASE_URL}/api/parking-spaces/me`, {
+          withCredentials: true,
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-        );
+        });
 
         if (isMounted) {
           setListings(Array.isArray(response.data) ? response.data : []);
@@ -89,15 +81,15 @@ export default function HostMyListings() {
 
   async function handleDelete(id) {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await axios.delete(`${API_BASE_URL}/api/parking-spaces/${id}`, {
         withCredentials: true,
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
-      setListings(prev => prev.filter(l => l._id !== id));
+      setListings((prev) => prev.filter((l) => l._id !== id));
       setConfirmDeleteId(null);
     } catch (err) {
-      setErrorMessage(err.response?.data?.message || 'Failed to remove listing.');
+      setErrorMessage(err.response?.data?.message || "Failed to remove listing.");
       setConfirmDeleteId(null);
     }
   }
@@ -118,7 +110,12 @@ export default function HostMyListings() {
           : "—",
         reviews: Number(listing.reviewCount) || 0,
         bookings: Number(listing.bookingCount) || 0,
-        status: listing.isPublished ? "active" : "pending",
+        status: listing.isPublished && listing.isVerified ? "active" : "pending",
+        statusLabel: !listing.isPublished
+          ? "Unpublished"
+          : listing.isVerified
+            ? "Active"
+            : "Pending Verification",
       })),
     [listings],
   );
@@ -132,14 +129,9 @@ export default function HostMyListings() {
           <div className="dash-page-header">
             <div>
               <h1 className="dash-page-title">My Listings</h1>
-              <p className="dash-page-sub">
-                Manage your active and pending parking spaces.
-              </p>
+              <p className="dash-page-sub">Manage your active and pending parking spaces.</p>
             </div>
-            <Link
-              to="/host/create-listing"
-              className="btn btn-nexa btn-nexa-sm"
-            >
+            <Link to="/host/create-listing" className="btn btn-nexa btn-nexa-sm">
               <i className="bi bi-plus-lg me-1"></i> New Listing
             </Link>
           </div>
@@ -159,33 +151,20 @@ export default function HostMyListings() {
           ) : displayListings.length === 0 ? (
             <div className="dash-card">
               <h3 style={{ marginBottom: "0.5rem" }}>No listings yet</h3>
-              <p
-                style={{ color: "var(--nexa-gray-400)", marginBottom: "1rem" }}
-              >
+              <p style={{ color: "var(--nexa-gray-400)", marginBottom: "1rem" }}>
                 You haven't created any parking listings yet.
               </p>
-              <Link
-                to="/host/create-listing"
-                className="btn btn-nexa btn-nexa-sm"
-              >
+              <Link to="/host/create-listing" className="btn btn-nexa btn-nexa-sm">
                 <i className="bi bi-plus-lg me-1"></i> Create your first listing
               </Link>
             </div>
           ) : (
             <div className="lsr-listings-grid">
               {displayListings.map((listing) => (
-                <div
-                  className="lsr-listing-card"
-                  key={listing.id}
-                  data-status={listing.status}
-                >
+                <div className="lsr-listing-card" key={listing.id} data-status={listing.status}>
                   <div className="lsr-listing-img-wrap">
                     {listing.img ? (
-                      <img
-                        src={listing.img}
-                        alt={listing.name}
-                        className="lsr-listing-card-img"
-                      />
+                      <img src={listing.img} alt={listing.name} className="lsr-listing-card-img" />
                     ) : (
                       <div
                         className="lsr-listing-card-img d-flex align-items-center justify-content-center"
@@ -198,11 +177,8 @@ export default function HostMyListings() {
                         No image
                       </div>
                     )}
-                    <span
-                      className={`lsr-badge lsr-badge-${listing.status} lsr-card-badge`}
-                    >
-                      {listing.status.charAt(0).toUpperCase() +
-                        listing.status.slice(1)}
+                    <span className={`lsr-badge lsr-badge-${listing.status} lsr-card-badge`}>
+                      {listing.statusLabel}
                     </span>
                   </div>
 
@@ -217,44 +193,63 @@ export default function HostMyListings() {
                         <i className="bi bi-cash"></i> {listing.price}
                       </span>
                       <span>
-                        <i className="bi bi-star-fill"></i> {listing.reviews > 0 ? listing.rating : "No rating"} (
-                        {listing.reviews})
+                        <i className="bi bi-star-fill"></i>{" "}
+                        {listing.reviews > 0 ? listing.rating : "No rating"} ({listing.reviews})
                       </span>
                       <span>
-                        <i className="bi bi-calendar2-check"></i>{" "}
-                        {listing.bookings} bookings
+                        <i className="bi bi-calendar2-check"></i> {listing.bookings} bookings
                       </span>
                     </div>
                   </div>
 
                   <div className="lsr-listing-card-actions">
-                    <Link
-                      to={`/host/listing-details?id=${listing.id}`}
-                      className="lsr-action-btn"
-                    >
+                    <Link to={`/host/listing-details?id=${listing.id}`} className="lsr-action-btn">
                       <i className="bi bi-eye"></i> View
                     </Link>
-                    <Link
-                      to={`/host/edit-listing?id=${listing.id}`}
-                      className="lsr-action-btn"
-                    >
+                    <Link to={`/host/edit-listing?id=${listing.id}`} className="lsr-action-btn">
                       <i className="bi bi-pencil"></i> Edit
                     </Link>
                     {confirmDeleteId === listing.id ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--nexa-gray-400)' }}>Are you sure?</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        <span style={{ fontSize: "0.8rem", color: "var(--nexa-gray-400)" }}>
+                          Are you sure?
+                        </span>
                         <button
-                          style={{ background: '#ff6b6b', color: '#fff', border: 'none', borderRadius: 8, padding: '0.4em 1em', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'background 0.2s' }}
-                          onMouseEnter={e => e.target.style.background = '#e55555'}
-                          onMouseLeave={e => e.target.style.background = '#ff6b6b'}
+                          style={{
+                            background: "#ff6b6b",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: 8,
+                            padding: "0.4em 1em",
+                            cursor: "pointer",
+                            fontSize: "0.85rem",
+                            fontWeight: 600,
+                            transition: "background 0.2s",
+                          }}
+                          onMouseEnter={(e) => (e.target.style.background = "#e55555")}
+                          onMouseLeave={(e) => (e.target.style.background = "#ff6b6b")}
                           onClick={() => handleDelete(listing.id)}
-                        >Yes</button>
+                        >
+                          Yes
+                        </button>
                         <button
-                          style={{ background: 'transparent', color: 'var(--nexa-gray-300)', border: '1px solid var(--nexa-border)', borderRadius: 8, padding: '0.4em 1em', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'background 0.2s' }}
-                          onMouseEnter={e => e.target.style.background = '#2a2a3a'}
-                          onMouseLeave={e => e.target.style.background = 'transparent'}
+                          style={{
+                            background: "transparent",
+                            color: "var(--nexa-gray-300)",
+                            border: "1px solid var(--nexa-border)",
+                            borderRadius: 8,
+                            padding: "0.4em 1em",
+                            cursor: "pointer",
+                            fontSize: "0.85rem",
+                            fontWeight: 600,
+                            transition: "background 0.2s",
+                          }}
+                          onMouseEnter={(e) => (e.target.style.background = "#2a2a3a")}
+                          onMouseLeave={(e) => (e.target.style.background = "transparent")}
                           onClick={() => setConfirmDeleteId(null)}
-                        >No</button>
+                        >
+                          No
+                        </button>
                       </div>
                     ) : (
                       <button
