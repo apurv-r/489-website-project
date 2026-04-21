@@ -22,7 +22,7 @@ function formatDate(d) {
 
 function calcDuration(start, end) {
   if (!start || !end) return 0;
-  return Math.max(0, Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)));
+  return Math.max(0, Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1);
 }
 
 function getEffectiveStatus(status, startDate, endDate) {
@@ -220,7 +220,6 @@ export default function HostBookingDetails() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {[
                     { label: 'Booking Requested', date: booking.requestedAt, done: true },
-                    { label: 'Booking Approved', date: booking.approvedAt, done: !!booking.approvedAt },
                     { label: 'Check-in', date: booking.startDate, done: new Date() >= new Date(booking.startDate) },
                     { label: 'Check-out', date: booking.endDate, done: new Date() >= new Date(booking.endDate) },
                   ].map((t, i) => (

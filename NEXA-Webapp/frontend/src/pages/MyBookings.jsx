@@ -55,7 +55,7 @@ export default function MyBookings(user) {
       const startDate = new Date(start);
       const endDate = new Date(end);
       const msPerDay = 1000 * 60 * 60 * 24;
-      const duration = Math.round((endDate - startDate) / msPerDay);
+      const duration = Math.round((endDate - startDate) / msPerDay) + 1;
       return Math.max(0, duration);
   }
 
