@@ -1,6 +1,8 @@
 const express = require("express");
 const User = require("../../models/user");
 const createCrudController = require("../../controllers/crudFactory");
+const messageController = require("../../controllers/messageController");
+
 const {
   addFavorite,
   createAdmin,
@@ -20,7 +22,7 @@ router.get("/", controller.list);
 router.get("/:id", controller.getById);
 router.post("/", controller.create);
 router.post("/admins", requireRole("Admin"), createAdmin);
-router.put("/message/:senderId/:recipientId", controller.sendMessage);
+router.put("/message/:senderId/:recipientId", messageController.sendMessage);
 router.put("/hosts/:id/verify", requireRole("Admin"), verifyHost);
 router.patch("/:id", requireRole("Admin"), updateUserAdminFields);
 router.get("/:id/favorites", requireAuth, getFavorites);
