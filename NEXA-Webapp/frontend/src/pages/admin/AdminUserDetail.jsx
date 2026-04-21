@@ -232,7 +232,8 @@ export default function AdminUserDetail() {
       <main className="adm-main">
         {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
 
-        <div className="adm-header">
+        <div className="adm-page-header">
+          <div>
           <nav
             style={{ fontSize: "0.85rem", color: "var(--nexa-gray-500)", marginBottom: "0.5rem" }}
           >
@@ -246,6 +247,7 @@ export default function AdminUserDetail() {
             <span style={{ color: "var(--nexa-gray-200)" }}>{displayName}</span>
           </nav>
           <h1 className="adm-page-title">User Detail</h1>
+          </div>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "1.5rem" }}>
