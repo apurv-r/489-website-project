@@ -122,7 +122,7 @@ export default function AdminDashboard() {
       .sort((left, right) => new Date(right?.createdAt || 0) - new Date(left?.createdAt || 0))
       .slice(0, 4)
       .map((listing) => {
-        const hostUser = userMapById.get(String(listing?.host));
+        const hostUser = listing?.host;
 
         return {
           id: listing?._id,
