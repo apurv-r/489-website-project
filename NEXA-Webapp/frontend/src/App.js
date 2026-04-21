@@ -48,7 +48,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 function RequireAuth({ user, loading, children }) {
   if (loading) return null;
-  if (!user?._id) return <Navigate to="/" replace />;
+  if (!user?._id) return <Navigate to="/login" replace />;
   return children;
 }
 

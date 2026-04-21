@@ -85,7 +85,6 @@ export default function Login() {
       } else {
         navigate("/dashboard", { replace: true });
       }
-      window.document.location.reload();
     } catch (error) {
       const backendMessage =
         error.response?.data?.message ||
