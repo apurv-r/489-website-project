@@ -79,7 +79,7 @@ export default function HostBookingDetails() {
     setActionError('');
     try {
       const res = await axios.put(`${API_BASE_URL}/api/bookings/${id}`, { status }, { withCredentials: true });
-      setBooking(res.data);
+      setBooking({ ...booking, ...res.data, renter: booking.renter, parkingSpace: booking.parkingSpace });
     } catch (err) {
       setActionError(err.response?.data?.message || 'Action failed.');
     } finally {
