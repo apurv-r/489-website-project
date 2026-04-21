@@ -28,8 +28,9 @@ async function createReview(req, res) {
     if (booking.renter.toString() !== renterId.toString()) {
       return res.status(403).json({ message: "You can only review your own bookings." });
     }
-    if (booking.status !== "completed") {
-      return res.status(400).json({ message: "You can only review completed bookings." });
+    const bookingEnded = new Date() > new Date(booking.endDate);
+    if (!bookingEnded) {
+      return res.status(400).json({ message: "You can only review a booking after the checkout date." });
     }
 
     const existing = await Review.findOne({ booking: bookingId });
