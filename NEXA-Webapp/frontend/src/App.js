@@ -24,7 +24,6 @@ import HostEditListing from "./pages/host/HostEditListing";
 import HostBookings from "./pages/host/HostBookings";
 import HostBookingDetails from "./pages/host/HostBookingDetails";
 import HostEarnings from "./pages/host/HostEarnings";
-import HostAvailability from "./pages/host/HostAvailability";
 import HostMessages from "./pages/host/HostMessages";
 
 // Admin pages
@@ -108,7 +107,6 @@ export default function App() {
         <Route path="/host/bookings" element={<RequireAuth user={user} loading={loading}><HostBookings /></RequireAuth>} />
         <Route path="/host/booking-details" element={<RequireAuth user={user} loading={loading}><HostBookingDetails /></RequireAuth>} />
         <Route path="/host/earnings" element={<RequireAuth user={user} loading={loading}><HostEarnings /></RequireAuth>} />
-        <Route path="/host/availability" element={<RequireAuth user={user} loading={loading}><HostAvailability /></RequireAuth>} />
         <Route path="/host/messages" element={<RequireAuth user={user} loading={loading}><HostMessages {...user} /></RequireAuth>} />
 
         {/* Admin */}

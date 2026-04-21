@@ -223,9 +223,6 @@ export default function HostListingDetails() {
                   <Link to={`/host/edit-listing?id=${id}`} className="btn btn-nexa w-100">
                     <i className="bi bi-pencil me-2"></i>Edit Listing
                   </Link>
-                  <Link to="/host/availability" className="btn btn-nexa-outline w-100">
-                    <i className="bi bi-calendar3 me-2"></i>Manage Availability
-                  </Link>
                 </div>
               </div>
 
