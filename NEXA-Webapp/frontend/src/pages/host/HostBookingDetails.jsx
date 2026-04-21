@@ -118,7 +118,7 @@ export default function HostBookingDetails() {
   const guestName = booking.renter ? `${booking.renter.firstName} ${booking.renter.lastName}` : 'Guest';
   const guestInitial = guestName.charAt(0).toUpperCase();
   const duration = calcDuration(booking.startDate, booking.endDate);
-  const payout = (booking.totalAmount || 0) * 0.95;
+  const payout = (booking.totalAmount || 0) * 0.90;
 
   return (
     <div className="dash-page lsr-page">
