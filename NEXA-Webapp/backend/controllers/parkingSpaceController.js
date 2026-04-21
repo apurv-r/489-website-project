@@ -61,7 +61,7 @@ async function getPublic(req, res, next) {
 
 async function listMine(req, res, next) {
   try {
-    const filter = req.query.host ? { host: req.query.host } : {};
+    const filter = req.user?.roleType === "Host" ? { host: req.user._id } : {};
 
     const spaces = await ParkingSpace.find(filter)
       .populate("host", "firstName lastName isVerified profilePictureUrl")
