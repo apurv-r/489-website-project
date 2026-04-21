@@ -132,7 +132,7 @@ export default function AdminDashboard() {
           type: toTitleCase(listing?.parkingType || "Parking"),
         };
       });
-  }, [listings, userMapById]);
+  }, [listings]);
 
   const recentReports = useMemo(() => {
     return reports
