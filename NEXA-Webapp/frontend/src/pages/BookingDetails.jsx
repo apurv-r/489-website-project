@@ -96,7 +96,7 @@ export default function BookingDetails(user) {
     const startDate = new Date(start);
     const endDate = new Date(end);
     const msPerDay = 1000 * 60 * 60 * 24;
-    const duration = Math.round((endDate - startDate) / msPerDay);
+    const duration = Math.round((endDate - startDate) / msPerDay) + 1;
     return Math.max(0, duration);
   }
 
@@ -301,7 +301,7 @@ export default function BookingDetails(user) {
                     </div>
                     <div className="bk-price-row">
                       <span>Service fee (10%)</span>
-                      <span>${booking ? booking.totalAmount * 0.1 : "Loading..."}</span>
+                      <span>${booking ? (booking.totalAmount * 0.1).toFixed(2) : "Loading..."}</span>
                     </div>
                     <div className="bk-price-row bk-price-total" style={{ padding: "0px" }}>
                       <span>Total</span>
@@ -368,8 +368,8 @@ export default function BookingDetails(user) {
                           onChange={(e) => setReviewComment(e.target.value)}
                           style={{
                             width: "100%",
-                            background: "var(--nexa-surface-2)",
-                            border: "1px solid var(--nexa-border)",
+                            background: "var(--nexa-gray-900)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
                             borderRadius: 8,
                             color: "var(--nexa-gray-100)",
                             padding: "0.65rem 0.9rem",
