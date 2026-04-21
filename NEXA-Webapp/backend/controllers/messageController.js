@@ -1,6 +1,4 @@
 const User = require("../models/user");
-const Host = require("../models/host");
-const Renter = require("../models/renter");  
   
 async function sendMessage(req, res, next) {
     try {
