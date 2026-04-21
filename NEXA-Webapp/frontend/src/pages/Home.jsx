@@ -275,7 +275,7 @@ export default function Home() {
                     >
                       <div className="listing-img">
                         {listing.imageUrls?.[0]
-                          ? <img src={listing.imageUrls[0]} alt={listing.title} />
+                          ? <img src={listing.imageUrls?.[0]} alt={listing.title} />
                           : <div style={{ width: '100%', height: '100%', background: 'var(--nexa-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nexa-gray-500)' }}><i className="bi bi-image fs-2" /></div>
                         }
                         <span className="listing-badge">Featured</span>
@@ -300,7 +300,7 @@ export default function Home() {
                         </div>
                         <div className="listing-footer">
                           <div className="listing-price">
-                            ${Number(listing.dailyRate).toFixed(0)} <span>/ day</span>
+                            ${Number(listing.dailyRate || 0).toFixed(0)} <span>/ day</span>
                           </div>
                           <div className="listing-rating">
                             <i className="bi bi-star-fill"></i>{" "}

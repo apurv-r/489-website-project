@@ -243,7 +243,7 @@ export default function HostBookingDetails() {
                 <h3 className="dash-card-title" style={{ marginBottom: '1rem' }}>Price Breakdown</h3>
                 {[
                   { label: `$${listing?.dailyRate || 0} × ${duration} days`, value: `$${booking.totalAmount?.toFixed(2)}` },
-                  { label: 'NEXA service fee (10%)', value: `−$${(booking.totalAmount * 0.1).toFixed(2)}` },
+                  { label: 'NEXA service fee (10%)', value: `−$${((booking.totalAmount || 0) * 0.1).toFixed(2)}` },
                   { label: 'Payout to you', value: `$${payout.toFixed(2)}`, bold: true },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--nexa-border)' }}>
