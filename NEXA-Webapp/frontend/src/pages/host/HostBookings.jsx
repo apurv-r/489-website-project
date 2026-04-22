@@ -71,17 +71,13 @@ export default function HostBookings() {
           </div>
 
           {/* Filter tabs */}
-          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', marginBottom: '1.5rem' }}>
+          <div className="lsr-date-filter" style={{ overflowX: 'auto', marginBottom: '1.5rem' }}>
             {FILTERS.map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                style={{
-                  padding: '0.4em 1.1em', borderRadius: 20, border: 'none', cursor: 'pointer',
-                  fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap', textTransform: 'capitalize',
-                  background: filter === f ? 'var(--nexa-lsr)' : 'var(--nexa-surface-2)',
-                  color: filter === f ? '#0a0a0f' : 'var(--nexa-gray-400)',
-                }}
+                className={`lsr-df-btn${filter === f ? ' active' : ''}`}
+                style={{ whiteSpace: 'nowrap', textTransform: 'capitalize' }}
               >
                 {f} {f !== 'All' && <span style={{ marginLeft: 4, opacity: 0.75 }}>({countFor(f)})</span>}
               </button>
