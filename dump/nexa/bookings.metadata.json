@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"parkingSpace":{"$numberInt":"1"},"startDate":{"$numberInt":"1"},"endDate":{"$numberInt":"1"}},"name":"parkingSpace_1_startDate_1_endDate_1"}],"uuid":"f62b8009de044983b404e2e1246d502c","collectionName":"bookings","type":"collection"}

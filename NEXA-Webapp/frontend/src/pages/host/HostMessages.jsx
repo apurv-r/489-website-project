@@ -151,9 +151,6 @@ export default function HostMessages(user) {
                       <p style={{ margin: 0, fontWeight: 700 }}>{thread?.name}</p>
                       <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--nexa-gray-500)' }}>{thread?.listing}</p>
                     </div>
-                    <Link to="/host/booking-details" className="btn btn-nexa-outline btn-nexa-sm">
-                      <i className="bi bi-calendar3 me-1"></i> View Booking
-                    </Link>
                   </div>
 
                   {/* Messages */}
