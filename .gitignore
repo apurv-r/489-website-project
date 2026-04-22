@@ -1,3 +1,4 @@
 node_modules/
 .env
 NEXA-Webapp/backend/uploads/*
+host-use-cases.md
