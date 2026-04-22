@@ -63,7 +63,7 @@ export default function HostSidebar() {
           <i className="bi bi-chat-dots-fill"></i> Messages
         </Link>
         <div className="dash-nav-divider"></div>
-        <Link to="/settings" className={`dash-nav-link${active('/settings')}`}>
+        <Link to="/host/settings" className={`dash-nav-link${active('/host/settings')}`}>
           <i className="bi bi-gear-fill"></i> Settings
         </Link>
         <Link to="/login" className="dash-nav-link dash-nav-logout">
