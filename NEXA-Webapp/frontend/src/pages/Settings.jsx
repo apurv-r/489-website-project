@@ -18,7 +18,6 @@ export default function Settings() {
   const [avatarMsg, setAvatarMsg] = useState({ type: '', text: '' });
   const avatarInputRef = useRef(null);
 
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -99,7 +98,6 @@ export default function Settings() {
         }
       );
       setPasswordMsg({ type: 'success', text: 'Password updated!' });
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {

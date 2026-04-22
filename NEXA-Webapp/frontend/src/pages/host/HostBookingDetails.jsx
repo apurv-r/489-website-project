@@ -224,7 +224,7 @@ export default function HostBookingDetails() {
                     { label: 'Check-out', date: booking.endDate, done: new Date() >= new Date(booking.endDate) },
                   ].map((t, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
-                      <i className={t.done ? 'bi-check-circle-fill' : 'bi-circle'} style={{ color: t.done ? '#00e676' : 'var(--nexa-gray-600)', fontSize: '1.1rem', marginTop: 2 }} />
+                      <i className={t.done ? 'bi bi-check-circle-fill' : 'bi bi-circle'} style={{ color: t.done ? '#00e676' : 'var(--nexa-gray-600)', fontSize: '1.1rem', marginTop: 2 }} />
                       <div>
                         <p style={{ fontWeight: 600, margin: 0, fontSize: '0.875rem' }}>{t.label}</p>
                         <p style={{ fontSize: '0.78rem', color: 'var(--nexa-gray-500)', margin: 0 }}>{t.date ? formatDate(t.date) : '—'}</p>

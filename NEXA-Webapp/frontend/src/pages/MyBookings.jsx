@@ -34,7 +34,6 @@ export default function MyBookings(user) {
       });
       return response.data;
     } catch (error) {
-      console.log("error fetching listing data for dashboard:", error);
     }
   }
 
@@ -85,9 +84,7 @@ export default function MyBookings(user) {
       });
 
       setBookings(fetchedBookings);
-      console.log("successfully fetched bookings data for my-bookings:", fetchedBookings);
     } catch (error) {
-      console.log("error fetching bookings:", error);
     }
   }
 

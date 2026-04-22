@@ -64,10 +64,8 @@ export default function App() {
       });
       const user = response.data.user;
       setUser(user);
-      console.log("successfully fetched user data for dashboard: ", user);
     } catch (error) {
       setUser({});
-      console.log(error);
     } finally {
       setLoading(false);
     }
