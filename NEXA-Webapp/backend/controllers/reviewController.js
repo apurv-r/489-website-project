@@ -29,7 +29,7 @@ async function createReview(req, res) {
       return res.status(403).json({ message: "You can only review your own bookings." });
     }
     const bookingEnded = new Date() > new Date(booking.endDate);
-    if (!bookingEnded) {
+    if (!bookingEnded || booking.status === "cancelled" || booking.status === "declined") {
       return res.status(400).json({ message: "You can only review a booking after the checkout date." });
     }
 
