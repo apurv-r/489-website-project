@@ -2313,9 +2313,15 @@ select.lsr-input::-ms-expand {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding: 1rem 2rem;
   display: flex;
-  justify-content: flex-end;
-  gap: 0.85rem;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.9rem;
   z-index: 50;
+}
+
+.lsr-save-bar .lsr-input {
+  width: 100%;
 }
 
 /* Save toast */

@@ -227,10 +227,9 @@ export default function HostEditListing() {
 
               {/* Sticky right panel */}
               <div>
-                <div className="dash-card lsr-save-bar">
-                  <h3 className="dash-card-title" style={{ marginBottom: '1rem' }}>Publish</h3>
+                <div className="dash-card lsr-save-bar" style={{ padding: '1.2rem'}}>
                   <div style={{ marginBottom: '1rem' }}>
-                    <label className="lsr-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Status</label>
+                    <label className="lsr-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Publish Status</label>
                     <select className="lsr-input" value={isPublished ? 'active' : 'paused'} onChange={e => setIsPublished(e.target.value === 'active')}>
                       <option value="active">Active</option>
                       <option value="paused">Paused</option>
