@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import LesseeSidebar from '../components/LesseeSidebar';
 import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -28,6 +28,8 @@ const INITIAL_MESSAGES = {
 };
 
 export default function Messages(user) {
+  const [searchParams] = useSearchParams();
+  const toParam = searchParams.get('to');
   const [activeThread, setActiveThread] = useState('');
   const [conversations, setConversations] = useState(INITIAL_MESSAGES);
   const [threads, setThreads] = useState([]);
@@ -94,28 +96,33 @@ export default function Messages(user) {
   }
 
   async function fetchMessages() {
-    const messages = user.messages;
-    if (!messages) return;
-
-    for (const userId in messages) {
-      const fetchedUser = await fetchUser(userId);
-      if (fetchedUser) await setThreadInfo(fetchedUser);
+    try {
+      // Fetch fresh user data so newly created threads are included
+      const meRes = await axios.get(`${API_BASE_URL}/api/auth/me`, { withCredentials: true });
+      const freshUser = meRes.data.user;
+      const messages = freshUser?.messages;
+      if (!messages) return;
+      for (const userId in messages) {
+        const fetchedUser = await fetchUser(userId);
+        if (fetchedUser) await setThreadInfo(fetchedUser);
+      }
+    } catch (error) {
+      console.log('error fetching messages:', error);
     }
-    console.log("FETCHING USER MESSAGES");
   }
 
-useEffect(() => {
-  fetchMessages(); // call immediately on mount
+  // Auto-select thread specified by ?to= query param once threads load
+  useEffect(() => {
+    if (toParam && threads.find(t => t.id === toParam)) {
+      setActiveThread(toParam);
+    }
+  }, [toParam, threads]);
 
-  const interval = setInterval(() => {
+  useEffect(() => {
     fetchMessages();
-    console.log("conversations: ", conversations);
-
-  }, 5000); // every 5 seconds
-
-  return () => clearInterval(interval); // cleanup on unmount
-
-}, []);
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="dash-page">
