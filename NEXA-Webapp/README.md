@@ -64,7 +64,7 @@ PORT=5000
 # Database mode
 USE_LOCAL_MONGODB=true
 LOCAL_MONGODB_URI=mongodb://127.0.0.1:27017/nexa
-MONGODB_URI=mongodb+srv://admin:admin@primary.bp1pjw1.mongodb.net/?appName=primary
+MONGODB_URI=<URI_from_env_file>
 
 # Frontend origin(s) allowed by backend CORS
 CORS_ALLOWED_ORIGINS=http://localhost:3000
