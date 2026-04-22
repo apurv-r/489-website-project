@@ -175,7 +175,7 @@ export default function BookingDetails(user) {
       )
       .then((response) => {
         console.log("successfully sent message: ", response.data);
-        navigate("/messages");
+        navigate(`/messages?to=${host._id}`);
       })
       .catch((error) => {
         console.log("error sending message: ", error);
