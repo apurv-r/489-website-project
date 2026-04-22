@@ -61,6 +61,8 @@ const active = (path) => location.pathname === path ? ' active' : '';
       setDashboardLink("/dashboard");
     } else if (role === "Host") {
       setDashboardLink("/host/dashboard");
+    } else if (role === "Admin") {
+      setDashboardLink("/admin/dashboard");
     }
   }, [role]);
 
